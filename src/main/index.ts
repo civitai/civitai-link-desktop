@@ -2,10 +2,11 @@ import { app, shell, BrowserWindow, Tray, nativeImage } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import logo from '../../resources/favicon@2x.png?asset';
+import { socketIOConnect } from './socketio';
 
 let tray;
 
-function createWindow(): void {
+function createWindow() {
   const icon = nativeImage.createFromPath(logo);
   tray = new Tray(icon);
 
@@ -63,6 +64,7 @@ app.whenReady().then(() => {
   });
 
   createWindow();
+  socketIOConnect();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
