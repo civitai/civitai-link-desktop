@@ -9,7 +9,7 @@ import logo from '../../resources/favicon@2x.png?asset';
 import { ConnectionStatus, getUpgradeKey, setConnectionStatus, setKey, setUpgradeKey } from './store';
 
 let tray;
-const socket = io('http://localhost:3000', { path: '/api/socketio', autoConnect: false });
+const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
 
 function createWindow() {
   // Create the browser window.
@@ -62,6 +62,10 @@ function socketIOConnect() {
     if (key) {
       console.log('Using upgrade key');
       socket.emit('join', key, () => {
+        // Set logo to connected when in room (green)
+        const icon = nativeImage.createFromPath(logoConnected);
+        tray.setImage(icon);
+
         console.log(`Joined room ${key}`);
       });
     }
@@ -73,7 +77,7 @@ function socketIOConnect() {
 
     // TODO: Add reconnect logic
 
-    // Set logo to disconnected
+    // Set logo to disconnected (red)
     const icon = nativeImage.createFromPath(logoDisconnected);
     tray.setImage(icon);
   });
@@ -105,11 +109,16 @@ function socketIOConnect() {
     setUpgradeKey(payload['key']);
 
     socket.emit('join', payload['key'], () => {
+      // Set logo to connected when in room (green)
+      const icon = nativeImage.createFromPath(logoConnected);
+      tray.setImage(icon);
+
       console.log(`Re-joined room with upgrade key: ${payload['key']}`);
     });
   });
 
   socket.on('join', () => {
+    console.log('Joined room');
     // Set logo to connected when in room (green)
     const icon = nativeImage.createFromPath(logoConnected);
     tray.setImage(icon);
