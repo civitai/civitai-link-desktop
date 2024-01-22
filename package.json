@@ -27,6 +27,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "electron-store": "^8.1.0",
     "electron-updater": "^6.1.7",
     "lucide-react": "^0.312.0",
     "socket.io-client": "^4.7.4",

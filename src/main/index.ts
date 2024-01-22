@@ -1,17 +1,16 @@
-import { app, shell, BrowserWindow, Tray, nativeImage } from 'electron';
+import { electronApp, is, optimizer } from '@electron-toolkit/utils';
+import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell } from 'electron';
 import { join } from 'path';
-import { electronApp, optimizer, is } from '@electron-toolkit/utils';
+import { io } from 'socket.io-client';
+import logoConnected from '../../resources/favicon-connected@2x.png?asset';
+import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logo from '../../resources/favicon@2x.png?asset';
-import { socketIOConnect } from './socketio';
+import { ConnectionStatus, setConnectionStatus, setKey } from './store';
 
 let tray;
+const socket = io('http://localhost:3000', { path: '/api/socketio', autoConnect: false });
 
 function createWindow() {
-  const icon = nativeImage.createFromPath(logo);
-  tray = new Tray(icon);
-
-  tray.setToolTip('Civitai Link');
-
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -24,12 +23,6 @@ function createWindow() {
       sandbox: false,
     },
   });
-
-  // This opens new window
-  // tray.addListener('mouse-up', () => {
-  //   browserWindow = new BrowserWindow();
-  //   browserWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
-  // });
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
@@ -49,10 +42,77 @@ function createWindow() {
   }
 }
 
+function socketIOConnect() {
+  socket.connect();
+  console.log('Socket connecting...');
+  setConnectionStatus(ConnectionStatus.CONNECTING);
+
+  // Event handlers
+  socket.on('connect', () => {
+    console.log('Connected to Civitai Link Server');
+    socket.emit('iam', { type: 'sd' });
+    setConnectionStatus(ConnectionStatus.CONNECTED);
+
+    // Set logo to connected
+    const icon = nativeImage.createFromPath(logoConnected);
+    tray.setImage(icon);
+
+    // if (key) {
+    //   console.log('JOIN');
+    //   socket.emit('join', { key });
+    // }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from Civitai Link Server');
+    setConnectionStatus(ConnectionStatus.DISCONNECTED);
+
+    // Set logo to disconnected
+    const icon = nativeImage.createFromPath(logoDisconnected);
+    tray.setImage(icon);
+  });
+
+  socket.on('error', (err) => {
+    console.log(err);
+  });
+
+  socket.on('command', (payload) => {
+    console.log('command', payload);
+
+    /**
+     * Useful links
+     * https://www.electronjs.org/docs/latest/tutorial/progress-bar
+     */
+  });
+
+  socket.on('kicked', () => {
+    console.log('Kicked from instance. Clearing key.');
+    // Reset key
+  });
+
+  socket.on('roomPresence', (payload) => {
+    console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
+  });
+
+  socket.on('upgradeKey', (payload) => {});
+
+  socket.on('join', () => console.log('Joined instance'));
+
+  app.on('before-quit', () => {
+    socket.close();
+  });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  ipcMain.on('set-key', (_, key) => setKey(key));
+
+  const icon = nativeImage.createFromPath(logoDisconnected);
+  tray = new Tray(icon);
+  tray.setToolTip('Civitai Link');
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
@@ -81,17 +141,3 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
-
-/**
- * Useful links
- * https://www.electronjs.org/docs/latest/tutorial/progress-bar
- */
-
-// https://blog.logrocket.com/building-menu-bar-application-electron-react/
-// Send events like status updates etc. to the renderer process
-// ipcMain.on('COUNTER_UPDATED', (event, data) => {
-//   store.set('counterValue', data);
-// });

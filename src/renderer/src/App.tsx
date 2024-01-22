@@ -1,4 +1,5 @@
 import { Item } from './components/item';
+import { KeyInput } from './key-input';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <h1>Available Models</h1>
         <Item />
       </div>
+      <KeyInput />
     </div>
   );
 }

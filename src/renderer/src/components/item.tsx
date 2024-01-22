@@ -11,6 +11,7 @@ export function Item() {
       <div>
         <h1>Model Im downloading</h1>
         <Progress value={33} />
+        <p>100MB / 300MB - 33%</p>
       </div>
     </div>
   );
