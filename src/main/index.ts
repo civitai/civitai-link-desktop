@@ -3,9 +3,10 @@ import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell } from 'electron'
 import { join } from 'path';
 import { io } from 'socket.io-client';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
+import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logo from '../../resources/favicon@2x.png?asset';
-import { ConnectionStatus, setConnectionStatus, setKey } from './store';
+import { ConnectionStatus, getUpgradeKey, setConnectionStatus, setKey, setUpgradeKey } from './store';
 
 let tray;
 const socket = io('http://localhost:3000', { path: '/api/socketio', autoConnect: false });
@@ -51,21 +52,26 @@ function socketIOConnect() {
   socket.on('connect', () => {
     console.log('Connected to Civitai Link Server');
     socket.emit('iam', { type: 'sd' });
-    setConnectionStatus(ConnectionStatus.CONNECTED);
+    setConnectionStatus(ConnectionStatus.CONNECTING);
 
-    // Set logo to connected
-    const icon = nativeImage.createFromPath(logoConnected);
+    // Set logo to pending (connected but not in a room) (Orange)
+    const icon = nativeImage.createFromPath(logoPending);
     tray.setImage(icon);
+    const key = getUpgradeKey();
 
-    // if (key) {
-    //   console.log('JOIN');
-    //   socket.emit('join', { key });
-    // }
+    if (key) {
+      console.log('Using upgrade key');
+      socket.emit('join', key, () => {
+        console.log(`Joined room ${key}`);
+      });
+    }
   });
 
   socket.on('disconnect', () => {
     console.log('Disconnected from Civitai Link Server');
     setConnectionStatus(ConnectionStatus.DISCONNECTED);
+
+    // TODO: Add reconnect logic
 
     // Set logo to disconnected
     const icon = nativeImage.createFromPath(logoDisconnected);
@@ -94,9 +100,20 @@ function socketIOConnect() {
     console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
   });
 
-  socket.on('upgradeKey', (payload) => {});
+  socket.on('upgradeKey', (payload) => {
+    console.log(`Received upgrade key: ${payload['key']}`);
+    setUpgradeKey(payload['key']);
 
-  socket.on('join', () => console.log('Joined instance'));
+    socket.emit('join', payload['key'], () => {
+      console.log(`Re-joined room with upgrade key: ${payload['key']}`);
+    });
+  });
+
+  socket.on('join', () => {
+    // Set logo to connected when in room (green)
+    const icon = nativeImage.createFromPath(logoConnected);
+    tray.setImage(icon);
+  });
 
   app.on('before-quit', () => {
     socket.close();
@@ -107,8 +124,14 @@ function socketIOConnect() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  ipcMain.on('set-key', (_, key) => setKey(key));
+  ipcMain.on('set-key', (_, key) => {
+    setKey(key);
+    socket.emit('join', key, () => {
+      console.log(`Joined room ${key}`);
+    });
+  });
 
+  // Set logo to disconnected (red)
   const icon = nativeImage.createFromPath(logoDisconnected);
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
