@@ -7,13 +7,25 @@ import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logo from '../../resources/favicon@2x.png?asset';
 import { ConnectionStatus, getUpgradeKey, setConnectionStatus, setKey, setUpgradeKey } from './store';
+import {
+  activitiesCancel,
+  activitiesClear,
+  activitiesList,
+  imageTxt2img,
+  resourcesAdd,
+  resourcesList,
+  resourcesRemove,
+} from './commands';
 
 let tray;
+let mainWindow;
 const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
 
 function createWindow() {
+  const upgradeKey = getUpgradeKey();
+
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -25,8 +37,14 @@ function createWindow() {
     },
   });
 
+  // TODO: set env variable for devtools
+  mainWindow.webContents.openDevTools();
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
+
+    // Pass upgradeKey to window
+    if (upgradeKey) mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -43,6 +61,10 @@ function createWindow() {
   }
 }
 
+function socketCommandStatus(payload) {
+  socket.emit('commandStatus', payload);
+}
+
 function socketIOConnect() {
   socket.connect();
   console.log('Socket connecting...');
@@ -57,16 +79,18 @@ function socketIOConnect() {
     // Set logo to pending (connected but not in a room) (Orange)
     const icon = nativeImage.createFromPath(logoPending);
     tray.setImage(icon);
-    const key = getUpgradeKey();
 
-    if (key) {
+    const upgradeKey = getUpgradeKey();
+
+    // Join room if upgrade upgradeKey exists
+    if (upgradeKey) {
       console.log('Using upgrade key');
-      socket.emit('join', key, () => {
+      socket.emit('join', upgradeKey, () => {
         // Set logo to connected when in room (green)
         const icon = nativeImage.createFromPath(logoConnected);
         tray.setImage(icon);
 
-        console.log(`Joined room ${key}`);
+        console.log(`Joined room ${upgradeKey}`);
       });
     }
   });
@@ -83,11 +107,37 @@ function socketIOConnect() {
   });
 
   socket.on('error', (err) => {
-    console.log(err);
+    console.error(err);
   });
 
   socket.on('command', (payload) => {
     console.log('command', payload);
+
+    switch (payload['type']) {
+      case 'activities:list':
+        activitiesList();
+        break;
+      case 'activities:clear':
+        activitiesClear();
+        break;
+      case 'activities:cancel':
+        activitiesCancel();
+        break;
+      case 'resources:list':
+        resourcesList();
+        break;
+      case 'resources:add':
+        resourcesAdd();
+        break;
+      case 'resources:remove':
+        resourcesRemove();
+        break;
+      case 'image:txt2img':
+        imageTxt2img();
+        break;
+      default:
+        console.log(`Unknown command: ${payload['command']}`);
+    }
 
     /**
      * Useful links
@@ -97,16 +147,25 @@ function socketIOConnect() {
 
   socket.on('kicked', () => {
     console.log('Kicked from instance. Clearing key.');
-    // Reset key
+    setKey(null);
+    setUpgradeKey(null);
   });
 
   socket.on('roomPresence', (payload) => {
     console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
+    // Python code
+    // log(f"Presence update: SD: {payload['sd']}, Clients: {payload['client']}")
+    // connected = payload['sd'] > 0 and payload['client'] > 0
+    // if civitai.connected != connected:
+    //     civitai.connected = connected
+    //     if connected: log("Connected to Civitai Instance")
+    //     else: log("Disconnected from Civitai Instance")
   });
 
   socket.on('upgradeKey', (payload) => {
     console.log(`Received upgrade key: ${payload['key']}`);
     setUpgradeKey(payload['key']);
+    mainWindow.webContents.send('upgrade-key', { key: payload['key'] });
 
     socket.emit('join', payload['key'], () => {
       // Set logo to connected when in room (green)
@@ -145,6 +204,9 @@ app.whenReady().then(() => {
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
 
+  createWindow();
+  socketIOConnect();
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
@@ -154,9 +216,6 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window);
   });
-
-  createWindow();
-  socketIOConnect();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

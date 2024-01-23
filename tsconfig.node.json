@@ -1,8 +1,8 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": ["electron.vite.config.*", "src/main/*", "src/preload/*", "src/main/socketio/**/*.ts"],
+  "include": ["electron.vite.config.*", "src/main/**/*.ts", "src/preload/*"],
   "compilerOptions": {
     "composite": true,
-    "types": ["electron-vite/node"]
+    "types": ["electron-vite/node", "vite/client"]
   }
 }

@@ -5,7 +5,7 @@ export function Item() {
   return (
     <div className="flex flex-row">
       <Avatar className="mr-2">
-        <AvatarImage src="https://github.com/shadcn.png" />
+        {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <div>
