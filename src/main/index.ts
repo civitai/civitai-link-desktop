@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell } from 'electron';
+import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell, screen } from 'electron';
 import { join } from 'path';
 import { io } from 'socket.io-client';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
@@ -19,6 +19,15 @@ import {
 
 let tray;
 let mainWindow;
+
+//defaults
+let width = 400;
+let height = 300;
+
+let margin_x = 0;
+let margin_y = 0;
+let framed = false;
+
 const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
 
 function createWindow() {
@@ -26,10 +35,18 @@ function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: width,
+    height: height,
+    maxWidth: width,
+    maxHeight: height,
     show: false,
-    autoHideMenuBar: true,
+    frame: framed,
+    fullscreenable: false,
+    resizable: false,
+    useContentSize: true,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -37,11 +54,13 @@ function createWindow() {
     },
   });
 
+  mainWindow.setMenu(null);
+
   // TODO: set env variable for devtools
   mainWindow.webContents.openDevTools();
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show();
+    // mainWindow.show();
 
     // Pass upgradeKey to window
     if (upgradeKey) mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
@@ -59,6 +78,87 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
+}
+
+function setWindowAutoHide() {
+  mainWindow.hide();
+  mainWindow.on('blur', () => {
+    if (!mainWindow.webContents.isDevToolsOpened()) {
+      mainWindow.hide();
+      ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
+    }
+  });
+  if (framed) {
+    mainWindow.on('close', function (event) {
+      event.preventDefault();
+      mainWindow.hide();
+    });
+  }
+}
+
+function toggleWindow() {
+  if (mainWindow.isVisible()) {
+    mainWindow.hide();
+    ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
+    return;
+  }
+
+  showWindow();
+  ipcMain.emit('tray-window-visible', { window: mainWindow, tray: tray });
+}
+
+function alignWindow() {
+  const position = calculateWindowPosition();
+  mainWindow.setBounds({
+    width: width,
+    height: height,
+    x: position.x,
+    y: position.y,
+  });
+}
+
+function showWindow() {
+  alignWindow();
+  mainWindow.show();
+}
+
+function calculateWindowPosition() {
+  const screenBounds = screen.getPrimaryDisplay().size;
+  const trayBounds = tray.getBounds();
+
+  //where is the icon on the screen?
+  let trayPos = 4; // 1:top-left 2:top-right 3:bottom-left 4.bottom-right
+  trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
+  trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
+
+  let DEFAULT_MARGIN = { x: margin_x, y: margin_y };
+  let x;
+  let y;
+
+  //calculate the new window position
+  switch (trayPos) {
+    case 1: // for TOP - LEFT
+      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
+      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
+      break;
+
+    case 2: // for TOP - RIGHT
+      x = Math.floor(trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2);
+      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
+      break;
+
+    case 3: // for BOTTOM - LEFT
+      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
+      y = Math.floor(trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2);
+      break;
+
+    case 4: // for BOTTOM - RIGHT
+      x = Math.floor(trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2);
+      y = Math.floor(trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2);
+      break;
+  }
+
+  return { x: x, y: y };
 }
 
 function socketCommandStatus(payload) {
@@ -206,8 +306,21 @@ app.whenReady().then(() => {
   createWindow();
   socketIOConnect();
 
+  tray.on('click', function () {
+    ipcMain.emit('tray-window-clicked', { window: mainWindow, tray: tray });
+    toggleWindow();
+  });
+
+  setWindowAutoHide();
+  alignWindow();
+
+  ipcMain.emit('tray-window-ready', { window: mainWindow, tray: tray });
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
+
+  // Hides dock icon on macOS but keeps in taskbar
+  app.dock.hide();
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
