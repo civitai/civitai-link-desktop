@@ -1,14 +1,34 @@
 import { Socket } from 'socket.io-client';
 import { downloadFile } from '../download-file';
 import { Resources } from '../store';
+import { BrowserWindow } from 'electron';
 
-export function resourcesAdd(params: { url: string; name: string; socket: Socket }) {
+type ResourcesAddPayload = {
+  type: Resources;
+  id: string;
+  hash: string;
+  name: string;
+  modelName: string;
+  modelVersionName: string;
+  url: string;
+};
+
+type ResourcesAddParams = { payload: ResourcesAddPayload; socket: Socket; mainWindow: BrowserWindow };
+
+export function resourcesAdd(params: ResourcesAddParams) {
   console.log('ResourcesAdd');
+  const payload = params.payload;
+
+  // TODO: Firing twice
+  params.mainWindow.webContents.send('resource-add', { ...payload });
+
   downloadFile({
-    name: params.name,
-    url: params.url,
+    id: payload.id,
+    name: payload.name,
+    url: payload.url,
     downloadPath: 'download',
     socket: params.socket,
+    mainWindow: params.mainWindow,
   });
   // TODO: resource.type determines path to download
 }

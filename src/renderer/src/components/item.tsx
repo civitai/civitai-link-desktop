@@ -1,17 +1,32 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { useEffect, useState } from 'react';
 
-export function Item() {
+type ItemProps = {
+  id: string;
+  name: string;
+};
+
+export function Item(props: ItemProps) {
+  const [progress, setProgress] = useState(0);
+  const [totalLength, setTotalLength] = useState(0);
+  const [downloaded, setDownloaded] = useState(0);
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on(`resource-download:${props.id}`, function (_, message) {
+      setProgress(message.progress);
+      setTotalLength(message.totalLength);
+      setDownloaded(message.downloaded);
+    });
+  }, []);
+
   return (
     <div className="flex flex-row">
-      <Avatar className="mr-2">
-        {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
       <div>
-        <h1>Model Im downloading</h1>
-        <Progress value={33} />
-        <p>100MB / 300MB - 33%</p>
+        <h1>{props.name}</h1>
+        <Progress value={progress} />
+        <p>
+          {Math.floor(downloaded / 1024 ** 2)}MB / {Math.floor(totalLength / 1024 ** 2)}MB - {Math.floor(progress)}%
+        </p>
       </div>
     </div>
   );

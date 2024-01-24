@@ -2,12 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
+import { BrowserWindow } from 'electron';
 
 type DownloadFileParams = {
+  id: string;
   name: string;
   url: string;
   downloadPath: string;
   socket: Socket;
+  mainWindow: BrowserWindow;
 };
 
 export async function downloadFile(params: DownloadFileParams) {
@@ -37,7 +40,13 @@ export async function downloadFile(params: DownloadFileParams) {
     speed = downloaded / elapsed_time;
     remaining_time = (totalLength - downloaded) / speed;
     progress = (downloaded / totalLength) * 100;
-    console.log('% complted', progress);
+    // console.log('% complted', progress);
+
+    params.mainWindow.webContents.send(`resource-download:${params.id}`, {
+      totalLength,
+      downloaded,
+      progress,
+    });
 
     params.socket.emit('commandStatus', {
       status: 'processing',

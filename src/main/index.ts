@@ -54,10 +54,9 @@ function createWindow() {
     },
   });
 
-  mainWindow.setMenu(null);
-
   // TODO: set env variable for devtools
   mainWindow.webContents.openDevTools();
+  mainWindow.setMenu(null);
 
   mainWindow.on('ready-to-show', () => {
     // mainWindow.show();
@@ -228,9 +227,18 @@ function socketIOConnect() {
         break;
       case 'resources:add':
         resourcesAdd({
-          name: payload['resource']['name'],
-          url: payload['resource']['url'],
+          // TODO: Is this different for different models?
+          payload: {
+            id: payload['resource']['id'],
+            name: payload['resource']['name'],
+            url: payload['resource']['url'],
+            type: payload['resource']['type'],
+            hash: payload['resource']['hash'],
+            modelName: payload['resource']['modelName'],
+            modelVersionName: payload['resource']['modelVersionName'],
+          },
           socket,
+          mainWindow,
         });
         break;
       case 'resources:remove':
