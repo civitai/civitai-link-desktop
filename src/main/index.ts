@@ -127,7 +127,11 @@ function socketIOConnect() {
         resourcesList();
         break;
       case 'resources:add':
-        resourcesAdd();
+        resourcesAdd({
+          name: payload['resource']['name'],
+          url: payload['resource']['url'],
+          socket,
+        });
         break;
       case 'resources:remove':
         resourcesRemove();
@@ -138,11 +142,6 @@ function socketIOConnect() {
       default:
         console.log(`Unknown command: ${payload['command']}`);
     }
-
-    /**
-     * Useful links
-     * https://www.electronjs.org/docs/latest/tutorial/progress-bar
-     */
   });
 
   socket.on('kicked', () => {

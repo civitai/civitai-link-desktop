@@ -1,7 +1,15 @@
+import { Socket } from 'socket.io-client';
+import { downloadFile } from '../download-file';
 import { Resources } from '../store';
 
-export function resourcesAdd() {
+export function resourcesAdd(params: { url: string; name: string; socket: Socket }) {
   console.log('ResourcesAdd');
+  downloadFile({
+    name: params.name,
+    url: params.url,
+    downloadPath: 'download',
+    socket: params.socket,
+  });
   // TODO: resource.type determines path to download
 }
 
