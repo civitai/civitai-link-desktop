@@ -27,6 +27,19 @@ let height = 300;
 let margin_x = 0;
 let margin_y = 0;
 let framed = false;
+const DEBUG = Boolean(import.meta.env.MAIN_VITE_DEBUG) || false;
+const browserWindowOptions = !DEBUG
+  ? {
+      show: true,
+      frame: framed,
+      fullscreenable: false,
+      resizable: false,
+      useContentSize: true,
+      transparent: true,
+      alwaysOnTop: true,
+      skipTaskbar: true,
+    }
+  : {};
 
 const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
 
@@ -39,14 +52,7 @@ function createWindow() {
     height: height,
     maxWidth: width,
     maxHeight: height,
-    show: false,
-    frame: framed,
-    fullscreenable: false,
-    resizable: false,
-    useContentSize: true,
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: true,
+    ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -56,6 +62,8 @@ function createWindow() {
 
   // TODO: set env variable for devtools
   mainWindow.webContents.openDevTools();
+
+  // Prevents dock icon from appearing on macOS
   mainWindow.setMenu(null);
 
   mainWindow.on('ready-to-show', () => {
@@ -319,8 +327,10 @@ app.whenReady().then(() => {
     toggleWindow();
   });
 
-  setWindowAutoHide();
-  alignWindow();
+  if (!DEBUG) {
+    setWindowAutoHide();
+    alignWindow();
+  }
 
   ipcMain.emit('tray-window-ready', { window: mainWindow, tray: tray });
 
