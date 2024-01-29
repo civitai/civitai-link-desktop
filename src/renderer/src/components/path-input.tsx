@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { GoFileDirectory } from 'react-icons/go';
+import { useApi } from '@/hooks/use-api';
 
 type PathInputProps = {
   defaultPath?: string;
@@ -8,9 +9,10 @@ type PathInputProps = {
 
 export function PathInput(props: PathInputProps) {
   const [dir, setDir] = useState<string | null>(null);
+  const { selectDirectory } = useApi();
 
   async function getDir() {
-    const selectedDir = await window.api.selectFolder();
+    const selectedDir = await selectDirectory();
 
     setDir(selectedDir !== null && selectedDir !== undefined ? selectedDir : null);
   }

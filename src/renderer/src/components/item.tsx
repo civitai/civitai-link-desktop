@@ -6,6 +6,7 @@ type ItemProps = {
   name: string;
 };
 
+// TODO: Move all window.electron.ipcRenderer.on to Electron Provider
 export function Item(props: ItemProps) {
   const [progress, setProgress] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
