@@ -17,12 +17,11 @@ type ResourcesAddPayload = {
 type ResourcesAddParams = { payload: ResourcesAddPayload; socket: Socket; mainWindow: BrowserWindow };
 
 export function resourcesAdd(params: ResourcesAddParams) {
-  console.log('ResourcesAdd');
   const payload = params.payload;
   const directories = getDirectories() as { [key: string]: string };
+  // TODO: Default should be to the types default folders
   const resourcePath = directories[payload.type.toLowerCase()] || directories['model'] + '/Lora';
 
-  // TODO: Firing twice
   params.mainWindow.webContents.send('resource-add', { ...payload });
 
   downloadFile({
@@ -33,7 +32,6 @@ export function resourcesAdd(params: ResourcesAddParams) {
     socket: params.socket,
     mainWindow: params.mainWindow,
   });
-  // TODO: resource.type determines path to download
 }
 
 // if resource['type'] == 'Checkpoint': load_model(resource, on_progress)

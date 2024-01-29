@@ -248,7 +248,7 @@ function socketIOConnect() {
         resourcesAdd({
           // TODO: Is this different for different models?
           payload: {
-            id: payload['resource']['id'],
+            id: payload['id'],
             name: payload['resource']['name'],
             url: payload['resource']['url'],
             type: payload['resource']['type'],

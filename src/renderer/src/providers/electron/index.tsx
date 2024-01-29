@@ -25,6 +25,7 @@ const ElectronContext = createContext<ElectronContextType>(defaultValue);
 export const useElectron = () => useContext(ElectronContext);
 
 export function ElectronProvider({ children }: { children: React.ReactNode }) {
+  const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
   const [resources, setResources] = useState<{ id: string; name: string }[]>([]);
   const [modelDirectories, setModelDirectories] = useState<{
@@ -40,22 +41,34 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   // TODO: Add on load to let the app know when the store has been accessed
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('upgrade-key', function (_, message) {
+    ipcRenderer.on('upgrade-key', function (_, message) {
       setKey(message.key);
     });
+
+    return () => {
+      ipcRenderer.removeAllListeners('upgrade-key');
+    };
   }, []);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('resource-add', function (_, message) {
+    ipcRenderer.on('resource-add', function (_, message) {
       // @ts-ignore
       setResources((resources) => [...resources, message]);
     });
+
+    return () => {
+      ipcRenderer.removeAllListeners('resource-add');
+    };
   }, []);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on('store-ready', function (_, message) {
+    ipcRenderer.on('store-ready', function (_, message) {
       setModelDirectories(message.modelDirectories);
     });
+
+    return () => {
+      ipcRenderer.removeAllListeners('store-ready');
+    };
   }, []);
 
   return (
