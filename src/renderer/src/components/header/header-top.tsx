@@ -20,7 +20,7 @@ export function HeaderTop() {
       <div className="flex items-center">
         <div className="ml-auto flex items-center space-x-4">
           <div>
-            <SheetTrigger asChild>
+            <SheetTrigger>
               <FaCog size={18} className="cursor-pointer" />
             </SheetTrigger>
           </div>
