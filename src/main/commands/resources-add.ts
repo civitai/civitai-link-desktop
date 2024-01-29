@@ -2,6 +2,7 @@ import { Socket } from 'socket.io-client';
 import { downloadFile } from '../download-file';
 import { Resources } from '../store';
 import { BrowserWindow } from 'electron';
+import { getDirectories } from '../store';
 
 type ResourcesAddPayload = {
   type: Resources;
@@ -18,6 +19,8 @@ type ResourcesAddParams = { payload: ResourcesAddPayload; socket: Socket; mainWi
 export function resourcesAdd(params: ResourcesAddParams) {
   console.log('ResourcesAdd');
   const payload = params.payload;
+  const directories = getDirectories() as { [key: string]: string };
+  const resourcePath = directories[payload.type.toLowerCase()] || directories['model'] + '/Lora';
 
   // TODO: Firing twice
   params.mainWindow.webContents.send('resource-add', { ...payload });
@@ -26,7 +29,7 @@ export function resourcesAdd(params: ResourcesAddParams) {
     id: payload.id,
     name: payload.name,
     url: payload.url,
-    downloadPath: 'download',
+    downloadPath: resourcePath,
     socket: params.socket,
     mainWindow: params.mainWindow,
   });

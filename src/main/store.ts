@@ -34,9 +34,18 @@ const schema = {
   modelDirectories: {
     type: 'object',
     default: {
-      model: null,
-      lora: null,
-      lycoris: null,
+      model: {
+        type: 'string',
+        default: null,
+      },
+      lora: {
+        type: 'string',
+        default: null,
+      },
+      lycoris: {
+        type: 'string',
+        default: null,
+      },
     },
   },
   resourcePaths: {
@@ -83,6 +92,10 @@ export function getConnectionStatus() {
 
 export function setDirectory(type: 'model' | 'lora' | 'lycoris', path: string) {
   store.set(`modelDirectories.${type}`, path);
+}
+
+export function getDirectories() {
+  return store.get('modelDirectories');
 }
 
 export function getUIStore() {
