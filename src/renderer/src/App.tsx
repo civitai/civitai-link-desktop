@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Item } from './components/item';
 import { KeyInput } from './key-input';
-// import { ipcRenderer } from 'electron';
+import { Header } from './components/header';
 
 function App() {
   const [key, setKey] = useState(null);
   const [resources, setResources] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    // window.Electron works
     window.electron.ipcRenderer.on('upgrade-key', function (_, message) {
       setKey(message.key);
     });
@@ -21,8 +20,11 @@ function App() {
     });
   }, []);
 
+  // TODO: Add screens to prevent flickr when checking key
   return (
     <div className="container mx-auto p-4">
+      {/* Maybe look at menubar */}
+      <Header />
       {key ? (
         <div className="mb-2">
           <h1>Downloading</h1>

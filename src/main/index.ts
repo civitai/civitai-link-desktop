@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell, screen } from 'electron';
+import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell, screen, dialog } from 'electron';
 import { join } from 'path';
 import { io } from 'socket.io-client';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
@@ -28,8 +28,9 @@ let margin_x = 0;
 let margin_y = 0;
 let framed = false;
 const DEBUG = Boolean(import.meta.env.MAIN_VITE_DEBUG) || false;
-const browserWindowOptions = !DEBUG
-  ? {
+const browserWindowOptions = DEBUG
+  ? {}
+  : {
       show: true,
       frame: framed,
       fullscreenable: false,
@@ -38,8 +39,7 @@ const browserWindowOptions = !DEBUG
       transparent: true,
       alwaysOnTop: true,
       skipTaskbar: true,
-    }
-  : {};
+    };
 
 const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
 
@@ -60,14 +60,13 @@ function createWindow() {
     },
   });
 
-  // TODO: set env variable for devtools
-  mainWindow.webContents.openDevTools();
-
   // Prevents dock icon from appearing on macOS
   mainWindow.setMenu(null);
 
   mainWindow.on('ready-to-show', () => {
-    // mainWindow.show();
+    if (DEBUG) {
+      mainWindow.webContents.openDevTools();
+    }
 
     // Pass upgradeKey to window
     if (upgradeKey) mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
@@ -312,6 +311,17 @@ app.whenReady().then(() => {
     socket.emit('join', key, () => {
       console.log(`Joined room ${key}`);
     });
+  });
+
+  ipcMain.handle('dialog:openDirectory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    });
+    if (canceled) {
+      return;
+    } else {
+      return filePaths[0];
+    }
   });
 
   // Set logo to disconnected (red)
