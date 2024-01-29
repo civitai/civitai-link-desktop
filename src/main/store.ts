@@ -31,6 +31,14 @@ const schema = {
     type: 'string',
     default: ConnectionStatus.DISCONNECTED,
   },
+  modelDirectories: {
+    type: 'object',
+    default: {
+      model: null,
+      lora: null,
+      lycoris: null,
+    },
+  },
   resourcePaths: {
     type: 'object',
     default: {
@@ -71,4 +79,15 @@ export function getUpgradeKey() {
 
 export function getConnectionStatus() {
   return store.get('connectionStatus');
+}
+
+export function setDirectory(type: 'model' | 'lora' | 'lycoris', path: string) {
+  store.set(`modelDirectories.${type}`, path);
+}
+
+export function getUIStore() {
+  return {
+    // upgradekey: store.get('upgradekey'),
+    modelDirectories: store.get('modelDirectories'),
+  };
 }

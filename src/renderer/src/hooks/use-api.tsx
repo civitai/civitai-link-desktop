@@ -7,5 +7,8 @@ export function useApi() {
     selectDirectory: async () => {
       return await window.api.selectFolder();
     },
+    setDirectory: async (type: string, path: string) => {
+      await window.api.setDirectory(type, path);
+    },
   };
 }

@@ -6,7 +6,15 @@ import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logo from '../../resources/favicon@2x.png?asset';
-import { ConnectionStatus, getUpgradeKey, setConnectionStatus, setKey, setUpgradeKey } from './store';
+import {
+  ConnectionStatus,
+  getUIStore,
+  getUpgradeKey,
+  setConnectionStatus,
+  setDirectory,
+  setKey,
+  setUpgradeKey,
+} from './store';
 import {
   activitiesCancel,
   activitiesClear,
@@ -49,9 +57,10 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: width,
-    height: height,
+    // height: height,
     maxWidth: width,
-    maxHeight: height,
+    // maxHeight: height,
+    useContentSize: true,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
@@ -63,6 +72,7 @@ function createWindow() {
   // Prevents dock icon from appearing on macOS
   mainWindow.setMenu(null);
 
+  // TODO: Pass all relevant store to the UI
   mainWindow.on('ready-to-show', () => {
     if (DEBUG) {
       mainWindow.webContents.openDevTools();
@@ -70,6 +80,8 @@ function createWindow() {
 
     // Pass upgradeKey to window
     if (upgradeKey) mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
+
+    mainWindow.webContents.send('store-ready', getUIStore());
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -306,11 +318,23 @@ function socketIOConnect() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // Set logo to disconnected (red)
+  const icon = nativeImage.createFromPath(logoDisconnected);
+  tray = new Tray(icon);
+  tray.setToolTip('Civitai Link');
+
+  createWindow();
+  socketIOConnect();
+
   ipcMain.on('set-key', (_, key) => {
     setKey(key);
     socket.emit('join', key, () => {
       console.log(`Joined room ${key}`);
     });
+  });
+
+  ipcMain.on('set-directory', (_, directory) => {
+    setDirectory(directory['type'], directory['path']);
   });
 
   ipcMain.handle('dialog:openDirectory', async () => {
@@ -323,14 +347,6 @@ app.whenReady().then(() => {
       return filePaths[0];
     }
   });
-
-  // Set logo to disconnected (red)
-  const icon = nativeImage.createFromPath(logoDisconnected);
-  tray = new Tray(icon);
-  tray.setToolTip('Civitai Link');
-
-  createWindow();
-  socketIOConnect();
 
   tray.on('click', function () {
     ipcMain.emit('tray-window-clicked', { window: mainWindow, tray: tray });

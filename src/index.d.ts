@@ -6,6 +6,7 @@ declare global {
     api: {
       setKey: (key: string) => void;
       selectFolder: () => void;
+      setDirectory: (type: string, path: string) => void;
     };
   }
 }
