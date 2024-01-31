@@ -9,6 +9,7 @@ type ElectronContextType = {
     model: string;
     lycoris: string;
   };
+  appLoading: boolean;
 };
 
 const defaultValue: ElectronContextType = {
@@ -19,6 +20,7 @@ const defaultValue: ElectronContextType = {
     model: '',
     lycoris: '',
   },
+  appLoading: true,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -37,6 +39,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     model: '',
     lycoris: '',
   });
+  const [appLoading, setAppLoading] = useState<boolean>(true);
 
   // TODO: Add on load to let the app know when the store has been accessed
 
@@ -71,12 +74,23 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    ipcRenderer.on('app-ready', function () {
+      setAppLoading(false);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('app-ready');
+    };
+  }, []);
+
   return (
     <ElectronContext.Provider
       value={{
         key,
         resources,
         modelDirectories,
+        appLoading,
       }}
     >
       {children}

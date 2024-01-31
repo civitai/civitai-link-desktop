@@ -24,6 +24,7 @@ import {
   resourcesList,
   resourcesRemove,
 } from './commands';
+import { listDirectory } from './list-directory';
 
 let tray;
 let mainWindow;
@@ -82,6 +83,9 @@ function createWindow() {
     if (upgradeKey) mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
 
     mainWindow.webContents.send('store-ready', getUIStore());
+    mainWindow.webContents.send('app-ready', true);
+
+    mainWindow.webContents.send('get-lora-dir', listDirectory());
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

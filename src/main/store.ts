@@ -94,8 +94,9 @@ export function setDirectory(type: 'model' | 'lora' | 'lycoris', path: string) {
   store.set(`modelDirectories.${type}`, path);
 }
 
-export function getDirectories() {
-  return store.get('modelDirectories');
+// TODO: Need better typing
+export function getDirectories(): { model: string; lora: string; lycoris: string } {
+  return store.get('modelDirectories') as { model: string; lora: string; lycoris: string };
 }
 
 export function getUIStore() {

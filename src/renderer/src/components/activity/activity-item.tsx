@@ -7,7 +7,7 @@ type ItemProps = {
 };
 
 // TODO: Move all window.electron.ipcRenderer.on to Electron Provider
-export function Item(props: ItemProps) {
+export function ActivityItem(props: ItemProps) {
   const [progress, setProgress] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
   const [downloaded, setDownloaded] = useState(0);

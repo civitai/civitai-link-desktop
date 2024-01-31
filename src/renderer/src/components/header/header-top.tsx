@@ -17,7 +17,7 @@ import { PathInput } from '../path-input';
 export function HeaderTop() {
   return (
     <Sheet>
-      <div className="flex items-center">
+      <div className="flex items-center px-4 pt-2">
         <div className="ml-auto flex items-center space-x-4">
           <div>
             <SheetTrigger>
