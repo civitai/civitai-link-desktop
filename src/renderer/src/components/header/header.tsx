@@ -1,12 +1,11 @@
 import { HeaderTop } from './header-top';
 import { HeaderBottom } from './header-bottom';
-import { TABS } from '../../types';
 
-export function Header(props: { setTab: (tab: TABS) => void }) {
+export function Header() {
   return (
     <div className="">
       <HeaderTop />
-      <HeaderBottom setTab={props.setTab} />
+      <HeaderBottom />
     </div>
   );
 }

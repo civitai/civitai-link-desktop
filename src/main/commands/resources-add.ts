@@ -20,6 +20,7 @@ export function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const directories = getDirectories() as { [key: string]: string };
   // TODO: Default should be to the types default folders
+  // key map of resource.type to directory
   const resourcePath = directories[payload.type.toLowerCase()] || directories['model'] + '/Lora';
 
   params.mainWindow.webContents.send('resource-add', { ...payload });

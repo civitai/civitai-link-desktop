@@ -38,7 +38,9 @@ let margin_y = 0;
 let framed = false;
 const DEBUG = Boolean(import.meta.env.MAIN_VITE_DEBUG) || false;
 const browserWindowOptions = DEBUG
-  ? {}
+  ? {
+      show: false,
+    }
   : {
       show: true,
       frame: framed,
@@ -97,6 +99,7 @@ function createWindow() {
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+    mainWindow.showInactive();
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
@@ -273,6 +276,8 @@ function socketIOConnect() {
       default:
         console.log(`Unknown command: ${payload['command']}`);
     }
+
+    // socketCommandStatus(payload);
   });
 
   socket.on('kicked', () => {
