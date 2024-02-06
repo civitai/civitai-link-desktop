@@ -10,6 +10,7 @@ const api = {
       type,
       path,
     }),
+  clearSettings: () => ipcRenderer.send('clear-settings'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

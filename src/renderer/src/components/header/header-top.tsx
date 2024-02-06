@@ -1,23 +1,17 @@
 import { FaCog } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
-
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { Checkbox } from '../ui/checkbox';
-import { Label } from '../ui/label';
-import { PathInput } from '../path-input';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { PathInput } from '@/components/path-input';
+import { useElectron } from '@/providers/electron';
 
 export function HeaderTop() {
+  const { clearSettings } = useElectron();
+
   return (
     <Sheet>
-      <div className="flex items-center px-4 pt-2">
+      <div className="flex items-center px-4 pt-4">
         <div className="ml-auto flex items-center space-x-4">
           <div>
             <SheetTrigger>
@@ -56,8 +50,13 @@ export function HeaderTop() {
             </Label>
           </div>
           <PathInput defaultPath="Root Models Directory" type="model" />
-          <PathInput defaultPath="LoRA Directory" type="lora" />
-          <PathInput defaultPath="LyCORIS Directory" type="lycoris" />
+          {/* <PathInput defaultPath="LoRA Directory" type="lora" />
+          <PathInput defaultPath="LyCORIS Directory" type="lycoris" /> */}
+          <div className="flex items-center space-x-2 justify-center mt-6">
+            <Button onClick={() => clearSettings()} variant="destructive">
+              Reset Settings
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

@@ -10,6 +10,7 @@ type ElectronContextType = {
     lycoris: string;
   };
   appLoading: boolean;
+  clearSettings: () => void;
 };
 
 const defaultValue: ElectronContextType = {
@@ -21,6 +22,7 @@ const defaultValue: ElectronContextType = {
     lycoris: '',
   },
   appLoading: true,
+  clearSettings: () => {},
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -84,6 +86,17 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const clearSettings = () => {
+    window.api.clearSettings();
+    setKey(null);
+    setResources([]);
+    setModelDirectories({
+      lora: '',
+      model: '',
+      lycoris: '',
+    });
+  };
+
   return (
     <ElectronContext.Provider
       value={{
@@ -91,6 +104,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         resources,
         modelDirectories,
         appLoading,
+        clearSettings,
       }}
     >
       {children}

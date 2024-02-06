@@ -20,11 +20,11 @@ export enum Resources {
 
 const schema = {
   key: {
-    type: 'string',
+    type: ['string', 'null'],
     default: null,
   },
   upgradekey: {
-    type: 'string',
+    type: ['string', 'null'],
     default: null,
   },
   connectionStatus: {
@@ -35,15 +35,15 @@ const schema = {
     type: 'object',
     default: {
       model: {
-        type: 'string',
+        type: ['string', 'null'],
         default: null,
       },
       lora: {
-        type: 'string',
+        type: ['string', 'null'],
         default: null,
       },
       lycoris: {
-        type: 'string',
+        type: ['string', 'null'],
         default: null,
       },
     },
@@ -94,9 +94,13 @@ export function setDirectory(type: 'model' | 'lora' | 'lycoris', path: string) {
   store.set(`modelDirectories.${type}`, path);
 }
 
+export function clearSettings() {
+  store.clear();
+}
+
 // TODO: Need better typing
-export function getDirectories(): { model: string; lora: string; lycoris: string } {
-  return store.get('modelDirectories') as { model: string; lora: string; lycoris: string };
+export function getDirectories(): { model: string | null; lora: string | null; lycoris: string | null } {
+  return store.get('modelDirectories') as { model: string | null; lora: string | null; lycoris: string | null };
 }
 
 export function getUIStore() {

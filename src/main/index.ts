@@ -14,6 +14,7 @@ import {
   setDirectory,
   setKey,
   setUpgradeKey,
+  clearSettings,
 } from './store';
 import {
   activitiesCancel,
@@ -87,7 +88,7 @@ function createWindow() {
     mainWindow.webContents.send('store-ready', getUIStore());
     mainWindow.webContents.send('app-ready', true);
 
-    mainWindow.webContents.send('get-lora-dir', listDirectory());
+    // mainWindow.webContents.send('get-lora-dir', listDirectory());
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -344,6 +345,10 @@ app.whenReady().then(() => {
 
   ipcMain.on('set-directory', (_, directory) => {
     setDirectory(directory['type'], directory['path']);
+  });
+
+  ipcMain.on('clear-settings', () => {
+    clearSettings();
   });
 
   ipcMain.handle('dialog:openDirectory', async () => {
