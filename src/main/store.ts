@@ -18,6 +18,8 @@ export enum Resources {
   LO_CON = 'LoCon',
 }
 
+type Directories = { model: string | null; lora: string | null; lycoris: string | null };
+
 const schema = {
   key: {
     type: ['string', 'null'],
@@ -64,7 +66,7 @@ const schema = {
 };
 
 // @ts-ignore
-const store = new Store({ schema });
+export const store = new Store({ schema });
 
 export function setKey(key: string | null) {
   store.set('key', key);
@@ -98,9 +100,8 @@ export function clearSettings() {
   store.clear();
 }
 
-// TODO: Need better typing
-export function getDirectories(): { model: string | null; lora: string | null; lycoris: string | null } {
-  return store.get('modelDirectories') as { model: string | null; lora: string | null; lycoris: string | null };
+export function getDirectories(): Directories {
+  return store.get('modelDirectories') as Directories;
 }
 
 export function getUIStore() {

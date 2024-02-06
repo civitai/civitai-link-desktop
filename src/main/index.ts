@@ -15,6 +15,8 @@ import {
   setKey,
   setUpgradeKey,
   clearSettings,
+  store,
+  getDirectories,
 } from './store';
 import {
   activitiesCancel,
@@ -25,7 +27,7 @@ import {
   resourcesList,
   resourcesRemove,
 } from './commands';
-import { listDirectory } from './list-directory';
+import chokidar from 'chokidar';
 
 let tray;
 let mainWindow;
@@ -76,7 +78,6 @@ function createWindow() {
   // Prevents dock icon from appearing on macOS
   mainWindow.setMenu(null);
 
-  // TODO: Pass all relevant store to the UI
   mainWindow.on('ready-to-show', () => {
     if (DEBUG) {
       mainWindow.webContents.openDevTools();
@@ -87,8 +88,6 @@ function createWindow() {
 
     mainWindow.webContents.send('store-ready', getUIStore());
     mainWindow.webContents.send('app-ready', true);
-
-    // mainWindow.webContents.send('get-lora-dir', listDirectory());
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -225,8 +224,6 @@ function socketIOConnect() {
     console.log('Disconnected from Civitai Link Server');
     setConnectionStatus(ConnectionStatus.DISCONNECTED);
 
-    // TODO: Add reconnect logic
-
     // Set logo to disconnected (red)
     const icon = nativeImage.createFromPath(logoDisconnected);
     tray.setImage(icon);
@@ -253,20 +250,21 @@ function socketIOConnect() {
         resourcesList();
         break;
       case 'resources:add':
+        const newPayload = {
+          id: payload['id'],
+          name: payload['resource']['name'],
+          url: payload['resource']['url'],
+          type: payload['resource']['type'],
+          hash: payload['resource']['hash'],
+          modelName: payload['resource']['modelName'],
+          modelVersionName: payload['resource']['modelVersionName'],
+        };
         resourcesAdd({
-          // TODO: Is this different for different models?
-          payload: {
-            id: payload['id'],
-            name: payload['resource']['name'],
-            url: payload['resource']['url'],
-            type: payload['resource']['type'],
-            hash: payload['resource']['hash'],
-            modelName: payload['resource']['modelName'],
-            modelVersionName: payload['resource']['modelVersionName'],
-          },
+          payload: newPayload,
           socket,
           mainWindow,
         });
+        socketCommandStatus(newPayload);
         break;
       case 'resources:remove':
         resourcesRemove();
@@ -360,6 +358,28 @@ app.whenReady().then(() => {
     } else {
       return filePaths[0];
     }
+  });
+
+  let watcher;
+  const modelDirectory = getDirectories().model;
+
+  // TODO: May need to watch multiple directories
+  if (modelDirectory) {
+    // @ts-ignore
+    watcher = chokidar.watch(modelDirectory).on('add, unlink', { ignored: /(^|[\/\\])\../ }, (event, path) => {
+      console.log(event, path);
+    });
+  }
+
+  // This is in case the directory changes
+  // We want to stop watching the current directory and start watching the new one
+  store.onDidChange('modelDirectories', async (newValue) => {
+    await watcher.close();
+
+    // @ts-ignore
+    watcher = chokidar.watch(newValue.model).on('add, unlink', { ignored: /(^|[\/\\])\../ }, (event, path) => {
+      console.log(event, path);
+    });
   });
 
   tray.on('click', function () {

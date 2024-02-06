@@ -16,7 +16,7 @@ type ResourcesAddPayload = {
 
 type ResourcesAddParams = { payload: ResourcesAddPayload; socket: Socket; mainWindow: BrowserWindow };
 
-export function resourcesAdd(params: ResourcesAddParams) {
+export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const directories = getDirectories() as { [key: string]: string };
   // TODO: Default should be to the types default folders
@@ -25,7 +25,7 @@ export function resourcesAdd(params: ResourcesAddParams) {
 
   params.mainWindow.webContents.send('resource-add', { ...payload });
 
-  downloadFile({
+  await downloadFile({
     id: payload.id,
     name: payload.name,
     url: payload.url,

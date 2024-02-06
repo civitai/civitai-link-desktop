@@ -33,8 +33,6 @@ function App() {
       </div>
     );
 
-  // TODO: Add screens to prevent flickr when checking key
-  // resources should become the activity list
   return (
     <div>
       {key ? (
