@@ -10,6 +10,7 @@ type PathInputProps = {
   onChange?: (value: string) => void;
 };
 
+// TODO: ResourceType isnt being defined properly for client
 export function PathInput(props: PathInputProps) {
   const [dir, setDir] = useState<string | null>(null);
   const { selectDirectory, setDirectory } = useApi();

@@ -33,4 +33,29 @@ declare global {
     LYCORIS = 'lycoris',
     DEFAULT = 'default',
   }
+
+  type Payload = {
+    types: ResourceType;
+    resources?: Resource[];
+    status: Status;
+    progress?: number;
+    remainingTime?: number;
+    speed?: number;
+    error?: string;
+  };
+
+  enum Status {
+    SUCCESS = 'success',
+    PROCESSING = 'processing',
+    ERROR = 'error',
+    CANCELLED = 'cancelled',
+  }
+
+  enum CommandTypes {
+    ActivitiesList = 'activities:list',
+    ActivitiesCancel = 'activities:cancel',
+    ResourcesList = 'resources:list',
+    ResourcesAdd = 'resources:add',
+    ResourcesRemove = 'resources:remove',
+  }
 }
