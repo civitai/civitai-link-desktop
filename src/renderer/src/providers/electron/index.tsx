@@ -11,6 +11,7 @@ type ElectronContextType = {
   };
   appLoading: boolean;
   clearSettings: () => void;
+  activityList: Activity[];
 };
 
 const defaultValue: ElectronContextType = {
@@ -23,6 +24,7 @@ const defaultValue: ElectronContextType = {
   },
   appLoading: true,
   clearSettings: () => {},
+  activityList: [],
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -41,6 +43,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     model: '',
     lycoris: '',
   });
+  const [activityList, setActivityList] = useState<any[]>([]);
   const [appLoading, setAppLoading] = useState<boolean>(true);
 
   // TODO: Add on load to let the app know when the store has been accessed
@@ -69,6 +72,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
       setModelDirectories(message.modelDirectories);
+      setActivityList(message.activityList);
     });
 
     return () => {
@@ -105,6 +109,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         modelDirectories,
         appLoading,
         clearSettings,
+        activityList,
       }}
     >
       {children}

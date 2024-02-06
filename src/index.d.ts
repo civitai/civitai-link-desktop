@@ -10,11 +10,28 @@ declare global {
       clearSettings: () => void;
     };
   }
-}
 
-enum Resource {
-  MODEL = 'model',
-  LORA = 'lora',
-  LYCORIS = 'lycoris',
-  DEFAULT = 'default',
+  type Model = {
+    id: string;
+    hash: string;
+    name: string;
+    modelName: string;
+    modelVersionName: string;
+    type: string;
+    url: string;
+  };
+
+  type Activity = {
+    [k: string]: {
+      downloadDate: string;
+      totalLength: number;
+    } & Model;
+  };
+
+  enum Resource {
+    MODEL = 'model',
+    LORA = 'lora',
+    LYCORIS = 'lycoris',
+    DEFAULT = 'default',
+  }
 }

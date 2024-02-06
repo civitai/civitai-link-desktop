@@ -3,17 +3,17 @@ import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
 import { BrowserWindow } from 'electron';
+import { addActivity } from './store';
 
 type DownloadFileParams = {
-  id: string;
-  name: string;
-  url: string;
   downloadPath: string;
   socket: Socket;
   mainWindow: BrowserWindow;
-};
+} & Model;
 
 export async function downloadFile(params: DownloadFileParams) {
+  // TODO: Lookup hash in store before downloading
+
   console.log('Connecting …');
   const { data, headers } = await axios({
     url: params.url,
@@ -29,10 +29,10 @@ export async function downloadFile(params: DownloadFileParams) {
   let speed = current / elapsed_time;
   let remaining_time = (totalLength - current) / speed;
   let progress = (current / totalLength) * 100;
-
   let downloaded = 0;
+  const filePath = path.resolve(__dirname, '', params.downloadPath, params.name);
 
-  const writer = fs.createWriteStream(path.resolve(__dirname, '', params.downloadPath, params.name));
+  const writer = fs.createWriteStream(filePath);
 
   data.on('data', (chunk) => {
     downloaded += chunk.length;
@@ -40,7 +40,6 @@ export async function downloadFile(params: DownloadFileParams) {
     speed = downloaded / elapsed_time;
     remaining_time = (totalLength - downloaded) / speed;
     progress = (downloaded / totalLength) * 100;
-    // console.log('% complted', progress);
 
     params.mainWindow.webContents.send(`resource-download:${params.id}`, {
       totalLength,
@@ -57,14 +56,31 @@ export async function downloadFile(params: DownloadFileParams) {
     });
   });
 
-  data.on('end', function () {
+  data.on('end', async function () {
     console.log("Downloaded to: '" + params.downloadPath + "'!");
+    const timestamp = new Date().toISOString();
+
+    const fileData = {
+      [params.hash]: {
+        downloadDate: timestamp,
+        totalLength,
+        hash: params.hash,
+        id: params.id,
+        url: params.url,
+        type: params.type,
+        name: params.name,
+        modelName: params.modelName,
+        modelVersionName: params.modelVersionName,
+      },
+    };
+    addActivity(fileData);
+
     params.socket.emit('commandStatus', {
       status: 'success',
       progress,
       remainingTime: remaining_time,
       speed,
-      updatedAt: new Date().toISOString(),
+      updatedAt: timestamp,
     });
   });
 

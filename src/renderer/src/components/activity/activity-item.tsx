@@ -6,7 +6,6 @@ type ItemProps = {
   name: string;
 };
 
-// TODO: Move all window.electron.ipcRenderer.on to Electron Provider
 export function ActivityItem(props: ItemProps) {
   const [progress, setProgress] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
@@ -24,10 +23,16 @@ export function ActivityItem(props: ItemProps) {
     <div className="flex flex-row">
       <div>
         <h1>{props.name}</h1>
-        <Progress value={progress} />
-        <p>
-          {Math.floor(downloaded / 1024 ** 2)}MB / {Math.floor(totalLength / 1024 ** 2)}MB - {Math.floor(progress)}%
-        </p>
+        {progress < 100 ? (
+          <>
+            <Progress value={progress} />
+            <p>
+              {Math.floor(downloaded / 1024 ** 2)}MB / {Math.floor(totalLength / 1024 ** 2)}MB - {Math.floor(progress)}%
+            </p>
+          </>
+        ) : (
+          <p>{Math.floor(totalLength / 1024 ** 2)}MB</p>
+        )}
       </div>
     </div>
   );

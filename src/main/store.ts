@@ -63,6 +63,10 @@ const schema = {
       [Resources.LO_CON]: '',
     },
   },
+  activityList: {
+    type: 'array',
+    default: [],
+  },
 };
 
 // @ts-ignore
@@ -108,5 +112,13 @@ export function getUIStore() {
   return {
     // upgradekey: store.get('upgradekey'),
     modelDirectories: store.get('modelDirectories'),
+    activityList: store.get('activityList'),
   };
+}
+
+export function addActivity(activity: Activity) {
+  const activities = store.get('activityList') as Activity[];
+  activities.push(activity);
+
+  store.set('activityList', activities);
 }

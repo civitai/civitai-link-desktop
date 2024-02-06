@@ -28,6 +28,7 @@ import {
   resourcesRemove,
 } from './commands';
 import chokidar from 'chokidar';
+import { hash } from './hash';
 
 let tray;
 let mainWindow;
@@ -325,7 +326,7 @@ function socketIOConnect() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set logo to disconnected (red)
   const icon = nativeImage.createFromPath(logoDisconnected);
   tray = new Tray(icon);
@@ -366,7 +367,7 @@ app.whenReady().then(() => {
   // TODO: May need to watch multiple directories
   if (modelDirectory) {
     // @ts-ignore
-    watcher = chokidar.watch(modelDirectory).on('add, unlink', { ignored: /(^|[\/\\])\../ }, (event, path) => {
+    watcher = chokidar.watch(modelDirectory, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
       console.log(event, path);
     });
   }
@@ -377,7 +378,7 @@ app.whenReady().then(() => {
     await watcher.close();
 
     // @ts-ignore
-    watcher = chokidar.watch(newValue.model).on('add, unlink', { ignored: /(^|[\/\\])\../ }, (event, path) => {
+    watcher = chokidar.watch(newValue.model, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
       console.log(event, path);
     });
   });
