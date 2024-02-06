@@ -49,9 +49,9 @@ export function HeaderTop() {
               Include resource hashes in image metadata (for resource auto-detection on Civitai)
             </Label>
           </div>
-          <PathInput defaultPath="Root Models Directory" type="model" />
-          {/* <PathInput defaultPath="LoRA Directory" type="lora" />
-          <PathInput defaultPath="LyCORIS Directory" type="lycoris" /> */}
+          <PathInput defaultPath="Root Models Directory" type={ResourceType.MODEL} />
+          {/* <PathInput defaultPath="LoRA Directory" type={ResourceType.LORA} />
+          <PathInput defaultPath="LyCORIS Directory" type={ResourceType.LYCORIS} /> */}
           <div className="flex items-center space-x-2 justify-center mt-6">
             <Button onClick={() => clearSettings()} variant="destructive">
               Reset Settings

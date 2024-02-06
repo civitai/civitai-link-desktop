@@ -6,8 +6,7 @@ import { useElectron } from '@/providers/electron';
 
 type PathInputProps = {
   defaultPath?: string;
-  // TODO: Better way to expose these global types maybe add to index.d.ts
-  type: 'model' | 'lora' | 'lycoris' | 'default';
+  type: ResourceType;
   onChange?: (value: string) => void;
 };
 
@@ -21,7 +20,7 @@ export function PathInput(props: PathInputProps) {
     const directory = selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
     setDir(directory);
-    if (props.type === 'default') {
+    if (props.type === ResourceType.DEFAULT) {
       // TODO: Make a key map of defaults
       setDirectory('model', directory);
       setDirectory('lora', `${directory}/Lora`);

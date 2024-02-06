@@ -50,7 +50,11 @@ function App() {
           </div>
           <div>
             <p>Set the default model folder for your A1111 installation.</p>
-            <PathInput defaultPath="Root Models Directory" type="default" onChange={(value) => setFolderValue(value)} />
+            <PathInput
+              defaultPath="Root Models Directory"
+              type={ResourceType.DEFAULT}
+              onChange={(value) => setFolderValue(value)}
+            />
           </div>
           <div className="space-x-4 justify-center flex">
             <Button onClick={submitSetKey} disabled={!inputValue && !folderValue}>

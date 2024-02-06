@@ -1,20 +1,9 @@
 import { Socket } from 'socket.io-client';
 import { downloadFile } from '../download-file';
-import { Resources } from '../store';
 import { BrowserWindow } from 'electron';
 import { getDirectories } from '../store';
 
-type ResourcesAddPayload = {
-  type: Resources;
-  id: string;
-  hash: string;
-  name: string;
-  modelName: string;
-  modelVersionName: string;
-  url: string;
-};
-
-type ResourcesAddParams = { payload: ResourcesAddPayload; socket: Socket; mainWindow: BrowserWindow };
+type ResourcesAddParams = { payload: Resource; socket: Socket; mainWindow: BrowserWindow };
 
 export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
@@ -26,9 +15,12 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   params.mainWindow.webContents.send('resource-add', { ...payload });
 
   await downloadFile({
-    id: payload.id,
     name: payload.name,
     url: payload.url,
+    type: payload.type,
+    hash: payload.hash,
+    modelName: payload.modelName,
+    modelVersionName: payload.modelVersionName,
     downloadPath: resourcePath,
     socket: params.socket,
     mainWindow: params.mainWindow,

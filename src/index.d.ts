@@ -11,8 +11,7 @@ declare global {
     };
   }
 
-  type Model = {
-    id: string;
+  type Resource = {
     hash: string;
     name: string;
     modelName: string;
@@ -28,7 +27,7 @@ declare global {
     } & Model;
   };
 
-  enum Resource {
+  enum ResourceType {
     MODEL = 'model',
     LORA = 'lora',
     LYCORIS = 'lycoris',

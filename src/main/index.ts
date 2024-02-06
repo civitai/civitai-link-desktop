@@ -28,7 +28,6 @@ import {
   resourcesRemove,
 } from './commands';
 import chokidar from 'chokidar';
-import { hash } from './hash';
 
 let tray;
 let mainWindow;

@@ -43,7 +43,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     model: '',
     lycoris: '',
   });
-  const [activityList, setActivityList] = useState<any[]>([]);
+  const [activityList, setActivityList] = useState<Activity[]>([]);
   const [appLoading, setAppLoading] = useState<boolean>(true);
 
   // TODO: Add on load to let the app know when the store has been accessed

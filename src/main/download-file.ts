@@ -9,7 +9,7 @@ type DownloadFileParams = {
   downloadPath: string;
   socket: Socket;
   mainWindow: BrowserWindow;
-} & Model;
+} & Resource;
 
 export async function downloadFile(params: DownloadFileParams) {
   // TODO: Lookup hash in store before downloading
@@ -65,7 +65,6 @@ export async function downloadFile(params: DownloadFileParams) {
         downloadDate: timestamp,
         totalLength,
         hash: params.hash,
-        id: params.id,
         url: params.url,
         type: params.type,
         name: params.name,

@@ -7,6 +7,7 @@ export enum ConnectionStatus {
   KICKED = 'kicked',
 }
 
+// TODO: move to *.d.ts
 export enum Resources {
   CHECKPOINT = 'Checkpoint',
   CHECKPOINT_CONFIG = 'CheckpointConfig',
