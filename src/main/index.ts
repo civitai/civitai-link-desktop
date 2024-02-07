@@ -235,6 +235,7 @@ function socketIOConnect() {
   });
 
   socket.on('error', (err) => {
+    mainWindow.webContents.send('connection-status', ConnectionStatus.DISCONNECTED);
     console.error(err);
   });
 
@@ -294,6 +295,7 @@ function socketIOConnect() {
 
   socket.on('kicked', () => {
     console.log('Kicked from instance. Clearing key.');
+    mainWindow.webContents.send('connection-status', ConnectionStatus.DISCONNECTED);
     setKey(null);
     setUpgradeKey(null);
   });
@@ -358,7 +360,9 @@ app.whenReady().then(async () => {
   });
 
   ipcMain.on('set-root-path', (_, directory) => {
-    setRootResourcePath(directory['path']);
+    if (directory['path'] !== '') {
+      setRootResourcePath(directory['path']);
+    }
   });
 
   ipcMain.on('clear-settings', () => {
@@ -392,13 +396,15 @@ app.whenReady().then(async () => {
   store.onDidChange('rootResourcePath', async (newValue) => {
     await watcher.close();
 
-    // @ts-ignore
-    watcher = chokidar.watch(newValue.model, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
-      console.log(event, path);
-
+    if (newValue && newValue !== '') {
       // @ts-ignore
-      console.log('Model directory changed to: ', newValue.model);
-    });
+      watcher = chokidar.watch(newValue, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
+        console.log(event, path);
+
+        // @ts-ignore
+        console.log('Model directory changed to: ', newValue.model);
+      });
+    }
   });
 
   tray.on('click', function () {
