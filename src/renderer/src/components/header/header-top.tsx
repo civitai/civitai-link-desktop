@@ -1,12 +1,13 @@
 import { FaCog } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+// import { Checkbox } from '@/components/ui/checkbox';
+// import { Label } from '@/components/ui/label';
 import { PathInput } from '@/components/path-input';
 import { useElectron } from '@/providers/electron';
 import { ConnectionStatus } from '@/types';
 import { TbPlugConnected, TbPlugConnectedX } from 'react-icons/tb';
+import { ResourceType } from '@/types';
 
 export function HeaderTop() {
   const { clearSettings, connectionStatus } = useElectron();
@@ -65,7 +66,7 @@ export function HeaderTop() {
               Include resource hashes in image metadata (for resource auto-detection on Civitai)
             </Label>
           </div> */}
-          <PathInput defaultPath="Root Models Directory" type="default" />
+          <PathInput defaultPath="Root Models Directory" type={ResourceType.DEFAULT} />
           {/* <PathInput defaultPath="LoRA Directory" type={ResourceType.LORA} />
           <PathInput defaultPath="LyCORIS Directory" type={ResourceType.LYCORIS} /> */}
           <div className="flex items-center space-x-2 justify-center mt-6">

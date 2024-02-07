@@ -2,18 +2,16 @@ import { useElectron } from '@/providers/electron';
 import { ActivityItem } from './activity-item';
 
 export function Activity() {
-  const { resources, activityList } = useElectron();
+  const { activityList } = useElectron();
 
-  if (!resources || !activityList) {
+  if (!activityList) {
     return <p>No Activity</p>;
   }
 
   return (
     <div>
-      {resources?.map((resource) => <ActivityItem {...resource} key={resource.hash} />)}
-      {activityList?.map((activity) => {
-        const key = Object.keys(activity)[0];
-        return <ActivityItem {...activity[key]} key={activity[key].hash} />;
+      {Object.keys(activityList)?.map((activity) => {
+        return <ActivityItem {...activityList[activity]} key={activityList[activity].hash} />;
       })}
     </div>
   );

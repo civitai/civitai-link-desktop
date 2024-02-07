@@ -11,7 +11,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   const resourcePath = getResourcePath(payload.type);
   const downloadPath = `${rootResourcePath}/${resourcePath}`;
 
-  params.mainWindow.webContents.send('resource-add', {
+  params.mainWindow.webContents.send('activity-add', {
     id: params.id,
     downloadDate: new Date().toISOString(),
     ...payload,

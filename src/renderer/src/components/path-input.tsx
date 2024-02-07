@@ -11,7 +11,6 @@ type PathInputProps = {
   onChange?: (value: string) => void;
 };
 
-// TODO: ResourceType isnt being defined properly for client
 export function PathInput(props: PathInputProps) {
   const [dir, setDir] = useState<string | null>(null);
   const { selectDirectory, setRootResourcePath } = useApi();
@@ -23,7 +22,6 @@ export function PathInput(props: PathInputProps) {
 
     setDir(directory);
 
-    // TODO: ResourceType is not defined
     if (props.type !== ResourceType.DEFAULT) {
       // TODO: use setPath but have it merge with root path
       // setRootResourcePath('model', directory);

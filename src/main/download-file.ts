@@ -3,7 +3,7 @@ import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
 import { BrowserWindow } from 'electron';
-import { addActivity } from './store';
+import { addActivity, addResource } from './store';
 
 type DownloadFileParams = {
   id: string;
@@ -62,18 +62,17 @@ export async function downloadFile(params: DownloadFileParams) {
     const timestamp = new Date().toISOString();
 
     const fileData = {
-      [params.hash]: {
-        downloadDate: timestamp,
-        totalLength,
-        hash: params.hash,
-        url: params.url,
-        type: params.type,
-        name: params.name,
-        modelName: params.modelName,
-        modelVersionName: params.modelVersionName,
-      },
+      downloadDate: timestamp,
+      totalLength,
+      hash: params.hash,
+      url: params.url,
+      type: params.type,
+      name: params.name,
+      modelName: params.modelName,
+      modelVersionName: params.modelVersionName,
     };
     addActivity(fileData);
+    addResource(fileData);
 
     params.socket.emit('commandStatus', {
       status: 'success',

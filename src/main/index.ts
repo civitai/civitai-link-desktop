@@ -17,6 +17,7 @@ import {
   clearSettings,
   store,
   getRootResourcePath,
+  lookupResource,
 } from './store';
 import {
   activitiesCancel,
@@ -254,25 +255,29 @@ function socketIOConnect() {
         resourcesList();
         break;
       case 'resources:add':
-        const newPayload = {
-          name: payload['resource']['name'],
-          url: payload['resource']['url'],
-          type: payload['resource']['type'],
-          hash: payload['resource']['hash'],
-          modelName: payload['resource']['modelName'],
-          modelVersionName: payload['resource']['modelVersionName'],
-        };
-        socketCommandStatus({
-          id: payload['id'],
-          status: 'processing',
-          resource: newPayload,
-        });
-        resourcesAdd({
-          id: payload['id'],
-          payload: newPayload,
-          socket,
-          mainWindow,
-        });
+        if (lookupResource(payload['resource']['hash'])) {
+          mainWindow.webContents.send('error', 'Resource already exists');
+        } else {
+          const newPayload = {
+            name: payload['resource']['name'],
+            url: payload['resource']['url'],
+            type: payload['resource']['type'],
+            hash: payload['resource']['hash'],
+            modelName: payload['resource']['modelName'],
+            modelVersionName: payload['resource']['modelVersionName'],
+          };
+          socketCommandStatus({
+            id: payload['id'],
+            status: 'processing',
+            resource: newPayload,
+          });
+          resourcesAdd({
+            id: payload['id'],
+            payload: newPayload,
+            socket,
+            mainWindow,
+          });
+        }
         break;
       case 'resources:remove':
         resourcesRemove();

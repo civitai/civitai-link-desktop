@@ -7,8 +7,6 @@ export enum ConnectionStatus {
   KICKED = 'kicked',
 }
 
-// TODO: move to *.d.ts
-// These are the paths for default
 export enum Resources {
   CHECKPOINT = 'Checkpoint',
   CONTROLNET = 'ControlNet',
@@ -19,8 +17,6 @@ export enum Resources {
   LO_CON = 'LoCon',
   VAE = 'VAE',
 }
-
-type Directories = { model: string | null; lora: string | null; lycoris: string | null };
 
 const schema = {
   key: {
@@ -52,13 +48,14 @@ const schema = {
       [Resources.VAE]: 'VAE',
     },
   },
-  // More historical
-  activityList: {
-    type: 'array',
-    default: [],
-  },
   // All of the resources available
+  // Only used for lookup purposes
   resources: {
+    type: 'object',
+    default: {},
+  },
+  // More historical activities < 30
+  activities: {
     type: 'object',
     default: {},
   },
@@ -91,16 +88,8 @@ export function getConnectionStatus() {
   return store.get('connectionStatus');
 }
 
-export function setDirectory(type: 'model' | 'lora' | 'lycoris', path: string) {
-  store.set(`modelDirectories.${type}`, path);
-}
-
 export function clearSettings() {
   store.clear();
-}
-
-export function getDirectories(): Directories {
-  return store.get('modelDirectories') as Directories;
 }
 
 export function getRootResourcePath() {
@@ -113,9 +102,7 @@ export function setRootResourcePath(path: string) {
 
 export function getUIStore() {
   return {
-    // upgradekey: store.get('upgradekey'),
-    modelDirectories: store.get('modelDirectories'),
-    activityList: store.get('activityList'),
+    activities: store.get('activities'),
   };
 }
 
@@ -126,16 +113,27 @@ export function getResourcePath(path: string) {
   return resourcePaths[resource];
 }
 
-export function addActivity(activity: Activity) {
-  const activities = store.get('activityList') as Activity[];
-  activities.push(activity);
+export function addActivity(activity: Resource) {
+  const activities = store.get('activities') as ResourcesMap;
 
-  store.set('activityList', activities);
+  // Only keep last 30 activities
+  if (Object.keys(activities).length > 30) {
+    const [_, ...rest] = Object.entries(activities);
+
+    return store.set('activities', { [activity.hash]: activity, ...Object.fromEntries(rest) });
+  } else {
+    return store.set('activities', { [activity.hash]: activity, ...activities });
+  }
+}
+
+export function addResource(resource: Resource) {
+  const resources = store.get('resources') as ResourcesMap;
+
+  return store.set('resources', { [resource.hash]: resource, ...resources });
 }
 
 export function lookupResource(hash: string) {
-  // Change this to key/map of Resources
-  const resources = store.get('resources') as Activity;
+  const resources = store.get('resources') as ResourcesMap;
 
   return resources[hash];
 }

@@ -1,21 +1,20 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ConnectionStatus } from '@/types';
+import { useToast } from '@/components/ui/use-toast';
 
 type ElectronContextType = {
   key?: string | null;
-  resources?: Resource[];
   appLoading: boolean;
   clearSettings: () => void;
-  activityList: Activity[];
+  activityList: ResourcesMap;
   connectionStatus: ConnectionStatus;
 };
 
 const defaultValue: ElectronContextType = {
   key: null,
-  resources: [],
   appLoading: true,
   clearSettings: () => {},
-  activityList: [],
+  activityList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
 };
 
@@ -25,10 +24,10 @@ export const useElectron = () => useContext(ElectronContext);
 export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [activityList, setActivityList] = useState<Activity[]>([]);
+  const [activityList, setActivityList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  const { toast } = useToast();
 
   useEffect(() => {
     ipcRenderer.on('upgrade-key', function (_, message) {
@@ -41,19 +40,19 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.on('resource-add', function (_, message) {
+    ipcRenderer.on('activity-add', function (_, message) {
       // @ts-ignore
-      setResources((resources) => [...resources, message]);
+      setActivityList((activities) => ({ ...activities, message }));
     });
 
     return () => {
-      ipcRenderer.removeAllListeners('resource-add');
+      ipcRenderer.removeAllListeners('activity-add');
     };
   }, []);
 
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
-      setActivityList(message.activityList);
+      setActivityList(message.activities);
     });
 
     return () => {
@@ -61,6 +60,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Get initial store on load
   useEffect(() => {
     ipcRenderer.on('app-ready', function () {
       setAppLoading(false);
@@ -81,17 +81,30 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    ipcRenderer.on('error', function (_, message) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong!',
+        description: message,
+      });
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('connection-status');
+    };
+  }, []);
+
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);
-    setResources([]);
+    setActivityList({});
   };
 
   return (
     <ElectronContext.Provider
       value={{
         key,
-        resources,
         appLoading,
         clearSettings,
         activityList,
