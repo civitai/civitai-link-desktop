@@ -255,7 +255,6 @@ function socketIOConnect() {
         break;
       case 'resources:add':
         const newPayload = {
-          id: payload['id'],
           name: payload['resource']['name'],
           url: payload['resource']['url'],
           type: payload['resource']['type'],
@@ -263,12 +262,17 @@ function socketIOConnect() {
           modelName: payload['resource']['modelName'],
           modelVersionName: payload['resource']['modelVersionName'],
         };
+        socketCommandStatus({
+          id: payload['id'],
+          status: 'processing',
+          resource: newPayload,
+        });
         resourcesAdd({
+          id: payload['id'],
           payload: newPayload,
           socket,
           mainWindow,
         });
-        socketCommandStatus(newPayload);
         break;
       case 'resources:remove':
         resourcesRemove();

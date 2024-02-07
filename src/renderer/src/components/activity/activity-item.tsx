@@ -1,10 +1,10 @@
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import dayjs from 'dayjs';
 
-type ItemProps = {
-  id: string;
-  name: string;
-};
+type ItemProps = Resource;
 
 export function ActivityItem(props: ItemProps) {
   const [progress, setProgress] = useState(0);
@@ -12,28 +12,41 @@ export function ActivityItem(props: ItemProps) {
   const [downloaded, setDownloaded] = useState(0);
 
   useEffect(() => {
-    window.electron.ipcRenderer.on(`resource-download:${props.id}`, function (_, message) {
-      setProgress(message.progress);
-      setTotalLength(message.totalLength);
-      setDownloaded(message.downloaded);
-    });
+    if (props.id) {
+      window.electron.ipcRenderer.on(`resource-download:${props.id}`, function (_, message) {
+        setProgress(message.progress);
+        setTotalLength(message.totalLength);
+        setDownloaded(message.downloaded);
+      });
+    }
   }, []);
 
   return (
-    <div className="flex flex-row">
-      <div>
-        <h1>{props.name}</h1>
-        {progress < 100 ? (
-          <>
-            <Progress value={progress} />
-            <p>
-              {Math.floor(downloaded / 1024 ** 2)}MB / {Math.floor(totalLength / 1024 ** 2)}MB - {Math.floor(progress)}%
-            </p>
-          </>
-        ) : (
-          <p>{Math.floor(totalLength / 1024 ** 2)}MB</p>
-        )}
-      </div>
-    </div>
+    <Card className="mb-8">
+      <CardHeader>
+        <CardTitle>
+          <Badge color="primary">{props.type}</Badge>
+        </CardTitle>
+        <CardDescription>{props.modelVersionName}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium leading-none">{props.modelName}</p>
+            {props.downloadDate ? (
+              <p className="text-sm text-muted-foreground">{dayjs(props.downloadDate).format('YYYY-MM-DD')}</p>
+            ) : null}
+          </div>
+        </div>
+      </CardContent>
+      {progress !== 0 && progress < 100 ? (
+        <CardFooter className="flex-col items-end">
+          <Progress value={progress} />
+          <p>
+            {Math.floor(downloaded / 1024 ** 2)}MB / {Math.floor(totalLength / 1024 ** 2)}MB - {Math.floor(progress)}%
+          </p>
+        </CardFooter>
+      ) : null}
+    </Card>
   );
 }

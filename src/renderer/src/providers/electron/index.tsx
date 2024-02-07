@@ -3,7 +3,7 @@ import { ConnectionStatus } from '@/types';
 
 type ElectronContextType = {
   key?: string | null;
-  resources?: { id: string; name: string }[];
+  resources?: Resource[];
   appLoading: boolean;
   clearSettings: () => void;
   activityList: Activity[];
@@ -25,7 +25,7 @@ export const useElectron = () => useContext(ElectronContext);
 export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
-  const [resources, setResources] = useState<{ id: string; name: string }[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);

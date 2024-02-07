@@ -6,6 +6,7 @@ import { BrowserWindow } from 'electron';
 import { addActivity } from './store';
 
 type DownloadFileParams = {
+  id: string;
   downloadPath: string;
   socket: Socket;
   mainWindow: BrowserWindow;
@@ -80,6 +81,8 @@ export async function downloadFile(params: DownloadFileParams) {
       remainingTime: remaining_time,
       speed,
       updatedAt: timestamp,
+      resource: fileData[params.hash],
+      id: params.id,
     });
   });
 

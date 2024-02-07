@@ -10,10 +10,10 @@ export function Activity() {
 
   return (
     <div>
-      {resources?.map((resource) => <ActivityItem id={resource.id} name={resource.name} key={resource.id} />)}
+      {resources?.map((resource) => <ActivityItem {...resource} key={resource.hash} />)}
       {activityList?.map((activity) => {
         const key = Object.keys(activity)[0];
-        return <p key={key}>{activity[key].name}</p>;
+        return <ActivityItem {...activity[key]} key={activity[key].hash} />;
       })}
     </div>
   );

@@ -18,6 +18,8 @@ declare global {
     modelVersionName: string;
     type: string;
     url: string;
+    id?: string;
+    downloadDate?: string;
   };
 
   type ResourcesMap = {
@@ -26,7 +28,6 @@ declare global {
 
   type Activity = {
     [k: string]: {
-      downloadDate: string;
       totalLength: number;
     } & Resource;
   };
