@@ -35,16 +35,6 @@ const schema = {
     type: 'string',
     default: ConnectionStatus.DISCONNECTED,
   },
-  // Deprecated
-  modelDirectories: {
-    type: 'object',
-    default: {
-      model: {
-        type: ['string', 'null'],
-        default: null,
-      },
-    },
-  },
   rootResourcePath: {
     type: ['string', 'null'],
     default: null,

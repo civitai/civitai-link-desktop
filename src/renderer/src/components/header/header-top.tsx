@@ -41,7 +41,7 @@ export function HeaderTop() {
           <SheetTitle>Settings</SheetTitle>
         </SheetHeader>
         <div className="grid gap-4 my-4">
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <Checkbox id="download_missing_preview" />
             <Label htmlFor="download_missing_preview">Download missing preview images on startup</Label>
           </div>
@@ -64,7 +64,7 @@ export function HeaderTop() {
             <Label htmlFor="include_hashes">
               Include resource hashes in image metadata (for resource auto-detection on Civitai)
             </Label>
-          </div>
+          </div> */}
           <PathInput defaultPath="Root Models Directory" type="default" />
           {/* <PathInput defaultPath="LoRA Directory" type={ResourceType.LORA} />
           <PathInput defaultPath="LyCORIS Directory" type={ResourceType.LYCORIS} /> */}

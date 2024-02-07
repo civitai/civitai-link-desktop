@@ -211,6 +211,8 @@ function socketIOConnect() {
     // Join room if upgrade upgradeKey exists
     if (upgradeKey) {
       console.log('Using upgrade key');
+      mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
+
       socket.emit('join', upgradeKey, () => {
         // Set logo to connected when in room (green)
         const icon = nativeImage.createFromPath(logoConnected);
@@ -289,6 +291,8 @@ function socketIOConnect() {
 
   socket.on('roomPresence', (payload) => {
     console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
+    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
+    setConnectionStatus(ConnectionStatus.CONNECTED);
     // Python code
     // log(f"Presence update: SD: {payload['sd']}, Clients: {payload['client']}")
     // connected = payload['sd'] > 0 and payload['client'] > 0
@@ -302,7 +306,6 @@ function socketIOConnect() {
     console.log(`Received upgrade key: ${payload['key']}`);
     setUpgradeKey(payload['key']);
     mainWindow.webContents.send('upgrade-key', { key: payload['key'] });
-    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
 
     socket.emit('join', payload['key'], () => {
       // Set logo to connected when in room (green)
@@ -314,6 +317,7 @@ function socketIOConnect() {
   });
 
   socket.on('join', () => {
+    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
     console.log('Joined room');
     // Set logo to connected when in room (green)
     const icon = nativeImage.createFromPath(logoConnected);

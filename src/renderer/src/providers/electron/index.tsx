@@ -1,15 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ConnectionStatus } from '@/types';
 
-// TODO: Split up types to re-use all over
 type ElectronContextType = {
   key?: string | null;
   resources?: { id: string; name: string }[];
-  modelDirectories: {
-    lora: string;
-    model: string;
-    lycoris: string;
-  };
   appLoading: boolean;
   clearSettings: () => void;
   activityList: Activity[];
@@ -19,11 +13,6 @@ type ElectronContextType = {
 const defaultValue: ElectronContextType = {
   key: null,
   resources: [],
-  modelDirectories: {
-    lora: '',
-    model: '',
-    lycoris: '',
-  },
   appLoading: true,
   clearSettings: () => {},
   activityList: [],
@@ -37,15 +26,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
   const [resources, setResources] = useState<{ id: string; name: string }[]>([]);
-  const [modelDirectories, setModelDirectories] = useState<{
-    lora: string;
-    model: string;
-    lycoris: string;
-  }>({
-    lora: '',
-    model: '',
-    lycoris: '',
-  });
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
@@ -73,7 +53,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
-      setModelDirectories(message.modelDirectories);
       setActivityList(message.activityList);
     });
 
@@ -106,11 +85,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     window.api.clearSettings();
     setKey(null);
     setResources([]);
-    setModelDirectories({
-      lora: '',
-      model: '',
-      lycoris: '',
-    });
   };
 
   return (
@@ -118,7 +92,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       value={{
         key,
         resources,
-        modelDirectories,
         appLoading,
         clearSettings,
         activityList,
