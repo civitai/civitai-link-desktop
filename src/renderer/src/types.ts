@@ -4,3 +4,10 @@ export enum ResourceType {
   LYCORIS = 'lycoris',
   DEFAULT = 'default',
 }
+
+export enum ConnectionStatus {
+  DISCONNECTED = 'disconnected',
+  CONNECTING = 'connecting',
+  CONNECTED = 'connected',
+  KICKED = 'kicked',
+}

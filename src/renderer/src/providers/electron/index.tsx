@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { ConnectionStatus } from '@/types';
 
 // TODO: Split up types to re-use all over
 type ElectronContextType = {
@@ -12,6 +13,7 @@ type ElectronContextType = {
   appLoading: boolean;
   clearSettings: () => void;
   activityList: Activity[];
+  connectionStatus: ConnectionStatus;
 };
 
 const defaultValue: ElectronContextType = {
@@ -25,6 +27,7 @@ const defaultValue: ElectronContextType = {
   appLoading: true,
   clearSettings: () => {},
   activityList: [],
+  connectionStatus: ConnectionStatus.DISCONNECTED,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -45,6 +48,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   });
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const [appLoading, setAppLoading] = useState<boolean>(true);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
 
   useEffect(() => {
     ipcRenderer.on('upgrade-key', function (_, message) {
@@ -88,6 +92,16 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    ipcRenderer.on('connection-status', function (_, message) {
+      setConnectionStatus(message);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('connection-status');
+    };
+  }, []);
+
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);
@@ -108,6 +122,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         appLoading,
         clearSettings,
         activityList,
+        connectionStatus,
       }}
     >
       {children}

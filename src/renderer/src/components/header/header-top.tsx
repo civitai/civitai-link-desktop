@@ -5,13 +5,29 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { PathInput } from '@/components/path-input';
 import { useElectron } from '@/providers/electron';
+import { ConnectionStatus } from '@/types';
+import { TbPlugConnected, TbPlugConnectedX } from 'react-icons/tb';
 
 export function HeaderTop() {
-  const { clearSettings } = useElectron();
+  const { clearSettings, connectionStatus } = useElectron();
+
+  function connectionRender() {
+    switch (connectionStatus) {
+      case ConnectionStatus.CONNECTED:
+        return <TbPlugConnected color="green" />;
+      case ConnectionStatus.DISCONNECTED:
+        return <TbPlugConnectedX color="red" />;
+      case ConnectionStatus.CONNECTING:
+        return <TbPlugConnected color="orange" />;
+      default:
+        return <TbPlugConnectedX />;
+    }
+  }
 
   return (
     <Sheet>
       <div className="flex items-center px-4 pt-4">
+        <div className="flex space-x-4 items-center">{connectionRender()}</div>
         <div className="ml-auto flex items-center space-x-4">
           <div>
             <SheetTrigger>

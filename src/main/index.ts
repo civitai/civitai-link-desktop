@@ -200,6 +200,7 @@ function socketIOConnect() {
     console.log('Connected to Civitai Link Server');
     socket.emit('iam', { type: 'sd' });
     setConnectionStatus(ConnectionStatus.CONNECTING);
+    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTING);
 
     // Set logo to pending (connected but not in a room) (Orange)
     const icon = nativeImage.createFromPath(logoPending);
@@ -223,6 +224,7 @@ function socketIOConnect() {
   socket.on('disconnect', () => {
     console.log('Disconnected from Civitai Link Server');
     setConnectionStatus(ConnectionStatus.DISCONNECTED);
+    mainWindow.webContents.send('connection-status', ConnectionStatus.DISCONNECTED);
 
     // Set logo to disconnected (red)
     const icon = nativeImage.createFromPath(logoDisconnected);
@@ -300,6 +302,7 @@ function socketIOConnect() {
     console.log(`Received upgrade key: ${payload['key']}`);
     setUpgradeKey(payload['key']);
     mainWindow.webContents.send('upgrade-key', { key: payload['key'] });
+    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
 
     socket.emit('join', payload['key'], () => {
       // Set logo to connected when in room (green)
@@ -365,7 +368,7 @@ app.whenReady().then(async () => {
 
   if (rootResourcePath && rootResourcePath !== '') {
     // @ts-ignore
-    watcher = chokidar.watch(modelDirectory, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
+    watcher = chokidar.watch(rootResourcePath, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
       console.log('Watching model directory: ', rootResourcePath);
       console.log(event, path);
     });
