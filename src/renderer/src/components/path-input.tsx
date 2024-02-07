@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { GoFileDirectory } from 'react-icons/go';
 import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
+import { ResourceType } from '@/types';
 
 type PathInputProps = {
   defaultPath?: string;
@@ -13,7 +14,7 @@ type PathInputProps = {
 // TODO: ResourceType isnt being defined properly for client
 export function PathInput(props: PathInputProps) {
   const [dir, setDir] = useState<string | null>(null);
-  const { selectDirectory, setDirectory } = useApi();
+  const { selectDirectory, setRootResourcePath } = useApi();
   const { modelDirectories } = useElectron();
 
   async function getDir() {
@@ -21,12 +22,14 @@ export function PathInput(props: PathInputProps) {
     const directory = selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
     setDir(directory);
-    if (props.type === ResourceType.DEFAULT) {
-      // TODO: Make a key map of defaults
-      setDirectory('model', directory);
-      setDirectory('lora', `${directory}/Lora`);
+
+    // TODO: ResourceType is not defined
+    if (props.type !== ResourceType.DEFAULT) {
+      // TODO: use setPath but have it merge with root path
+      // setRootResourcePath('model', directory);
+      // setRootResourcePath('lora', `${directory}/Lora`);
     } else {
-      setDirectory(props.type, directory);
+      setRootResourcePath(directory);
     }
 
     if (props.onChange) {

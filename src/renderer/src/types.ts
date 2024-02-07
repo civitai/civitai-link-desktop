@@ -1,4 +1,6 @@
-export enum TABS {
-  ACTIVITY = 'activity',
-  FILES = 'files',
+export enum ResourceType {
+  MODEL = 'model',
+  LORA = 'lora',
+  LYCORIS = 'lycoris',
+  DEFAULT = 'default',
 }

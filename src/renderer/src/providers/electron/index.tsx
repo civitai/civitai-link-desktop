@@ -46,8 +46,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [activityList, setActivityList] = useState<Activity[]>([]);
   const [appLoading, setAppLoading] = useState<boolean>(true);
 
-  // TODO: Add on load to let the app know when the store has been accessed
-
   useEffect(() => {
     ipcRenderer.on('upgrade-key', function (_, message) {
       setKey(message.key);

@@ -11,12 +11,12 @@ import {
   getUIStore,
   getUpgradeKey,
   setConnectionStatus,
-  setDirectory,
+  setRootResourcePath,
   setKey,
   setUpgradeKey,
   clearSettings,
   store,
-  getDirectories,
+  getRootResourcePath,
 } from './store';
 import {
   activitiesCancel,
@@ -341,8 +341,8 @@ app.whenReady().then(async () => {
     });
   });
 
-  ipcMain.on('set-directory', (_, directory) => {
-    setDirectory(directory['type'], directory['path']);
+  ipcMain.on('set-root-path', (_, directory) => {
+    setRootResourcePath(directory['path']);
   });
 
   ipcMain.on('clear-settings', () => {
@@ -361,24 +361,27 @@ app.whenReady().then(async () => {
   });
 
   let watcher;
-  const modelDirectory = getDirectories().model;
+  const rootResourcePath = getRootResourcePath();
 
-  // TODO: May need to watch multiple directories
-  if (modelDirectory) {
+  if (rootResourcePath && rootResourcePath !== '') {
     // @ts-ignore
     watcher = chokidar.watch(modelDirectory, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
+      console.log('Watching model directory: ', rootResourcePath);
       console.log(event, path);
     });
   }
 
   // This is in case the directory changes
   // We want to stop watching the current directory and start watching the new one
-  store.onDidChange('modelDirectories', async (newValue) => {
+  store.onDidChange('rootResourcePath', async (newValue) => {
     await watcher.close();
 
     // @ts-ignore
     watcher = chokidar.watch(newValue.model, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
       console.log(event, path);
+
+      // @ts-ignore
+      console.log('Model directory changed to: ', newValue.model);
     });
   });
 

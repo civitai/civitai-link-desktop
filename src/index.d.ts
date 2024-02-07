@@ -6,7 +6,7 @@ declare global {
     api: {
       setKey: (key: string) => void;
       selectFolder: () => void;
-      setDirectory: (type: string, path: string) => void;
+      setRootResourcePath: (path: string) => void;
       clearSettings: () => void;
     };
   }
@@ -20,11 +20,15 @@ declare global {
     url: string;
   };
 
+  type ResourcesMap = {
+    [k: string]: Resource;
+  };
+
   type Activity = {
     [k: string]: {
       downloadDate: string;
       totalLength: number;
-    } & Model;
+    } & Resource;
   };
 
   enum ResourceType {

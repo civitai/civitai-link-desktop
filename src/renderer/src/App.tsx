@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useApi } from '@/hooks/use-api';
+import { ResourceType } from '@/types';
 
 function App() {
   const { appLoading, key } = useElectron();

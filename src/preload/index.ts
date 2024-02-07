@@ -5,9 +5,8 @@ import { electronAPI } from '@electron-toolkit/preload';
 const api = {
   setKey: (key: string) => ipcRenderer.send('set-key', key),
   selectFolder: () => ipcRenderer.invoke('dialog:openDirectory'),
-  setDirectory: (type: string, path: string) =>
-    ipcRenderer.send('set-directory', {
-      type,
+  setRootResourcePath: (path: string) =>
+    ipcRenderer.send('set-root-path', {
       path,
     }),
   clearSettings: () => ipcRenderer.send('clear-settings'),

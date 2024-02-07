@@ -8,15 +8,16 @@ export enum ConnectionStatus {
 }
 
 // TODO: move to *.d.ts
+// These are the paths for default
 export enum Resources {
   CHECKPOINT = 'Checkpoint',
-  CHECKPOINT_CONFIG = 'CheckpointConfig',
-  CONTROLNET = 'Controlnet',
+  CONTROLNET = 'ControlNet',
   UPSCALER = 'Upscaler',
   HYPERNETWORK = 'Hypernetwork',
   TEXTUAL_INVERSION = 'TextualInversion',
-  LORA = 'LORA',
+  LORA = 'Lora',
   LO_CON = 'LoCon',
+  VAE = 'VAE',
 }
 
 type Directories = { model: string | null; lora: string | null; lycoris: string | null };
@@ -34,6 +35,7 @@ const schema = {
     type: 'string',
     default: ConnectionStatus.DISCONNECTED,
   },
+  // TODO: Change to rootResourcePath
   modelDirectories: {
     type: 'object',
     default: {
@@ -41,21 +43,17 @@ const schema = {
         type: ['string', 'null'],
         default: null,
       },
-      lora: {
-        type: ['string', 'null'],
-        default: null,
-      },
-      lycoris: {
-        type: ['string', 'null'],
-        default: null,
-      },
     },
   },
+  rootResourcePath: {
+    type: ['string', 'null'],
+    default: null,
+  },
+  // TODO: Set this at start w/ default values using model route
   resourcePaths: {
     type: 'object',
     default: {
       [Resources.CHECKPOINT]: '',
-      [Resources.CHECKPOINT_CONFIG]: '',
       [Resources.CONTROLNET]: '',
       [Resources.UPSCALER]: '',
       [Resources.HYPERNETWORK]: '',
@@ -64,9 +62,15 @@ const schema = {
       [Resources.LO_CON]: '',
     },
   },
+  // More historical
   activityList: {
     type: 'array',
     default: [],
+  },
+  // All of the resources available
+  resources: {
+    type: 'object',
+    default: {},
   },
 };
 
@@ -109,6 +113,14 @@ export function getDirectories(): Directories {
   return store.get('modelDirectories') as Directories;
 }
 
+export function getRootResourcePath() {
+  return store.get('rootResourcePath');
+}
+
+export function setRootResourcePath(path: string) {
+  store.set('rootResourcePath', path);
+}
+
 export function getUIStore() {
   return {
     // upgradekey: store.get('upgradekey'),
@@ -122,4 +134,11 @@ export function addActivity(activity: Activity) {
   activities.push(activity);
 
   store.set('activityList', activities);
+}
+
+export function lookupResource(hash: string) {
+  // Change this to key/map of Resources
+  const resources = store.get('resources') as Activity;
+
+  return resources[hash];
 }
