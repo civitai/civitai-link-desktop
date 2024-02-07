@@ -13,8 +13,6 @@ type DownloadFileParams = {
 } & Resource;
 
 export async function downloadFile(params: DownloadFileParams) {
-  // TODO: Lookup hash in store before downloading
-
   console.log('Connecting …');
   const { data, headers } = await axios({
     url: params.url,
@@ -31,9 +29,17 @@ export async function downloadFile(params: DownloadFileParams) {
   let remaining_time = (totalLength - current) / speed;
   let progress = (current / totalLength) * 100;
   let downloaded = 0;
-  const filePath = path.resolve(__dirname, '', params.downloadPath, params.name);
+  const dirPath = path.resolve(__dirname, '', params.downloadPath);
+  const tempDirPath = path.resolve(dirPath, 'temp');
+  const tempFilePath = path.resolve(tempDirPath, params.name);
+  const filePath = path.resolve(dirPath, params.name);
 
-  const writer = fs.createWriteStream(filePath);
+  // Creates temp folder if it doesnt exist, also ensures that the main dir exists
+  if (!fs.existsSync(tempDirPath)) {
+    fs.mkdirSync(tempDirPath, { recursive: true });
+  }
+
+  const writer = fs.createWriteStream(tempFilePath);
 
   data.on('data', (chunk) => {
     downloaded += chunk.length;
@@ -73,6 +79,9 @@ export async function downloadFile(params: DownloadFileParams) {
     };
     addActivity(fileData);
     addResource(fileData);
+
+    console.log("Move file to: '" + filePath + "'!");
+    fs.renameSync(tempFilePath, filePath);
 
     params.socket.emit('commandStatus', {
       status: 'success',
