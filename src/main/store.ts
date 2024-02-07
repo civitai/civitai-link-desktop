@@ -35,7 +35,7 @@ const schema = {
     type: 'string',
     default: ConnectionStatus.DISCONNECTED,
   },
-  // TODO: Change to rootResourcePath
+  // Deprecated
   modelDirectories: {
     type: 'object',
     default: {
@@ -49,17 +49,17 @@ const schema = {
     type: ['string', 'null'],
     default: null,
   },
-  // TODO: Set this at start w/ default values using model route
   resourcePaths: {
     type: 'object',
     default: {
-      [Resources.CHECKPOINT]: '',
-      [Resources.CONTROLNET]: '',
-      [Resources.UPSCALER]: '',
-      [Resources.HYPERNETWORK]: '',
-      [Resources.TEXTUAL_INVERSION]: '',
-      [Resources.LORA]: '',
-      [Resources.LO_CON]: '',
+      [Resources.CHECKPOINT]: 'Checkpoint',
+      [Resources.CONTROLNET]: 'ControlNet',
+      [Resources.UPSCALER]: 'ESRGAN',
+      [Resources.HYPERNETWORK]: 'hypernetworks',
+      [Resources.TEXTUAL_INVERSION]: 'TextualInversion',
+      [Resources.LORA]: 'Lora',
+      [Resources.LO_CON]: 'LyCORIS',
+      [Resources.VAE]: 'VAE',
     },
   },
   // More historical
@@ -127,6 +127,13 @@ export function getUIStore() {
     modelDirectories: store.get('modelDirectories'),
     activityList: store.get('activityList'),
   };
+}
+
+export function getResourcePath(path: string) {
+  const resource = Resources[path];
+  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+
+  return resourcePaths[resource];
 }
 
 export function addActivity(activity: Activity) {
