@@ -92,8 +92,8 @@ export function clearSettings() {
   store.clear();
 }
 
-export function getRootResourcePath() {
-  return store.get('rootResourcePath');
+export function getRootResourcePath(): string {
+  return store.get('rootResourcePath') as string;
 }
 
 export function setRootResourcePath(path: string) {
@@ -132,8 +132,20 @@ export function addResource(resource: Resource) {
   return store.set('resources', { [resource.hash]: resource, ...resources });
 }
 
+export function removeResource(hash: string) {
+  const resources = store.get('resources') as ResourcesMap;
+
+  delete resources[hash];
+
+  return store.set('resources', resources);
+}
+
 export function lookupResource(hash: string) {
   const resources = store.get('resources') as ResourcesMap;
 
   return resources[hash];
+}
+
+export function getResources() {
+  return store.get('resources') as ResourcesMap;
 }

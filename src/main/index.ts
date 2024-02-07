@@ -188,7 +188,7 @@ function calculateWindowPosition() {
 }
 
 function socketCommandStatus(payload) {
-  socket.emit('commandStatus', payload);
+  socket.emit('commandStatus', { ...payload, updatedAt: new Date().toISOString() });
 }
 
 function socketIOConnect() {
@@ -239,22 +239,16 @@ function socketIOConnect() {
         activitiesCancel();
         break;
       case 'resources:list':
-        resourcesList();
+        const newPayload = resourcesList();
+        socketCommandStatus({ id: payload.id, status: 'success', resources: newPayload });
         break;
       case 'resources:add':
-        if (lookupResource(payload['resource']['hash'])) {
+        if (lookupResource(payload.resource.hash)) {
           mainWindow.webContents.send('error', 'Resource already exists');
         } else {
-          const newPayload = {
-            name: payload['resource']['name'],
-            url: payload['resource']['url'],
-            type: payload['resource']['type'],
-            hash: payload['resource']['hash'],
-            modelName: payload['resource']['modelName'],
-            modelVersionName: payload['resource']['modelVersionName'],
-          };
+          const { ...newPayload } = payload.resource;
           socketCommandStatus({
-            id: payload['id'],
+            id: payload.id,
             status: 'processing',
             resource: newPayload,
           });
@@ -267,7 +261,8 @@ function socketIOConnect() {
         }
         break;
       case 'resources:remove':
-        resourcesRemove();
+        resourcesRemove(payload.resource.hash);
+        socketCommandStatus({ id: payload.id, status: 'success' });
         break;
       case 'image:txt2img':
         imageTxt2img();
@@ -366,6 +361,14 @@ app.whenReady().then(async () => {
     watcher = chokidar.watch(rootResourcePath, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
       console.log('Watching model directory: ', rootResourcePath);
       console.log(event, path);
+      // Generate hash from file
+
+      // event === 'add'
+      // Lookup hash in store
+      // Add if doesnt exist
+
+      // event === 'unlink'
+      // Remove hash from store
     });
   }
 

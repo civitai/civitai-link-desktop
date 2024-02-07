@@ -10,5 +10,6 @@ export async function hash(filePath: string) {
     hash_sha256.update(data);
   }
 
+  // This is lowercase vs. site is upper
   return hash_sha256.digest('hex');
 }
