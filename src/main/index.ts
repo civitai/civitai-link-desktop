@@ -201,24 +201,15 @@ function socketIOConnect() {
     console.log('Connected to Civitai Link Server');
     socket.emit('iam', { type: 'sd' });
     setConnectionStatus(ConnectionStatus.CONNECTING);
-    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTING);
-
-    // Set logo to pending (connected but not in a room) (Orange)
-    const icon = nativeImage.createFromPath(logoPending);
-    tray.setImage(icon);
 
     const upgradeKey = getUpgradeKey();
 
     // Join room if upgrade upgradeKey exists
     if (upgradeKey) {
       console.log('Using upgrade key');
-      mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
 
       socket.emit('join', upgradeKey, () => {
-        // Set logo to connected when in room (green)
-        const icon = nativeImage.createFromPath(logoConnected);
-        tray.setImage(icon);
-
+        setConnectionStatus(ConnectionStatus.CONNECTED);
         console.log(`Joined room ${upgradeKey}`);
       });
     }
@@ -227,15 +218,10 @@ function socketIOConnect() {
   socket.on('disconnect', () => {
     console.log('Disconnected from Civitai Link Server');
     setConnectionStatus(ConnectionStatus.DISCONNECTED);
-    mainWindow.webContents.send('connection-status', ConnectionStatus.DISCONNECTED);
-
-    // Set logo to disconnected (red)
-    const icon = nativeImage.createFromPath(logoDisconnected);
-    tray.setImage(icon);
   });
 
   socket.on('error', (err) => {
-    mainWindow.webContents.send('connection-status', ConnectionStatus.DISCONNECTED);
+    setConnectionStatus(ConnectionStatus.DISCONNECTED);
     console.error(err);
   });
 
@@ -295,14 +281,12 @@ function socketIOConnect() {
 
   socket.on('kicked', () => {
     console.log('Kicked from instance. Clearing key.');
-    mainWindow.webContents.send('connection-status', ConnectionStatus.DISCONNECTED);
     setKey(null);
     setUpgradeKey(null);
   });
 
   socket.on('roomPresence', (payload) => {
     console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
-    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
     setConnectionStatus(ConnectionStatus.CONNECTED);
     // Python code
     // log(f"Presence update: SD: {payload['sd']}, Clients: {payload['client']}")
@@ -319,20 +303,14 @@ function socketIOConnect() {
     mainWindow.webContents.send('upgrade-key', { key: payload['key'] });
 
     socket.emit('join', payload['key'], () => {
-      // Set logo to connected when in room (green)
-      const icon = nativeImage.createFromPath(logoConnected);
-      tray.setImage(icon);
-
+      setConnectionStatus(ConnectionStatus.CONNECTED);
       console.log(`Re-joined room with upgrade key: ${payload['key']}`);
     });
   });
 
   socket.on('join', () => {
-    mainWindow.webContents.send('connection-status', ConnectionStatus.CONNECTED);
+    setConnectionStatus(ConnectionStatus.CONNECTED);
     console.log('Joined room');
-    // Set logo to connected when in room (green)
-    const icon = nativeImage.createFromPath(logoConnected);
-    tray.setImage(icon);
   });
 
   app.on('before-quit', () => {
@@ -405,6 +383,21 @@ app.whenReady().then(async () => {
         console.log('Model directory changed to: ', newValue.model);
       });
     }
+  });
+
+  store.onDidChange('connectionStatus', async (newValue) => {
+    mainWindow.webContents.send('connection-status', newValue);
+    let icon;
+
+    if (newValue === ConnectionStatus.CONNECTED) {
+      icon = nativeImage.createFromPath(logoConnected);
+    } else if (newValue === ConnectionStatus.DISCONNECTED) {
+      icon = nativeImage.createFromPath(logoDisconnected);
+    } else if (newValue === ConnectionStatus.CONNECTING) {
+      icon = nativeImage.createFromPath(logoPending);
+    }
+
+    tray.setImage(icon);
   });
 
   tray.on('click', function () {
