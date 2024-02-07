@@ -11,6 +11,12 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   const resourcePath = getResourcePath(payload.type);
   const downloadPath = `${rootResourcePath}/${resourcePath}`;
 
+  params.socket.emit('commandStatus', {
+    status: 'processing',
+    id: params.id,
+    resource: payload,
+  });
+
   params.mainWindow.webContents.send('activity-add', {
     id: params.id,
     downloadDate: new Date().toISOString(),

@@ -196,7 +196,7 @@ function socketIOConnect() {
   console.log('Socket connecting...');
   setConnectionStatus(ConnectionStatus.CONNECTING);
 
-  // Event handlers
+  // Socket Event handlers
   socket.on('connect', () => {
     console.log('Connected to Civitai Link Server');
     socket.emit('iam', { type: 'sd' });
@@ -246,15 +246,9 @@ function socketIOConnect() {
         if (lookupResource(payload.resource.hash)) {
           mainWindow.webContents.send('error', 'Resource already exists');
         } else {
-          const { ...newPayload } = payload.resource;
-          socketCommandStatus({
-            id: payload.id,
-            status: 'processing',
-            resource: newPayload,
-          });
           resourcesAdd({
             id: payload['id'],
-            payload: newPayload,
+            payload: payload.resource,
             socket,
             mainWindow,
           });
@@ -270,8 +264,6 @@ function socketIOConnect() {
       default:
         console.log(`Unknown command: ${payload['command']}`);
     }
-
-    // socketCommandStatus(payload);
   });
 
   socket.on('kicked', () => {
@@ -283,13 +275,6 @@ function socketIOConnect() {
   socket.on('roomPresence', (payload) => {
     console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
     setConnectionStatus(ConnectionStatus.CONNECTED);
-    // Python code
-    // log(f"Presence update: SD: {payload['sd']}, Clients: {payload['client']}")
-    // connected = payload['sd'] > 0 and payload['client'] > 0
-    // if civitai.connected != connected:
-    //     civitai.connected = connected
-    //     if connected: log("Connected to Civitai Instance")
-    //     else: log("Disconnected from Civitai Instance")
   });
 
   socket.on('upgradeKey', (payload) => {
