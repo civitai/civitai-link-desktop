@@ -58,7 +58,7 @@ function App() {
             />
           </div>
           <div className="space-x-4 justify-center flex">
-            <Button onClick={submitSetKey} disabled={!inputValue && !folderValue}>
+            <Button onClick={submitSetKey} disabled={!inputValue || !folderValue}>
               Continue
             </Button>
           </div>

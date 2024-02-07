@@ -42,7 +42,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('activity-add', function (_, message) {
       // @ts-ignore
-      setActivityList((activities) => ({ ...activities, message }));
+      setActivityList((activities) => ({ message, ...activities }));
     });
 
     return () => {
