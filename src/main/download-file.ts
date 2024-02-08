@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
-import { BrowserWindow, Notification } from 'electron';
+import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addActivity, addResource } from './store';
 
 type DownloadFileParams = {
@@ -14,10 +14,12 @@ type DownloadFileParams = {
 
 export async function downloadFile(params: DownloadFileParams) {
   console.log('Connecting …');
+  const controller = new AbortController();
   const { data, headers } = await axios({
     url: params.url,
     method: 'GET',
     responseType: 'stream',
+    signal: controller.signal,
   });
   const totalLength = parseInt(headers['content-length'], 10);
 
@@ -102,4 +104,22 @@ export async function downloadFile(params: DownloadFileParams) {
   });
 
   data.pipe(writer);
+
+  ipcMain.on('cancel-download', (_, id) => {
+    if (params.id === id) {
+      console.log('Download canceled');
+
+      // Abort download w/ Axios
+      controller.abort();
+
+      // Let server know its canceled
+      params.socket.emit('commandStatus', {
+        status: 'canceled',
+        id: params.id,
+      });
+
+      // Remove from temp folder
+      fs.unlinkSync(tempFilePath);
+    }
+  });
 }

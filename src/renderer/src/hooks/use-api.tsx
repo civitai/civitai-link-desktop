@@ -2,13 +2,16 @@ export function useApi() {
   // Note: window.api definitions can be found in src/index.d.ts
   return {
     setKey: async (key: string) => {
-      await window.api.setKey(key);
+      return await window.api.setKey(key);
     },
     selectDirectory: async () => {
       return await window.api.selectFolder();
     },
     setRootResourcePath: async (path: string) => {
-      await window.api.setRootResourcePath(path);
+      return await window.api.setRootResourcePath(path);
+    },
+    cancelDownload: async (id: string) => {
+      return await window.api.cancelDownload(id);
     },
   };
 }

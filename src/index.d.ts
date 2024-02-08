@@ -8,6 +8,7 @@ declare global {
       selectFolder: () => void;
       setRootResourcePath: (path: string) => void;
       clearSettings: () => void;
+      cancelDownload: (id: string) => void;
     };
   }
 

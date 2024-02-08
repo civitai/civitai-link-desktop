@@ -10,6 +10,7 @@ const api = {
       path,
     }),
   clearSettings: () => ipcRenderer.send('clear-settings'),
+  cancelDownload: (id: string) => ipcRenderer.send('cancel-download', id),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

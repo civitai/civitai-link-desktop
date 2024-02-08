@@ -9,6 +9,7 @@ type ElectronContextType = {
   activityList: ResourcesMap;
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
+  removeActivity: (hash: string) => void;
 };
 
 const defaultValue: ElectronContextType = {
@@ -18,6 +19,7 @@ const defaultValue: ElectronContextType = {
   activityList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
+  removeActivity: () => {},
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -31,6 +33,17 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const removeActivity = (hash: string) => {
+    const { [hash]: rm, ...rest } = activityList;
+
+    toast({
+      title: 'Download canceled',
+      description: `The download for ${rm.modelName} has been canceled.`,
+    });
+
+    setActivityList(rest);
+  };
 
   useEffect(() => {
     ipcRenderer.on('upgrade-key', function (_, message) {
@@ -116,6 +129,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         activityList,
         connectionStatus,
         rootResourcePath,
+        removeActivity,
       }}
     >
       {children}
