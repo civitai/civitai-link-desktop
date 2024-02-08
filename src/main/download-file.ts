@@ -44,7 +44,7 @@ export async function downloadFile(params: DownloadFileParams) {
   data.on('data', (chunk) => {
     downloaded += chunk.length;
     elapsed_time = Date.now() - start_time;
-    speed = downloaded / elapsed_time;
+    speed = (downloaded / elapsed_time) * 1024;
     remaining_time = (totalLength - downloaded) / speed;
     progress = (downloaded / totalLength) * 100;
 
@@ -87,7 +87,7 @@ export async function downloadFile(params: DownloadFileParams) {
 
     new Notification({
       title: 'Download Complete',
-      body: `Downloaded ${params.name}`,
+      body: params.name,
     }).show();
 
     params.socket.emit('commandStatus', {

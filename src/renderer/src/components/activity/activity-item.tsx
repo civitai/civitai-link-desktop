@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -31,6 +32,8 @@ export function ActivityItem(props: ItemProps) {
     }
   }, []);
 
+  // TODO: If canceled maybe make red
+  // Need to remove from activity list too
   return (
     <Card className="mb-4">
       <CardHeader>
@@ -51,10 +54,12 @@ export function ActivityItem(props: ItemProps) {
       </CardContent>
       {progress !== 0 && progress < 100 ? (
         <CardFooter className="flex-col items-start">
-          <Progress value={progress} className="my-2" />
+          <div className="flex w-full items-center my-2 ">
+            <Progress value={progress} className="mr-2" />
+            {/* <AiOutlineCloseCircle /> */}
+          </div>
           <div className="flex-row flex justify-between w-full">
             <div>
-              {/* TODO: I think this is mathed wrong */}
               <p className="text-sm font-medium leading-none">
                 {dayjs.duration({ seconds: remainingTime }).humanize()} - {prettyBytes(speed)}/sec
               </p>
