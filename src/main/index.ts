@@ -74,6 +74,7 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
     },
+    icon: logo,
   });
 
   // Prevents dock icon from appearing on macOS
@@ -307,6 +308,9 @@ app.whenReady().then(async () => {
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
 
+  // Set app user model id for windows
+  electronApp.setAppUserModelId('com.electron');
+
   createWindow();
   socketIOConnect();
 
@@ -399,9 +403,6 @@ app.whenReady().then(async () => {
   }
 
   ipcMain.emit('tray-window-ready', { window: mainWindow, tray: tray });
-
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron');
 
   // Hides dock icon on macOS but keeps in taskbar
   app.dock.hide();

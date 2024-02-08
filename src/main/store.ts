@@ -102,6 +102,7 @@ export function setRootResourcePath(path: string) {
 
 export function getUIStore() {
   return {
+    rootResourcePath: store.get('rootResourcePath'),
     activities: store.get('activities'),
   };
 }

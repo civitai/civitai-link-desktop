@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, Notification } from 'electron';
 import { addActivity, addResource } from './store';
 
 type DownloadFileParams = {
@@ -52,6 +52,8 @@ export async function downloadFile(params: DownloadFileParams) {
       totalLength,
       downloaded,
       progress,
+      speed,
+      remainingTime: remaining_time,
     });
 
     params.socket.emit('commandStatus', {
@@ -82,6 +84,11 @@ export async function downloadFile(params: DownloadFileParams) {
 
     console.log("Move file to: '" + filePath + "'!");
     fs.renameSync(tempFilePath, filePath);
+
+    new Notification({
+      title: 'Download Complete',
+      body: `Downloaded ${params.name}`,
+    }).show();
 
     params.socket.emit('commandStatus', {
       status: 'success',

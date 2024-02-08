@@ -8,6 +8,7 @@ type ElectronContextType = {
   clearSettings: () => void;
   activityList: ResourcesMap;
   connectionStatus: ConnectionStatus;
+  rootResourcePath: string | null;
 };
 
 const defaultValue: ElectronContextType = {
@@ -16,6 +17,7 @@ const defaultValue: ElectronContextType = {
   clearSettings: () => {},
   activityList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
+  rootResourcePath: null,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -27,6 +29,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [activityList, setActivityList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -53,6 +56,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
       setActivityList(message.activities);
+      setRootResourcePath(message.rootResourcePath);
     });
 
     return () => {
@@ -109,6 +113,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         clearSettings,
         activityList,
         connectionStatus,
+        rootResourcePath,
       }}
     >
       {children}
