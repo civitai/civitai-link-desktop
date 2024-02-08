@@ -8,9 +8,12 @@ import { useElectron } from '@/providers/electron';
 import { ConnectionStatus } from '@/types';
 import { TbPlugConnected, TbPlugConnectedX } from 'react-icons/tb';
 import { ResourceType } from '@/types';
+import logoDark from '@/assets/logo_dark_mode.png';
+import logoLight from '@/assets/logo_light_mode.png';
 
 export function HeaderTop() {
   const { clearSettings, connectionStatus } = useElectron();
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   function connectionRender() {
     switch (connectionStatus) {
@@ -28,7 +31,10 @@ export function HeaderTop() {
   return (
     <Sheet>
       <div className="flex items-center px-4 pt-4">
-        <div className="flex space-x-4 items-center">{connectionRender()}</div>
+        <div className="flex space-x-2 items-center">
+          <img src={systemTheme ? logoDark : logoLight} alt="Civitai" />
+          {connectionRender()}
+        </div>
         <div className="ml-auto flex items-center space-x-4">
           <div>
             <SheetTrigger>
