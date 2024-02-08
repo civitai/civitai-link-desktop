@@ -10,30 +10,55 @@ import { TbPlugConnected, TbPlugConnectedX } from 'react-icons/tb';
 import { ResourceType } from '@/types';
 import logoDark from '@/assets/logo_dark_mode.png';
 import logoLight from '@/assets/logo_light_mode.png';
+import { Input } from '@/components/ui/input';
+import { useCallback, useEffect, useState } from 'react';
+import { useApi } from '@/hooks/use-api';
+import { FaRegSave } from 'react-icons/fa';
 
 export function HeaderTop() {
-  const { clearSettings, connectionStatus } = useElectron();
+  const { clearSettings, connectionStatus, key } = useElectron();
+  const { setKey } = useApi();
+  const [inputValue, setInputValue] = useState<string | null>(key || '');
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  function connectionRender() {
-    switch (connectionStatus) {
-      case ConnectionStatus.CONNECTED:
-        return <TbPlugConnected color="green" />;
-      case ConnectionStatus.DISCONNECTED:
-        return <TbPlugConnectedX color="red" />;
-      case ConnectionStatus.CONNECTING:
-        return <TbPlugConnected color="orange" />;
-      default:
-        return <TbPlugConnectedX />;
+  useEffect(() => {
+    setInputValue(key || '');
+  }, [key]);
+
+  const connectionRender = useCallback(
+    (connectionStatus: ConnectionStatus) => {
+      switch (connectionStatus) {
+        case ConnectionStatus.CONNECTED:
+          return <TbPlugConnected color="green" />;
+        case ConnectionStatus.DISCONNECTED:
+          return <TbPlugConnectedX color="red" />;
+        case ConnectionStatus.CONNECTING:
+          return <TbPlugConnected color="orange" />;
+        default:
+          return <TbPlugConnectedX />;
+      }
+    },
+    [connectionStatus],
+  );
+
+  const submitSetKey = async () => {
+    if (inputValue) {
+      setKey(inputValue);
+    } else {
+      console.log('No input value');
     }
-  }
+  };
+
+  const handleSetInputValue = (value: string) => {
+    setInputValue(value);
+  };
 
   return (
     <Sheet>
       <div className="flex items-center px-4 pt-4">
         <div className="flex space-x-2 items-center">
           <img src={systemTheme ? logoDark : logoLight} alt="Civitai" />
-          {connectionRender()}
+          {connectionRender(connectionStatus)}
         </div>
         <div className="ml-auto flex items-center space-x-4">
           <div>
@@ -72,6 +97,17 @@ export function HeaderTop() {
               Include resource hashes in image metadata (for resource auto-detection on Civitai)
             </Label>
           </div> */}
+          <div className="flex items-center space-x-4 justify-center">
+            <Input
+              type="text"
+              value={inputValue || ''}
+              onChange={(e) => handleSetInputValue(e.target.value)}
+              className="overflow-ellipsis"
+            />
+            <Button onClick={submitSetKey} disabled={!inputValue}>
+              <FaRegSave />
+            </Button>
+          </div>
           <PathInput defaultPath="Root Models Directory" type={ResourceType.DEFAULT} />
           {/* <PathInput defaultPath="LoRA Directory" type={ResourceType.LORA} />
           <PathInput defaultPath="LyCORIS Directory" type={ResourceType.LYCORIS} /> */}

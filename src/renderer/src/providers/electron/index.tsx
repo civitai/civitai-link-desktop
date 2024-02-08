@@ -75,6 +75,8 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Bug: When reloading the UI it does not get an update about connection status
+  // Instead it uses the default set in useState
   useEffect(() => {
     ipcRenderer.on('connection-status', function (_, message) {
       setConnectionStatus(message);
