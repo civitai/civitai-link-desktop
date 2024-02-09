@@ -35,6 +35,8 @@ export async function downloadFile(params: DownloadFileParams) {
   const tempDirPath = path.resolve(dirPath, 'temp');
   const tempFilePath = path.resolve(tempDirPath, params.name);
   const filePath = path.resolve(dirPath, params.name);
+  const REPORT_INTERVAL = 1;
+  let last_reported_time = Date.now();
 
   // Creates temp folder if it doesnt exist, also ensures that the main dir exists
   if (!fs.existsSync(tempDirPath)) {
@@ -44,27 +46,32 @@ export async function downloadFile(params: DownloadFileParams) {
   const writer = fs.createWriteStream(tempFilePath);
 
   data.on('data', (chunk) => {
+    const current_time = Date.now();
     downloaded += chunk.length;
-    elapsed_time = Date.now() - start_time;
+    elapsed_time = current_time - start_time;
     speed = (downloaded / elapsed_time) * 1024;
     remaining_time = (totalLength - downloaded) / speed;
     progress = (downloaded / totalLength) * 100;
 
-    params.mainWindow.webContents.send(`resource-download:${params.id}`, {
-      totalLength,
-      downloaded,
-      progress,
-      speed,
-      remainingTime: remaining_time,
-    });
+    if (current_time - last_reported_time > REPORT_INTERVAL) {
+      params.mainWindow.webContents.send(`resource-download:${params.id}`, {
+        totalLength,
+        downloaded,
+        progress,
+        speed,
+        remainingTime: remaining_time,
+      });
 
-    params.socket.emit('commandStatus', {
-      status: 'processing',
-      progress,
-      remainingTime: remaining_time,
-      speed,
-      updatedAt: new Date().toISOString(),
-    });
+      params.socket.emit('commandStatus', {
+        status: 'processing',
+        progress,
+        remainingTime: remaining_time,
+        speed,
+        updatedAt: new Date().toISOString(),
+      });
+
+      last_reported_time = current_time;
+    }
   });
 
   data.on('end', async function () {
