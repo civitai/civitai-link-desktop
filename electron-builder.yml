@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: civitai-link-desktop
+appId: com.civitai.link
+productName: civitai-link
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: civitai-link-desktop
+  executableName: civitai-link
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

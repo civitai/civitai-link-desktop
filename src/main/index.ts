@@ -35,12 +35,12 @@ let mainWindow;
 
 //defaults
 let width = 400;
-let height = 300;
+let height = 600;
 
 let margin_x = 0;
 let margin_y = 0;
 let framed = false;
-const DEBUG = Boolean(import.meta.env.MAIN_VITE_DEBUG) || false;
+const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 const browserWindowOptions = DEBUG
   ? {
       show: false,
