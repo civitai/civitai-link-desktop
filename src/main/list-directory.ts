@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getDirectories } from './store';
+import { getRootResourcePath } from './store';
 
 const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
 
 export function listDirectory() {
-  const modelDirectory = getDirectories().model;
+  const modelDirectory = getRootResourcePath();
 
   if (!modelDirectory) {
     return [];
