@@ -331,6 +331,11 @@ app.whenReady().then(async () => {
     clearSettings();
   });
 
+  ipcMain.on('close-app', async () => {
+    console.log('Closing app');
+    app.quit();
+  });
+
   ipcMain.handle('dialog:openDirectory', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'],

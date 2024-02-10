@@ -13,5 +13,8 @@ export function useApi() {
     cancelDownload: async (id: string) => {
       return await window.api.cancelDownload(id);
     },
+    closeApp: async () => {
+      return await window.api.closeApp();
+    },
   };
 }

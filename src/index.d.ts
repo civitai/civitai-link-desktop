@@ -9,6 +9,7 @@ declare global {
       setRootResourcePath: (path: string) => void;
       clearSettings: () => void;
       cancelDownload: (id: string) => void;
+      closeApp: () => void;
     };
   }
 
