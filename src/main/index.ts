@@ -23,26 +23,14 @@ let mainWindow;
 
 //defaults
 let width = 400;
-let height = 600;
 
-let margin_x = 0;
-let margin_y = 0;
-let framed = false;
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
-const browserWindowOptions = DEBUG
-  ? {
-      show: false,
-    }
-  : {
-      show: true,
-      frame: framed,
-      fullscreenable: false,
-      resizable: false,
-      useContentSize: true,
-      transparent: true,
-      alwaysOnTop: true,
-      skipTaskbar: true,
-    };
+const browserWindowOptions = {
+  show: true,
+  alwaysOnTop: true,
+  skipTaskbar: true,
+  titleBarOverlay: true,
+};
 
 function createWindow() {
   const upgradeKey = getUpgradeKey();
@@ -50,9 +38,6 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: width,
-    // height: height,
-    maxWidth: width,
-    // maxHeight: height,
     useContentSize: true,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
@@ -61,10 +46,8 @@ function createWindow() {
       sandbox: false,
     },
     icon: logo,
+    titleBarStyle: 'hidden', // Fix: Set the titleBarStyle to 'hidden'
   });
-
-  // Prevents dock icon from appearing on macOS
-  mainWindow.setMenu(null);
 
   mainWindow.on('ready-to-show', () => {
     if (DEBUG) {
@@ -91,87 +74,6 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
-}
-
-function setWindowAutoHide() {
-  mainWindow.hide();
-  mainWindow.on('blur', () => {
-    if (!mainWindow.webContents.isDevToolsOpened()) {
-      mainWindow.hide();
-      ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
-    }
-  });
-  if (framed) {
-    mainWindow.on('close', function (event) {
-      event.preventDefault();
-      mainWindow.hide();
-    });
-  }
-}
-
-function toggleWindow() {
-  if (mainWindow.isVisible()) {
-    mainWindow.hide();
-    ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
-    return;
-  }
-
-  showWindow();
-  ipcMain.emit('tray-window-visible', { window: mainWindow, tray: tray });
-}
-
-function alignWindow() {
-  const position = calculateWindowPosition();
-  mainWindow.setBounds({
-    width: width,
-    height: height,
-    x: position.x,
-    y: position.y,
-  });
-}
-
-function showWindow() {
-  alignWindow();
-  mainWindow.show();
-}
-
-function calculateWindowPosition() {
-  const screenBounds = screen.getPrimaryDisplay().size;
-  const trayBounds = tray.getBounds();
-
-  //where is the icon on the screen?
-  let trayPos = 4; // 1:top-left 2:top-right 3:bottom-left 4.bottom-right
-  trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
-  trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
-
-  let DEFAULT_MARGIN = { x: margin_x, y: margin_y };
-  let x;
-  let y;
-
-  //calculate the new window position
-  switch (trayPos) {
-    case 1: // for TOP - LEFT
-      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
-      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
-      break;
-
-    case 2: // for TOP - RIGHT
-      x = Math.floor(trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2);
-      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
-      break;
-
-    case 3: // for BOTTOM - LEFT
-      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
-      y = Math.floor(trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2);
-      break;
-
-    case 4: // for BOTTOM - RIGHT
-      x = Math.floor(trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2);
-      y = Math.floor(trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2);
-      break;
-  }
-
-  return { x: x, y: y };
 }
 
 // This method will be called when Electron has finished
@@ -278,18 +180,9 @@ app.whenReady().then(async () => {
 
   tray.on('click', function () {
     ipcMain.emit('tray-window-clicked', { window: mainWindow, tray: tray });
-    toggleWindow();
   });
 
-  if (!DEBUG) {
-    setWindowAutoHide();
-    alignWindow();
-  }
-
   ipcMain.emit('tray-window-ready', { window: mainWindow, tray: tray });
-
-  // Hides dock icon on macOS but keeps in taskbar
-  app.dock.hide();
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

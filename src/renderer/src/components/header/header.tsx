@@ -3,7 +3,7 @@ import { HeaderBottom } from './header-bottom';
 
 export function Header() {
   return (
-    <div className="">
+    <div>
       <HeaderTop />
       <HeaderBottom />
     </div>

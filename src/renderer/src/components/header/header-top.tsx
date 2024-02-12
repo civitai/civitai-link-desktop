@@ -14,11 +14,10 @@ import { Input } from '@/components/ui/input';
 import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@/hooks/use-api';
 import { FaRegSave } from 'react-icons/fa';
-import { ImExit } from 'react-icons/im';
 
 export function HeaderTop() {
   const { clearSettings, connectionStatus, key } = useElectron();
-  const { setKey, closeApp } = useApi();
+  const { setKey } = useApi();
   const [inputValue, setInputValue] = useState<string | null>(key || '');
   const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -65,7 +64,6 @@ export function HeaderTop() {
           <SheetTrigger>
             <FaCog size={18} className="cursor-pointer" />
           </SheetTrigger>
-          <ImExit size={18} onClick={() => closeApp()} className="cursor-pointer" />
         </div>
       </div>
       <SheetContent className="w-full overflow-y-scroll">
