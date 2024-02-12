@@ -1,7 +1,6 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell, screen, dialog } from 'electron';
 import { join } from 'path';
-import { io } from 'socket.io-client';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
@@ -10,25 +9,14 @@ import {
   ConnectionStatus,
   getUIStore,
   getUpgradeKey,
-  setConnectionStatus,
   setRootResourcePath,
   setKey,
-  setUpgradeKey,
   clearSettings,
   store,
   getRootResourcePath,
-  lookupResource,
 } from './store';
-import {
-  activitiesCancel,
-  activitiesClear,
-  activitiesList,
-  imageTxt2img,
-  resourcesAdd,
-  resourcesList,
-  resourcesRemove,
-} from './commands';
 import chokidar from 'chokidar';
+import { socketIOConnect, socketEmit } from './socket';
 
 let tray;
 let mainWindow;
@@ -55,8 +43,6 @@ const browserWindowOptions = DEBUG
       alwaysOnTop: true,
       skipTaskbar: true,
     };
-
-const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
 
 function createWindow() {
   const upgradeKey = getUpgradeKey();
@@ -188,117 +174,6 @@ function calculateWindowPosition() {
   return { x: x, y: y };
 }
 
-function socketCommandStatus(payload) {
-  socket.emit('commandStatus', { ...payload, updatedAt: new Date().toISOString() });
-}
-
-function socketIOConnect() {
-  socket.connect();
-  console.log('Socket connecting...');
-  setConnectionStatus(ConnectionStatus.CONNECTING);
-
-  // Socket Event handlers
-  socket.on('connect', () => {
-    console.log('Connected to Civitai Link Server');
-    socket.emit('iam', { type: 'sd' });
-    setConnectionStatus(ConnectionStatus.CONNECTING);
-
-    const upgradeKey = getUpgradeKey();
-
-    // Join room if upgrade upgradeKey exists
-    if (upgradeKey) {
-      console.log('Using upgrade key');
-
-      socket.emit('join', upgradeKey, () => {
-        setConnectionStatus(ConnectionStatus.CONNECTED);
-        console.log(`Joined room ${upgradeKey}`);
-      });
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Disconnected from Civitai Link Server');
-    setConnectionStatus(ConnectionStatus.DISCONNECTED);
-  });
-
-  socket.on('error', (err) => {
-    setConnectionStatus(ConnectionStatus.DISCONNECTED);
-    console.error(err);
-  });
-
-  socket.on('command', (payload) => {
-    console.log('command', payload);
-
-    switch (payload['type']) {
-      case 'activities:list':
-        activitiesList();
-        break;
-      case 'activities:clear':
-        activitiesClear();
-        break;
-      case 'activities:cancel':
-        activitiesCancel();
-        break;
-      case 'resources:list':
-        const newPayload = resourcesList();
-        socketCommandStatus({ id: payload.id, status: 'success', resources: newPayload });
-        break;
-      case 'resources:add':
-        if (lookupResource(payload.resource.hash)) {
-          mainWindow.webContents.send('error', 'Resource already exists');
-        } else {
-          resourcesAdd({
-            id: payload['id'],
-            payload: payload.resource,
-            socket,
-            mainWindow,
-          });
-        }
-        break;
-      case 'resources:remove':
-        resourcesRemove(payload.resource.hash);
-        socketCommandStatus({ id: payload.id, status: 'success' });
-        break;
-      case 'image:txt2img':
-        imageTxt2img();
-        break;
-      default:
-        console.log(`Unknown command: ${payload['command']}`);
-    }
-  });
-
-  socket.on('kicked', () => {
-    console.log('Kicked from instance. Clearing key.');
-    setKey(null);
-    setUpgradeKey(null);
-  });
-
-  socket.on('roomPresence', (payload) => {
-    console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
-    setConnectionStatus(ConnectionStatus.CONNECTED);
-  });
-
-  socket.on('upgradeKey', (payload) => {
-    console.log(`Received upgrade key: ${payload['key']}`);
-    setUpgradeKey(payload['key']);
-    mainWindow.webContents.send('upgrade-key', { key: payload['key'] });
-
-    socket.emit('join', payload['key'], () => {
-      setConnectionStatus(ConnectionStatus.CONNECTED);
-      console.log(`Re-joined room with upgrade key: ${payload['key']}`);
-    });
-  });
-
-  socket.on('join', () => {
-    setConnectionStatus(ConnectionStatus.CONNECTED);
-    console.log('Joined room');
-  });
-
-  app.on('before-quit', () => {
-    socket.close();
-  });
-}
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -312,12 +187,16 @@ app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.electron');
 
   createWindow();
-  socketIOConnect();
+  socketIOConnect({ mainWindow, app });
 
   ipcMain.on('set-key', (_, key) => {
     setKey(key);
-    socket.emit('join', key, () => {
-      console.log(`Joined room ${key}`);
+    socketEmit({
+      eventName: 'join',
+      payload: key,
+      cb: () => {
+        console.log(`Joined room ${key}`);
+      },
     });
   });
 
