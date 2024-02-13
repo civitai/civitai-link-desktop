@@ -7,6 +7,7 @@ import { addActivity, addResource } from './store';
 
 type DownloadFileParams = {
   id: string;
+  eventType: string;
   downloadPath: string;
   socket: Socket;
   mainWindow: BrowserWindow;
@@ -62,12 +63,15 @@ export async function downloadFile(params: DownloadFileParams) {
         remainingTime: remaining_time,
       });
 
+      params.mainWindow.setProgressBar(downloaded / totalLength);
+
       params.socket.emit('commandStatus', {
         status: 'processing',
         progress,
         remainingTime: remaining_time,
         speed,
         updatedAt: new Date().toISOString(),
+        type: params.eventType,
       });
 
       last_reported_time = current_time;
@@ -99,14 +103,25 @@ export async function downloadFile(params: DownloadFileParams) {
       body: params.name,
     }).show();
 
+    params.mainWindow.setProgressBar(-1);
+
+    params.mainWindow.webContents.send(`resource-download:${params.id}`, {
+      totalLength,
+      downloaded,
+      progress: 100,
+      speed,
+      remainingTime: remaining_time,
+    });
+
     params.socket.emit('commandStatus', {
       status: 'success',
-      progress,
+      progress: 100,
       remainingTime: remaining_time,
       speed,
       updatedAt: timestamp,
       resource: fileData[params.hash],
       id: params.id,
+      type: params.eventType,
     });
   });
 

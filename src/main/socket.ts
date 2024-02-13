@@ -80,8 +80,9 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         activitiesCancel();
         break;
       case 'resources:list':
+        // TODO: This might need to be activity:list
         const newPayload = resourcesList();
-        socketCommandStatus({ id: payload.id, status: 'success', resources: newPayload });
+        socketCommandStatus({ id: payload.id, type: payload['type'], status: 'success', resources: newPayload });
         break;
       case 'resources:add':
         if (lookupResource(payload.resource.hash)) {
@@ -89,6 +90,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         } else {
           resourcesAdd({
             id: payload['id'],
+            eventType: payload['type'],
             payload: payload.resource,
             socket,
             mainWindow,
