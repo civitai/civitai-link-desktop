@@ -1,7 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+body {
+  overflow: hidden;
+}
+
+.titlebar {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  height: 1.5rem;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

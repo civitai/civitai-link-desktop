@@ -35,11 +35,12 @@ function App() {
     );
 
   return (
-    <div>
+    <div className="h-lvh">
+      <div className="titlebar" />
       {key ? (
         <>
           <Header />
-          <div className="container mx-auto p-4 mb-2">
+          <div className="container mx-auto p-4 mb-2 overflow-y-scroll h-full">
             <Activity />
           </div>
         </>

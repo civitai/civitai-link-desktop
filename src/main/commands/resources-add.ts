@@ -3,7 +3,12 @@ import { downloadFile } from '../download-file';
 import { BrowserWindow } from 'electron';
 import { getRootResourcePath, getResourcePath } from '../store';
 
-type ResourcesAddParams = { id: string; payload: Resource; socket: Socket; mainWindow: BrowserWindow };
+type ResourcesAddParams = {
+  id: string;
+  payload: Resource;
+  socket: Socket;
+  mainWindow: BrowserWindow;
+};
 
 export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
@@ -15,6 +20,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
     status: 'processing',
     id: params.id,
     resource: payload,
+    type: 'resources:add',
   });
 
   params.mainWindow.webContents.send('activity-add', {

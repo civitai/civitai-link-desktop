@@ -58,7 +58,7 @@ export function ActivityItem(props: ItemProps) {
       <CardContent>
         <div>
           <div className="space-y-1">
-            <p className="text-sm leading-none text-[#c1c2c5] font-bold">{props.modelName}</p>
+            <p className="text-sm leading-none dark:text-[#c1c2c5] font-bold">{props.modelName}</p>
             <CardDescription>{props.modelVersionName}</CardDescription>
           </div>
         </div>

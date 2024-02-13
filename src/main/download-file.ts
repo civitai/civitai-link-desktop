@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addActivity, addResource } from './store';
+import { resourcesList } from './commands';
 
 type DownloadFileParams = {
   id: string;
@@ -35,7 +36,7 @@ export async function downloadFile(params: DownloadFileParams) {
   const tempDirPath = path.resolve(dirPath, 'temp');
   const tempFilePath = path.resolve(tempDirPath, params.name);
   const filePath = path.resolve(dirPath, params.name);
-  const REPORT_INTERVAL = 1;
+  const REPORT_INTERVAL = 1000;
   let last_reported_time = Date.now();
 
   // Creates temp folder if it doesnt exist, also ensures that the main dir exists
@@ -62,12 +63,26 @@ export async function downloadFile(params: DownloadFileParams) {
         remainingTime: remaining_time,
       });
 
+      params.mainWindow.setProgressBar(downloaded / totalLength);
+
       params.socket.emit('commandStatus', {
         status: 'processing',
         progress,
         remainingTime: remaining_time,
         speed,
         updatedAt: new Date().toISOString(),
+        type: 'resources:add',
+        id: params.id,
+        resource: {
+          downloadDate: current_time,
+          totalLength,
+          hash: params.hash,
+          url: params.url,
+          type: params.type,
+          name: params.name,
+          modelName: params.modelName,
+          modelVersionName: params.modelVersionName,
+        },
       });
 
       last_reported_time = current_time;
@@ -99,15 +114,26 @@ export async function downloadFile(params: DownloadFileParams) {
       body: params.name,
     }).show();
 
+    params.mainWindow.setProgressBar(-1);
+
+    params.mainWindow.webContents.send(`resource-download:${params.id}`, {
+      totalLength,
+      downloaded,
+      progress: 100,
+      speed,
+      remainingTime: remaining_time,
+    });
+
     params.socket.emit('commandStatus', {
       status: 'success',
-      progress,
-      remainingTime: remaining_time,
-      speed,
+      progress: 100,
       updatedAt: timestamp,
-      resource: fileData[params.hash],
+      resource: fileData,
       id: params.id,
+      type: 'resources:add',
     });
+    const newPayload = resourcesList();
+    params.socket.emit('commandStatus', { type: 'resources:list', resources: newPayload });
   });
 
   data.pipe(writer);
@@ -118,6 +144,8 @@ export async function downloadFile(params: DownloadFileParams) {
 
       // Abort download w/ Axios
       controller.abort();
+
+      params.mainWindow.setProgressBar(-1);
 
       // Let server know its canceled
       params.socket.emit('commandStatus', {
