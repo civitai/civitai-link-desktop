@@ -69,6 +69,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
 
   socket.on('command', (payload) => {
     console.log('command', payload);
+    const resourceList = resourcesList();
 
     switch (payload['type']) {
       case 'activities:list':
@@ -81,9 +82,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         activitiesCancel();
         break;
       case 'resources:list':
-        // TODO: This might need to be activity:list
-        const newPayload = resourcesList();
-        socketCommandStatus({ id: payload.id, type: payload['type'], status: 'success', resources: newPayload });
+        socketCommandStatus({ id: payload.id, type: payload['type'], status: 'success', resources: resourceList });
         break;
       case 'resources:add':
         if (lookupResource(payload.resource.hash)) {
@@ -99,7 +98,8 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         break;
       case 'resources:remove':
         resourcesRemove(payload.resource.hash);
-        socketCommandStatus({ id: payload.id, status: 'success' });
+        socketCommandStatus({ id: payload.id, type: 'resources:remove', status: 'success' });
+        socketCommandStatus({ type: 'resources:list', resources: resourceList });
         break;
       case 'image:txt2img':
         imageTxt2img();
