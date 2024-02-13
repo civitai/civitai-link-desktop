@@ -14,6 +14,7 @@ type DownloadFileParams = {
 } & Resource;
 
 export async function downloadFile(params: DownloadFileParams) {
+  const hashLowercase = params.hash.toLowerCase();
   console.log('Connecting …');
   const controller = new AbortController();
   const { data, headers } = await axios({
@@ -55,6 +56,7 @@ export async function downloadFile(params: DownloadFileParams) {
     progress = (downloaded / totalLength) * 100;
 
     if (current_time - last_reported_time > REPORT_INTERVAL) {
+      // Updates the UI with the current progress
       params.mainWindow.webContents.send(`resource-download:${params.id}`, {
         totalLength,
         downloaded,
@@ -63,8 +65,10 @@ export async function downloadFile(params: DownloadFileParams) {
         remainingTime: remaining_time,
       });
 
+      // Updates the progress bar
       params.mainWindow.setProgressBar(downloaded / totalLength);
 
+      // Send progress to server
       params.socket.emit('commandStatus', {
         status: 'processing',
         progress,
@@ -76,7 +80,7 @@ export async function downloadFile(params: DownloadFileParams) {
         resource: {
           downloadDate: current_time,
           totalLength,
-          hash: params.hash,
+          hash: hashLowercase,
           url: params.url,
           type: params.type,
           name: params.name,
@@ -96,7 +100,7 @@ export async function downloadFile(params: DownloadFileParams) {
     const fileData = {
       downloadDate: timestamp,
       totalLength,
-      hash: params.hash,
+      hash: hashLowercase,
       url: params.url,
       type: params.type,
       name: params.name,
@@ -114,8 +118,10 @@ export async function downloadFile(params: DownloadFileParams) {
       body: params.name,
     }).show();
 
+    // Reset progress bar
     params.mainWindow.setProgressBar(-1);
 
+    // Updates the UI with the final progress
     params.mainWindow.webContents.send(`resource-download:${params.id}`, {
       totalLength,
       downloaded,
@@ -124,6 +130,7 @@ export async function downloadFile(params: DownloadFileParams) {
       remainingTime: remaining_time,
     });
 
+    // Send newly added resource to server
     params.socket.emit('commandStatus', {
       status: 'success',
       progress: 100,
@@ -132,6 +139,8 @@ export async function downloadFile(params: DownloadFileParams) {
       id: params.id,
       type: 'resources:add',
     });
+
+    // Send entire list of resources to server
     const newPayload = resourcesList();
     params.socket.emit('commandStatus', { type: 'resources:list', resources: newPayload });
   });

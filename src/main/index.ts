@@ -1,12 +1,8 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { BrowserWindow, app, ipcMain, nativeImage, shell, dialog } from 'electron';
+import { BrowserWindow, app, ipcMain, shell, dialog } from 'electron';
 import { join } from 'path';
-import logoConnected from '../../resources/favicon-connected@2x.png?asset';
-import logoPending from '../../resources/favicon-pending@2x.png?asset';
-import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logo from '../../resources/favicon@2x.png?asset';
 import {
-  ConnectionStatus,
   getUIStore,
   getUpgradeKey,
   setRootResourcePath,
@@ -137,8 +133,13 @@ app.whenReady().then(async () => {
       // Lookup hash in store
       // Add if doesnt exist
 
+      // const resourceList = resourcesList();
+      // socketCommandStatus({ type: 'resources:list', resources: resourceList });
+      // resources.append({'type': type, 'name': name, 'hash': hash, 'path': filename, 'hasPreview': has_preview(filename), 'hasInfo': has_info(filename) })
+
       // event === 'unlink'
       // Remove hash from store
+      // TODO: This wont work because we need to read the file to get the hash
     });
   }
 
@@ -161,18 +162,7 @@ app.whenReady().then(async () => {
   store.onDidChange('connectionStatus', async (newValue) => {
     mainWindow.webContents.send('connection-status', newValue);
 
-    // TODO: Update this for menu icon
-    // let icon;
-
-    // if (newValue === ConnectionStatus.CONNECTED) {
-    //   icon = nativeImage.createFromPath(logoConnected);
-    // } else if (newValue === ConnectionStatus.DISCONNECTED) {
-    //   icon = nativeImage.createFromPath(logoDisconnected);
-    // } else if (newValue === ConnectionStatus.CONNECTING) {
-    //   icon = nativeImage.createFromPath(logoPending);
-    // }
-
-    // tray.setImage(icon);
+    // TODO: Update this for menu icon to show connection status
   });
 
   ipcMain.emit('tray-window-ready', { window: mainWindow });

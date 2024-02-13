@@ -114,29 +114,32 @@ export function getResourcePath(path: string) {
   return resourcePaths[resource];
 }
 
+// TODO: Activities should be based on the action type 'resources:add' etc.
 export function addActivity(activity: Resource) {
   const activities = store.get('activities') as ResourcesMap;
+  const activityToAdd = { ...activity, hash: activity.hash.toLowerCase() };
 
   // Only keep last 30 activities
   if (Object.keys(activities).length > 30) {
     const [_, ...rest] = Object.entries(activities);
 
-    return store.set('activities', { [activity.hash]: activity, ...Object.fromEntries(rest) });
+    return store.set('activities', { [activityToAdd.hash]: activityToAdd, ...Object.fromEntries(rest) });
   } else {
-    return store.set('activities', { [activity.hash]: activity, ...activities });
+    return store.set('activities', { [activityToAdd.hash]: activityToAdd, ...activities });
   }
 }
 
 export function addResource(resource: Resource) {
   const resources = store.get('resources') as ResourcesMap;
+  const resourceToAdd = { ...resource, hash: resource.hash.toLowerCase() };
 
-  return store.set('resources', { [resource.hash]: resource, ...resources });
+  return store.set('resources', { [resourceToAdd.hash]: resourceToAdd, ...resources });
 }
 
 export function removeResource(hash: string) {
   const resources = store.get('resources') as ResourcesMap;
 
-  delete resources[hash];
+  delete resources[hash.toLowerCase()];
 
   return store.set('resources', resources);
 }
@@ -144,7 +147,7 @@ export function removeResource(hash: string) {
 export function lookupResource(hash: string) {
   const resources = store.get('resources') as ResourcesMap;
 
-  return resources[hash];
+  return resources[hash.toLowerCase()];
 }
 
 export function getResources() {
