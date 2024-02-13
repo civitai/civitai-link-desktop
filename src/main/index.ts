@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { BrowserWindow, Tray, app, ipcMain, nativeImage, shell, screen, dialog } from 'electron';
+import { BrowserWindow, app, ipcMain, nativeImage, shell, dialog } from 'electron';
 import { join } from 'path';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
@@ -18,7 +18,6 @@ import {
 import chokidar from 'chokidar';
 import { socketIOConnect, socketEmit } from './socket';
 
-let tray;
 let mainWindow;
 
 //defaults
@@ -80,11 +79,6 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  // Set logo to disconnected (red)
-  const icon = nativeImage.createFromPath(logoDisconnected);
-  tray = new Tray(icon);
-  tray.setToolTip('Civitai Link');
-
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
@@ -92,6 +86,7 @@ app.whenReady().then(async () => {
   socketIOConnect({ mainWindow, app });
 
   ipcMain.on('set-key', (_, key) => {
+    console.log('Setting key', key);
     setKey(key);
     socketEmit({
       eventName: 'join',
@@ -165,24 +160,22 @@ app.whenReady().then(async () => {
 
   store.onDidChange('connectionStatus', async (newValue) => {
     mainWindow.webContents.send('connection-status', newValue);
-    let icon;
 
-    if (newValue === ConnectionStatus.CONNECTED) {
-      icon = nativeImage.createFromPath(logoConnected);
-    } else if (newValue === ConnectionStatus.DISCONNECTED) {
-      icon = nativeImage.createFromPath(logoDisconnected);
-    } else if (newValue === ConnectionStatus.CONNECTING) {
-      icon = nativeImage.createFromPath(logoPending);
-    }
+    // TODO: Update this for menu icon
+    // let icon;
 
-    tray.setImage(icon);
+    // if (newValue === ConnectionStatus.CONNECTED) {
+    //   icon = nativeImage.createFromPath(logoConnected);
+    // } else if (newValue === ConnectionStatus.DISCONNECTED) {
+    //   icon = nativeImage.createFromPath(logoDisconnected);
+    // } else if (newValue === ConnectionStatus.CONNECTING) {
+    //   icon = nativeImage.createFromPath(logoPending);
+    // }
+
+    // tray.setImage(icon);
   });
 
-  tray.on('click', function () {
-    ipcMain.emit('tray-window-clicked', { window: mainWindow, tray: tray });
-  });
-
-  ipcMain.emit('tray-window-ready', { window: mainWindow, tray: tray });
+  ipcMain.emit('tray-window-ready', { window: mainWindow });
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

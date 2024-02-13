@@ -20,10 +20,11 @@ export function socketCommandStatus(payload) {
 type socketEmitParams = {
   eventName: string;
   payload: any;
-  cb: () => void;
+  cb?: () => void;
 };
 
 export function socketEmit({ eventName, payload, cb }: socketEmitParams) {
+  console.log('socketEmit', eventName);
   socket.emit(eventName, payload, cb);
 }
 
@@ -90,7 +91,6 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         } else {
           resourcesAdd({
             id: payload['id'],
-            eventType: payload['type'],
             payload: payload.resource,
             socket,
             mainWindow,

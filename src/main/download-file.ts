@@ -4,10 +4,10 @@ import axios from 'axios';
 import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addActivity, addResource } from './store';
+import { resourcesList } from './commands';
 
 type DownloadFileParams = {
   id: string;
-  eventType: string;
   downloadPath: string;
   socket: Socket;
   mainWindow: BrowserWindow;
@@ -71,7 +71,18 @@ export async function downloadFile(params: DownloadFileParams) {
         remainingTime: remaining_time,
         speed,
         updatedAt: new Date().toISOString(),
-        type: params.eventType,
+        type: 'resources:add',
+        id: params.id,
+        resource: {
+          downloadDate: current_time,
+          totalLength,
+          hash: params.hash,
+          url: params.url,
+          type: params.type,
+          name: params.name,
+          modelName: params.modelName,
+          modelVersionName: params.modelVersionName,
+        },
       });
 
       last_reported_time = current_time;
@@ -117,10 +128,12 @@ export async function downloadFile(params: DownloadFileParams) {
       status: 'success',
       progress: 100,
       updatedAt: timestamp,
-      resource: fileData[params.hash],
+      resource: fileData,
       id: params.id,
-      type: params.eventType,
+      type: 'resources:add',
     });
+    const newPayload = resourcesList();
+    params.socket.emit('commandStatus', { type: 'resources:list', resources: newPayload });
   });
 
   data.pipe(writer);
