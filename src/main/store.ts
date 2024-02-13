@@ -108,7 +108,7 @@ export function getUIStore() {
 }
 
 export function getResourcePath(path: string) {
-  const resource = Resources[path];
+  const resource = Resources[path.toUpperCase()];
   const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
 
   return resourcePaths[resource];
@@ -142,6 +142,14 @@ export function removeResource(hash: string) {
   delete resources[hash.toLowerCase()];
 
   return store.set('resources', resources);
+}
+
+export function removeActivity(hash: string) {
+  const activities = store.get('activities') as ResourcesMap;
+
+  delete activities[hash.toLowerCase()];
+
+  return store.set('activities', activities);
 }
 
 export function lookupResource(hash: string) {

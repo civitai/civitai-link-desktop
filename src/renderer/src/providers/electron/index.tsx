@@ -114,6 +114,25 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    // TODO: This still isnt removing correctly
+    ipcRenderer.on('resource-remove', function (_, { resource }) {
+      const { [resource.hash]: rm, ...rest } = activityList;
+
+      setActivityList(rest);
+
+      toast({
+        variant: 'destructive',
+        title: 'Resource removed',
+        description: `${rm.modelName} has been removed.`,
+      });
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('resource-remove');
+    };
+  }, [activityList]);
+
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);

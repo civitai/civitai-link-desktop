@@ -1,6 +1,7 @@
 import path from 'path';
-import { lookupResource, removeResource, getRootResourcePath, getResourcePath } from '../store';
+import { lookupResource, removeResource, getRootResourcePath, getResourcePath, removeActivity } from '../store';
 import fs from 'fs';
+import { resourcesList } from './resources-list';
 
 export function resourcesRemove(hash: string) {
   const resource = lookupResource(hash);
@@ -10,8 +11,10 @@ export function resourcesRemove(hash: string) {
   // Remove from disk
   fs.unlinkSync(path.join(rootPath, resourcePath, resource.name));
 
-  // Remove from store
+  // Remove from resources and activity
   removeResource(hash);
+  removeActivity(hash);
 
-  return;
+  // Return resource list
+  return resourcesList();
 }

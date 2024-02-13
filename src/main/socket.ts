@@ -97,9 +97,15 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         }
         break;
       case 'resources:remove':
-        resourcesRemove(payload.resource.hash);
-        socketCommandStatus({ id: payload.id, type: 'resources:remove', status: 'success' });
-        socketCommandStatus({ type: 'resources:list', resources: resourceList });
+        const updatedResources = resourcesRemove(payload.resource.hash);
+        socketCommandStatus({
+          id: payload.id,
+          type: 'resources:remove',
+          status: 'success',
+          resource: payload.resource,
+        });
+        socketCommandStatus({ type: 'resources:list', resources: updatedResources });
+        mainWindow.webContents.send('resource-remove', { resource: payload.resource });
         break;
       case 'image:txt2img':
         imageTxt2img();
