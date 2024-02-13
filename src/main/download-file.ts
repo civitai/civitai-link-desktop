@@ -36,7 +36,7 @@ export async function downloadFile(params: DownloadFileParams) {
   const tempDirPath = path.resolve(dirPath, 'temp');
   const tempFilePath = path.resolve(tempDirPath, params.name);
   const filePath = path.resolve(dirPath, params.name);
-  const REPORT_INTERVAL = 1;
+  const REPORT_INTERVAL = 1000;
   let last_reported_time = Date.now();
 
   // Creates temp folder if it doesnt exist, also ensures that the main dir exists
@@ -116,8 +116,6 @@ export async function downloadFile(params: DownloadFileParams) {
     params.socket.emit('commandStatus', {
       status: 'success',
       progress: 100,
-      remainingTime: remaining_time,
-      speed,
       updatedAt: timestamp,
       resource: fileData[params.hash],
       id: params.id,
@@ -133,6 +131,8 @@ export async function downloadFile(params: DownloadFileParams) {
 
       // Abort download w/ Axios
       controller.abort();
+
+      params.mainWindow.setProgressBar(-1);
 
       // Let server know its canceled
       params.socket.emit('commandStatus', {
