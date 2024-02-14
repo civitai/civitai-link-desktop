@@ -22,7 +22,6 @@ let width = 400;
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 const browserWindowOptions = {
   show: true,
-  alwaysOnTop: true,
   skipTaskbar: true,
   titleBarOverlay: true,
 };
