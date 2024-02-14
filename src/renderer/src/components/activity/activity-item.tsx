@@ -1,7 +1,14 @@
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';
 import duration from 'dayjs/plugin/duration';
@@ -9,6 +16,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
+import { FaCloudDownloadAlt } from 'react-icons/fa';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -23,20 +31,27 @@ export function ActivityItem(props: ItemProps) {
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload } = useApi();
   const { removeActivity } = useElectron();
+  // TODO: Get proper model id
+  // const modelUrl = `https://civitai.com/models/${props.id}`;
 
   useEffect(() => {
     if (props.id) {
-      window.electron.ipcRenderer.on(`resource-download:${props.id}`, function (_, message) {
-        setProgress(message.progress);
-        setTotalLength(message.totalLength);
-        setDownloaded(message.downloaded);
-        setSpeed(message.speed);
-        setRemainingTime(message.remainingTime);
-      });
+      window.electron.ipcRenderer.on(
+        `resource-download:${props.id}`,
+        function (_, message) {
+          setProgress(message.progress);
+          setTotalLength(message.totalLength);
+          setDownloaded(message.downloaded);
+          setSpeed(message.speed);
+          setRemainingTime(message.remainingTime);
+        },
+      );
     }
 
     return () => {
-      window.electron.ipcRenderer.removeAllListeners(`resource-download:${props.id}`);
+      window.electron.ipcRenderer.removeAllListeners(
+        `resource-download:${props.id}`,
+      );
     };
   }, []);
 
@@ -51,14 +66,23 @@ export function ActivityItem(props: ItemProps) {
         <CardTitle className="justify-between flex-row flex">
           <Badge color="primary">{props.type}</Badge>
           {props.downloadDate ? (
-            <p className="text-sm text-muted-foreground">{dayjs(props.downloadDate).format('YYYY-MM-DD')}</p>
+            <p className="text-sm text-muted-foreground flex items-center">
+              <FaCloudDownloadAlt className="mr-1" />
+              {dayjs(props.downloadDate).format('YYYY-MM-DD')}
+            </p>
           ) : null}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div>
           <div className="space-y-1">
-            <p className="text-sm leading-none dark:text-[#c1c2c5] font-bold">{props.modelName}</p>
+            <p
+              // href={modelUrl}
+              // target="_blank"
+              className="text-sm leading-none dark:text-[#c1c2c5] font-bold cursor-pointer"
+            >
+              {props.modelName}
+            </p>
             <CardDescription>{props.modelVersionName}</CardDescription>
           </div>
         </div>
@@ -74,11 +98,13 @@ export function ActivityItem(props: ItemProps) {
           <div className="flex-row flex justify-between w-full">
             <div>
               <p className="text-sm font-medium leading-none">
-                {dayjs.duration({ seconds: remainingTime }).humanize()} - {prettyBytes(speed)}/sec
+                {dayjs.duration({ seconds: remainingTime }).humanize()} -{' '}
+                {prettyBytes(speed)}/sec
               </p>
             </div>
             <p className="text-sm font-medium leading-none">
-              {prettyBytes(downloaded)} / {prettyBytes(totalLength)} - {Math.floor(progress)}%
+              {prettyBytes(downloaded)} / {prettyBytes(totalLength)} -{' '}
+              {Math.floor(progress)}%
             </p>
           </div>
         </CardFooter>
