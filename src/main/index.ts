@@ -12,7 +12,7 @@ import {
   getRootResourcePath,
 } from './store';
 import chokidar from 'chokidar';
-import { socketIOConnect, socketEmit } from './socket';
+import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
 
 let mainWindow;
 
@@ -90,6 +90,13 @@ app.whenReady().then(async () => {
       cb: () => {
         console.log(`Joined room ${key}`);
       },
+    });
+  });
+
+  ipcMain.on('resource-remove', (_, resource) => {
+    socketEmit({
+      eventName: 'command',
+      payload: { type: 'resources:remove', resource },
     });
   });
 

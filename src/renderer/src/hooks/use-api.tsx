@@ -16,5 +16,8 @@ export function useApi() {
     closeApp: async () => {
       return await window.api.closeApp();
     },
+    resourceRemove: async (resource: Resource) => {
+      return await window.api.resourceRemove(resource);
+    },
   };
 }

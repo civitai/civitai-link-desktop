@@ -2,6 +2,12 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { ConnectionStatus } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 
+type RemoveActivityParams = {
+  hash: string;
+  title: string;
+  description: string;
+};
+
 type ElectronContextType = {
   key?: string | null;
   appLoading: boolean;
@@ -9,7 +15,7 @@ type ElectronContextType = {
   activityList: ResourcesMap;
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
-  removeActivity: (hash: string) => void;
+  removeActivity: (param: RemoveActivityParams) => void;
 };
 
 const defaultValue: ElectronContextType = {
@@ -36,12 +42,16 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const removeActivity = (hash: string) => {
+  const removeActivity = ({
+    hash,
+    title,
+    description,
+  }: RemoveActivityParams) => {
     const { [hash]: rm, ...rest } = activityList;
 
     toast({
-      title: 'Download canceled',
-      description: `The download for ${rm.modelName} has been canceled.`,
+      title,
+      description,
     });
 
     setActivityList(rest);
@@ -121,14 +131,8 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     ipcRenderer.on('resource-remove', function (_, { resource }) {
-      setActivityList((state) => {
-        const { [resource.hash]: rm, ...rest } = state;
-
-        return rest;
-      });
-
-      toast({
-        variant: 'destructive',
+      removeActivity({
+        hash: resource.hash,
         title: 'Resource removed',
         description: `${resource.modelName} has been removed.`,
       });

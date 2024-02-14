@@ -10,6 +10,7 @@ declare global {
       clearSettings: () => void;
       cancelDownload: (id: string) => void;
       closeApp: () => void;
+      resourceRemove: (resource: Resource) => void;
     };
   }
 

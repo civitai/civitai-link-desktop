@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -16,7 +15,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
-import { FaCloudDownloadAlt } from 'react-icons/fa';
+import { FaCloudDownloadAlt, FaTrashAlt } from 'react-icons/fa';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -29,7 +28,7 @@ export function ActivityItem(props: ItemProps) {
   const [downloaded, setDownloaded] = useState(0);
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
-  const { cancelDownload } = useApi();
+  const { cancelDownload, resourceRemove } = useApi();
   const { removeActivity } = useElectron();
   // TODO: Get proper model id
   // const modelUrl = `https://civitai.com/models/${props.id}`;
@@ -57,7 +56,15 @@ export function ActivityItem(props: ItemProps) {
 
   const cancelAndRemoveDownload = () => {
     cancelDownload(props.id || '');
-    removeActivity(props.hash || '');
+    removeActivity({
+      hash: props.hash,
+      title: 'Download canceled',
+      description: `The download for ${props.modelName} has been canceled.`,
+    });
+  };
+
+  const removeResource = () => {
+    resourceRemove(props);
   };
 
   return (
@@ -83,7 +90,17 @@ export function ActivityItem(props: ItemProps) {
             >
               {props.modelName}
             </p>
-            <CardDescription>{props.modelVersionName}</CardDescription>
+            <div className="flex items-center justify-between py-1">
+              <p className="text-xs dark:text-[#c1c2c5]">
+                {props.modelVersionName}
+              </p>
+              {/* TODO: Figure out how to get this to emit resources:remove */}
+              {/* <FaTrashAlt
+                color="red"
+                className="cursor-pointer"
+                onClick={removeResource}
+              /> */}
+            </div>
           </div>
         </div>
       </CardContent>
