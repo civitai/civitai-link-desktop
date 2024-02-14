@@ -1,6 +1,12 @@
 import { FaCog } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 // import { Checkbox } from '@/components/ui/checkbox';
 // import { Label } from '@/components/ui/label';
 import { PathInput } from '@/components/path-input';
@@ -106,7 +112,10 @@ export function HeaderTop() {
               <FaRegSave />
             </Button>
           </div>
-          <PathInput defaultPath="Root Models Directory" type={ResourceType.DEFAULT} />
+          <PathInput
+            defaultPath="Root Models Directory"
+            type={ResourceType.DEFAULT}
+          />
           {/* <PathInput defaultPath="LoRA Directory" type={ResourceType.LORA} />
           <PathInput defaultPath="LyCORIS Directory" type={ResourceType.LYCORIS} /> */}
           <div className="flex items-center space-x-2 justify-center mt-6">
