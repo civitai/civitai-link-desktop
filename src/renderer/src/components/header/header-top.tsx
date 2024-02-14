@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@/hooks/use-api';
 import { FaRegSave } from 'react-icons/fa';
+import { Label } from '../ui/label';
 
 export function HeaderTop() {
   const { clearSettings, connectionStatus, key } = useElectron();
@@ -101,6 +102,7 @@ export function HeaderTop() {
               Include resource hashes in image metadata (for resource auto-detection on Civitai)
             </Label>
           </div> */}
+          <Label>Civitai Link Key</Label>
           <div className="flex items-center space-x-4 justify-center">
             <Input
               type="text"
@@ -112,6 +114,7 @@ export function HeaderTop() {
               <FaRegSave />
             </Button>
           </div>
+          <Label>Root Model Folder</Label>
           <PathInput
             defaultPath="Root Models Directory"
             type={ResourceType.DEFAULT}
