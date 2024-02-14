@@ -13,7 +13,12 @@ export function Activity() {
   return (
     <div>
       {activityKeys?.map((activity) => {
-        return <ActivityItem {...activityList[activity]} key={activityList[activity].hash} />;
+        return (
+          <ActivityItem
+            {...activityList[activity]}
+            key={activityList[activity].hash}
+          />
+        );
       })}
     </div>
   );

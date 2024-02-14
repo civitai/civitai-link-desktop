@@ -30,7 +30,9 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [key, setKey] = useState<string | null>(null);
   const [activityList, setActivityList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.DISCONNECTED,
+  );
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -58,7 +60,10 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('activity-add', function (_, message) {
       // @ts-ignore
-      setActivityList((activities) => ({ [message.hash]: message, ...activities }));
+      setActivityList((activities) => ({
+        [message.hash]: message,
+        ...activities,
+      }));
     });
 
     return () => {
@@ -115,23 +120,24 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // TODO: This still isnt removing correctly
     ipcRenderer.on('resource-remove', function (_, { resource }) {
-      const { [resource.hash]: rm, ...rest } = activityList;
+      setActivityList((state) => {
+        const { [resource.hash]: rm, ...rest } = state;
 
-      setActivityList(rest);
+        return rest;
+      });
 
       toast({
         variant: 'destructive',
         title: 'Resource removed',
-        description: `${rm.modelName} has been removed.`,
+        description: `${resource.modelName} has been removed.`,
       });
     });
 
     return () => {
       ipcRenderer.removeAllListeners('resource-remove');
     };
-  }, [activityList]);
+  }, []);
 
   const clearSettings = () => {
     window.api.clearSettings();
