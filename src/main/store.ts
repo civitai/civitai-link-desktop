@@ -123,9 +123,15 @@ export function addActivity(activity: Resource) {
   if (Object.keys(activities).length > 30) {
     const [_, ...rest] = Object.entries(activities);
 
-    return store.set('activities', { [activityToAdd.hash]: activityToAdd, ...Object.fromEntries(rest) });
+    return store.set('activities', {
+      [activityToAdd.hash]: activityToAdd,
+      ...Object.fromEntries(rest),
+    });
   } else {
-    return store.set('activities', { [activityToAdd.hash]: activityToAdd, ...activities });
+    return store.set('activities', {
+      [activityToAdd.hash]: activityToAdd,
+      ...activities,
+    });
   }
 }
 
@@ -133,7 +139,10 @@ export function addResource(resource: Resource) {
   const resources = store.get('resources') as ResourcesMap;
   const resourceToAdd = { ...resource, hash: resource.hash.toLowerCase() };
 
-  return store.set('resources', { [resourceToAdd.hash]: resourceToAdd, ...resources });
+  return store.set('resources', {
+    [resourceToAdd.hash]: resourceToAdd,
+    ...resources,
+  });
 }
 
 export function removeResource(hash: string) {

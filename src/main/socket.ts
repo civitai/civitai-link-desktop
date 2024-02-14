@@ -1,5 +1,12 @@
 import { io } from 'socket.io-client';
-import { ConnectionStatus, getUpgradeKey, setConnectionStatus, setKey, setUpgradeKey, lookupResource } from './store';
+import {
+  ConnectionStatus,
+  getUpgradeKey,
+  setConnectionStatus,
+  setKey,
+  setUpgradeKey,
+  lookupResource,
+} from './store';
 import {
   activitiesCancel,
   activitiesClear,
@@ -11,10 +18,16 @@ import {
 } from './commands';
 import { BrowserWindow } from 'electron';
 
-const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, { path: '/api/socketio', autoConnect: false });
+const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, {
+  path: '/api/socketio',
+  autoConnect: false,
+});
 
 export function socketCommandStatus(payload) {
-  socket.emit('commandStatus', { ...payload, updatedAt: new Date().toISOString() });
+  socket.emit('commandStatus', {
+    ...payload,
+    updatedAt: new Date().toISOString(),
+  });
 }
 
 type socketEmitParams = {
@@ -82,7 +95,12 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         activitiesCancel();
         break;
       case 'resources:list':
-        socketCommandStatus({ id: payload.id, type: payload['type'], status: 'success', resources: resourceList });
+        socketCommandStatus({
+          id: payload.id,
+          type: payload['type'],
+          status: 'success',
+          resources: resourceList,
+        });
         break;
       case 'resources:add':
         if (lookupResource(payload.resource.hash)) {
@@ -104,8 +122,13 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
           status: 'success',
           resource: payload.resource,
         });
-        socketCommandStatus({ type: 'resources:list', resources: updatedResources });
-        mainWindow.webContents.send('resource-remove', { resource: payload.resource });
+        socketCommandStatus({
+          type: 'resources:list',
+          resources: updatedResources,
+        });
+        mainWindow.webContents.send('resource-remove', {
+          resource: payload.resource,
+        });
         break;
       case 'image:txt2img':
         imageTxt2img();
@@ -122,7 +145,9 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
   });
 
   socket.on('roomPresence', (payload) => {
-    console.log(`Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`);
+    console.log(
+      `Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`,
+    );
     setConnectionStatus(ConnectionStatus.CONNECTED);
   });
 

@@ -50,7 +50,8 @@ function createWindow() {
     }
 
     // Pass upgradeKey to window
-    if (upgradeKey) mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
+    if (upgradeKey)
+      mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
 
     mainWindow.webContents.send('store-ready', getUIStore());
     mainWindow.webContents.send('app-ready', true);
@@ -124,38 +125,44 @@ app.whenReady().then(async () => {
 
   if (rootResourcePath && rootResourcePath !== '') {
     // @ts-ignore
-    watcher = chokidar.watch(rootResourcePath, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
-      console.log('Watching model directory: ', rootResourcePath);
-      console.log(event, path);
-      // Generate hash from file
+    watcher = chokidar
+      .watch(rootResourcePath, { ignored: /(^|[\/\\])\../ })
+      .on('add, unlink', (event, path) => {
+        console.log('Watching model directory: ', rootResourcePath);
+        console.log(event, path);
+        // Generate hash from file
 
-      // event === 'add'
-      // Lookup hash in store
-      // Add if doesnt exist
+        // event === 'add'
+        // Lookup hash in store
+        // Add if doesnt exist
 
-      // const resourceList = resourcesList();
-      // socketCommandStatus({ type: 'resources:list', resources: resourceList });
-      // resources.append({'type': type, 'name': name, 'hash': hash, 'path': filename, 'hasPreview': has_preview(filename), 'hasInfo': has_info(filename) })
+        // const resourceList = resourcesList();
+        // socketCommandStatus({ type: 'resources:list', resources: resourceList });
+        // resources.append({'type': type, 'name': name, 'hash': hash, 'path': filename, 'hasPreview': has_preview(filename), 'hasInfo': has_info(filename) })
 
-      // event === 'unlink'
-      // Remove hash from store
-      // TODO: This wont work because we need to read the file to get the hash
-    });
+        // event === 'unlink'
+        // Remove hash from store
+        // TODO: This wont work because we need to read the file to get the hash
+      });
   }
 
   // This is in case the directory changes
   // We want to stop watching the current directory and start watching the new one
-  store.onDidChange('rootResourcePath', async (newValue) => {
-    await watcher.close();
+  store.onDidChange('rootResourcePath', async (newValue: unknown) => {
+    const path = newValue as string;
 
-    if (newValue && newValue !== '') {
+    if (path && path !== '') {
+      await watcher.close();
+
       // @ts-ignore
-      watcher = chokidar.watch(newValue, { ignored: /(^|[\/\\])\../ }).on('add, unlink', (event, path) => {
-        console.log(event, path);
+      watcher = chokidar
+        .watch(path, { ignored: /(^|[\/\\])\../ })
+        .on('add, unlink', (event, path) => {
+          console.log(event, path);
 
-        // @ts-ignore
-        console.log('Model directory changed to: ', newValue.model);
-      });
+          // @ts-ignore
+          console.log('Model directory changed to: ', newValue.model);
+        });
     }
   });
 
