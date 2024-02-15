@@ -21,6 +21,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@/hooks/use-api';
 import { FaRegSave } from 'react-icons/fa';
 import { Label } from '../ui/label';
+import { toast } from '../ui/use-toast';
 
 export function HeaderTop() {
   const { clearSettings, connectionStatus, key } = useElectron();
@@ -51,8 +52,17 @@ export function HeaderTop() {
   const submitSetKey = async () => {
     if (inputValue) {
       setKey(inputValue);
+
+      toast({
+        title: 'Link Key Updated',
+        description: 'Link key has been updated successfully',
+      });
     } else {
-      console.log('No input value');
+      toast({
+        variant: 'destructive',
+        title: 'Link Key Empty',
+        description: 'No link key provided',
+      });
     }
   };
 

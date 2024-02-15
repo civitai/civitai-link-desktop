@@ -115,7 +115,6 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         }
         break;
       case 'resources:remove':
-        console.log('Removing resource', payload.resource.hash);
         const updatedResources = resourcesRemove(payload.resource.hash);
         socketCommandStatus({
           id: payload.id,
