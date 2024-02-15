@@ -92,7 +92,7 @@ export function ActivityItem(props: ItemProps) {
               />
             </div>
           ) : null}
-          <div className="space-y-1">
+          <div className="space-y-1 w-full">
             <a
               href={props.civitaiUrl}
               target="_blank"
