@@ -4,6 +4,7 @@ import { GoFileDirectory } from 'react-icons/go';
 import { useApi } from '@/hooks/use-api';
 import { ResourceType } from '@/types';
 import { useElectron } from '@/providers/electron';
+import { toast } from './ui/use-toast';
 
 type PathInputProps = {
   defaultPath?: string;
@@ -18,7 +19,8 @@ export function PathInput(props: PathInputProps) {
 
   async function getDir() {
     const selectedDir = await selectDirectory();
-    const directory = selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
+    const directory =
+      selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
     setDir(directory);
 
@@ -28,6 +30,11 @@ export function PathInput(props: PathInputProps) {
       // setRootResourcePath('lora', `${directory}/Lora`);
     } else {
       setRootResourcePath(directory);
+
+      toast({
+        title: 'Model directory set',
+        description: 'Model directory has been set successfully',
+      });
     }
 
     if (props.onChange) {
