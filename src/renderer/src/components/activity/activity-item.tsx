@@ -71,7 +71,10 @@ export function ActivityItem(props: ItemProps) {
     <Card className="mb-4">
       <CardHeader>
         <CardTitle className="justify-between flex-row flex">
-          <Badge color="primary">{props.type}</Badge>
+          <div className="flex items-center space-x-1">
+            <Badge color="primary">{props.type}</Badge>
+            <Badge variant="outline">{props.modelVersionName}</Badge>
+          </div>
           {props.downloadDate ? (
             <p className="text-sm text-muted-foreground flex items-center">
               <FaCloudDownloadAlt className="mr-1" />
@@ -91,9 +94,9 @@ export function ActivityItem(props: ItemProps) {
               {props.modelName}
             </p>
             <div className="flex items-center justify-between py-1">
-              <p className="text-xs dark:text-[#c1c2c5]">
-                {props.modelVersionName}
-              </p>
+              <div className="flex items-center space-x-1">
+                <p className="text-xs dark:text-[#c1c2c5]">{props.name}</p>
+              </div>
               {/* TODO: Figure out how to get this to emit resources:remove */}
               {/* <FaTrashAlt
                 color="red"
