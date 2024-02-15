@@ -2,6 +2,7 @@ import axios from 'axios';
 
 type PartialResource = { previewImageUrl: string; civitaiUrl: string };
 
+// TODO: Could use this for getting all the Resource details
 export const getModelByHash = async (
   hash: string,
 ): Promise<PartialResource> => {

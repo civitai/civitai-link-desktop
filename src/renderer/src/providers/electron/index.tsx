@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { ConnectionStatus } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -42,20 +48,21 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const removeActivity = ({
-    hash,
-    title,
-    description,
-  }: RemoveActivityParams) => {
-    const { [hash]: rm, ...rest } = activityList;
+  const removeActivity = useCallback(
+    ({ hash, title, description }: RemoveActivityParams) => {
+      toast({
+        title,
+        description,
+      });
 
-    toast({
-      title,
-      description,
-    });
+      setActivityList((state) => {
+        const { [hash]: rm, ...rest } = state;
 
-    setActivityList(rest);
-  };
+        return rest;
+      });
+    },
+    [activityList],
+  );
 
   useEffect(() => {
     ipcRenderer.on('upgrade-key', function (_, message) {
