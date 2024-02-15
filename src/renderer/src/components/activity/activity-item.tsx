@@ -30,8 +30,6 @@ export function ActivityItem(props: ItemProps) {
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload, resourceRemove } = useApi();
   const { removeActivity } = useElectron();
-  // TODO: Get proper model id
-  // const modelUrl = `https://civitai.com/models/${props.id}`;
 
   useEffect(() => {
     if (props.id) {
@@ -84,15 +82,24 @@ export function ActivityItem(props: ItemProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div>
+        <div className="flex items-center">
+          {props.previewImageUrl ? (
+            <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
+              <img
+                src={props.previewImageUrl}
+                alt={props.modelName}
+                className="h-full w-full object-cover object-center"
+              />
+            </div>
+          ) : null}
           <div className="space-y-1">
-            <p
-              // href={modelUrl}
-              // target="_blank"
-              className="text-sm leading-none dark:text-[#c1c2c5] font-bold cursor-pointer"
+            <a
+              href={props.civitaiUrl}
+              target="_blank"
+              className="text-sm leading-none dark:text-[#c1c2c5] font-bold"
             >
               {props.modelName}
-            </p>
+            </a>
             <div className="flex items-center justify-between py-1">
               <div className="flex items-center space-x-1">
                 <p className="text-xs dark:text-[#c1c2c5]">{props.name}</p>

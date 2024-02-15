@@ -5,6 +5,7 @@ import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addActivity, addResource } from './store';
 import { resourcesList } from './commands';
+import { getModelByHash } from './civitai-api';
 
 type DownloadFileParams = {
   id: string;
@@ -96,6 +97,7 @@ export async function downloadFile(params: DownloadFileParams) {
   data.on('end', async function () {
     console.log("Downloaded to: '" + params.downloadPath + "'!");
     const timestamp = new Date().toISOString();
+    const partialResource = await getModelByHash(hashLowercase);
 
     const fileData = {
       downloadDate: timestamp,
@@ -106,6 +108,7 @@ export async function downloadFile(params: DownloadFileParams) {
       name: params.name,
       modelName: params.modelName,
       modelVersionName: params.modelVersionName,
+      ...partialResource,
     };
     addActivity(fileData);
     addResource(fileData);
@@ -122,6 +125,7 @@ export async function downloadFile(params: DownloadFileParams) {
     params.mainWindow.setProgressBar(-1);
 
     // Updates the UI with the final progress
+    // TODO: Also needs to update image and link
     params.mainWindow.webContents.send(`resource-download:${params.id}`, {
       totalLength,
       downloaded,
@@ -142,7 +146,10 @@ export async function downloadFile(params: DownloadFileParams) {
 
     // Send entire list of resources to server
     const newPayload = resourcesList();
-    params.socket.emit('commandStatus', { type: 'resources:list', resources: newPayload });
+    params.socket.emit('commandStatus', {
+      type: 'resources:list',
+      resources: newPayload,
+    });
   });
 
   data.pipe(writer);

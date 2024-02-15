@@ -23,6 +23,8 @@ declare global {
     url: string;
     id?: string;
     downloadDate?: string;
+    previewImageUrl?: string;
+    civitaiUrl?: string;
   };
 
   type ResourcesMap = {
