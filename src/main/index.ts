@@ -1,3 +1,4 @@
+// import { updateElectronApp } from 'update-electron-app';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import { BrowserWindow, app, ipcMain, shell, dialog } from 'electron';
 import { join } from 'path';
@@ -12,7 +13,9 @@ import {
   getRootResourcePath,
 } from './store';
 import chokidar from 'chokidar';
-import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
+import { socketIOConnect, socketEmit } from './socket';
+
+// updateElectronApp();
 
 let mainWindow;
 
