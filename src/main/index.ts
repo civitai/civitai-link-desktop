@@ -15,6 +15,7 @@ import {
 import chokidar from 'chokidar';
 import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
 import { resourcesRemove } from './commands';
+import { checkModelsFolder } from './check-models-folder';
 
 // updateElectronApp();
 
@@ -82,6 +83,7 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
+  checkModelsFolder();
   createWindow();
   socketIOConnect({ mainWindow, app });
 

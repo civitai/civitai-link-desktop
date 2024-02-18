@@ -16,11 +16,11 @@ declare global {
 
   type Resource = {
     hash: string;
-    name: string;
+    name: string; // filename
     modelName: string;
     modelVersionName: string;
     type: string;
-    url: string;
+    url: string; // download url
     id?: string;
     downloadDate?: string;
     previewImageUrl?: string;

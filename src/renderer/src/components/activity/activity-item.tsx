@@ -104,7 +104,6 @@ export function ActivityItem(props: ItemProps) {
               <div className="flex items-center space-x-1">
                 <p className="text-xs dark:text-[#c1c2c5]">{props.name}</p>
               </div>
-              {/* TODO: Figure out how to get this to emit resources:remove */}
               <FaTrashAlt
                 color="red"
                 className="cursor-pointer"

@@ -97,7 +97,7 @@ export async function downloadFile(params: DownloadFileParams) {
   data.on('end', async function () {
     console.log("Downloaded to: '" + params.downloadPath + "'!");
     const timestamp = new Date().toISOString();
-    const partialResource = await getModelByHash(hashLowercase);
+    const { previewImageUrl, civitaiUrl } = await getModelByHash(hashLowercase);
 
     const fileData = {
       downloadDate: timestamp,
@@ -108,7 +108,8 @@ export async function downloadFile(params: DownloadFileParams) {
       name: params.name,
       modelName: params.modelName,
       modelVersionName: params.modelVersionName,
-      ...partialResource,
+      previewImageUrl,
+      civitaiUrl,
     };
     addActivity(fileData);
     addResource(fileData);
@@ -125,7 +126,6 @@ export async function downloadFile(params: DownloadFileParams) {
     params.mainWindow.setProgressBar(-1);
 
     // Updates the UI with the final progress
-    // TODO: Also needs to update image and link
     params.mainWindow.webContents.send(`resource-download:${params.id}`, {
       totalLength,
       downloaded,
