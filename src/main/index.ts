@@ -13,7 +13,8 @@ import {
   getRootResourcePath,
 } from './store';
 import chokidar from 'chokidar';
-import { socketIOConnect, socketEmit } from './socket';
+import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
+import { resourcesRemove } from './commands';
 
 // updateElectronApp();
 
@@ -96,10 +97,19 @@ app.whenReady().then(async () => {
     });
   });
 
-  ipcMain.on('resource-remove', (_, resource) => {
-    socketEmit({
-      eventName: 'command',
-      payload: { type: 'resources:remove', resource },
+  ipcMain.on('resource-remove', (_, resource: Resource) => {
+    const updatedResources = resourcesRemove(resource.hash);
+    socketCommandStatus({
+      type: 'resources:remove',
+      status: 'success',
+      resource,
+    });
+    socketCommandStatus({
+      type: 'resources:list',
+      resources: updatedResources,
+    });
+    mainWindow.webContents.send('resource-remove', {
+      resource,
     });
   });
 
