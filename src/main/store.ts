@@ -114,6 +114,15 @@ export function getResourcePath(path: string) {
   return resourcePaths[resource];
 }
 
+export function setResourcePath(resource: string, path: string) {
+  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+
+  return store.set('resourcePaths', {
+    ...resourcePaths,
+    [resource]: path,
+  });
+}
+
 // TODO: Activities should be based on the action type 'resources:add' etc.
 export function addActivity(activity: Resource) {
   const activities = store.get('activities') as ResourcesMap;
