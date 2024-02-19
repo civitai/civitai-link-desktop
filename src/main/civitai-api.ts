@@ -2,6 +2,7 @@ import axios from 'axios';
 
 type ResponsePayload = {
   data: {
+    modelId: number;
     downloadUrl: string;
     model: {
       name: string;
