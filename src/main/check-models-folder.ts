@@ -9,6 +9,7 @@ export function checkModelsFolder() {
   const files = listDirectory();
 
   files.forEach(async (file) => {
+    // TODO: Check all dirs in modelDirectory
     const filePath = path.join(modelDirectory, 'Lora', file);
     // Hash files
     const modelHash = await hash(filePath);

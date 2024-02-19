@@ -12,6 +12,7 @@ export function listDirectory() {
     return [];
   }
 
+  // TODO: Check all dirs in modelDirectory
   const files = fs
     .readdirSync(path.join(modelDirectory, 'Lora'))
     .filter((file) => FILE_TYPES.some((x) => file.includes(x)));

@@ -14,6 +14,8 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const rootResourcePath = getRootResourcePath();
   const resourcePath = getResourcePath(payload.type);
+
+  // TODO: Do this if resourcePath is not set
   const downloadPath = `${rootResourcePath}/${resourcePath}`;
 
   params.socket.emit('commandStatus', {

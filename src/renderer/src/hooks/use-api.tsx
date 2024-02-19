@@ -10,6 +10,9 @@ export function useApi() {
     setRootResourcePath: async (path: string) => {
       return await window.api.setRootResourcePath(path);
     },
+    setResourcePath: async (type: ResourceType, path: string) => {
+      return await window.api.setResourcePath(type, path);
+    },
     cancelDownload: async (id: string) => {
       return await window.api.cancelDownload(id);
     },

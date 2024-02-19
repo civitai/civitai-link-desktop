@@ -20,6 +20,7 @@ import {
   store,
   getRootResourcePath,
   ConnectionStatus,
+  setResourcePath,
 } from './store';
 import chokidar from 'chokidar';
 import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
@@ -139,6 +140,12 @@ app.whenReady().then(async () => {
   ipcMain.on('set-root-path', (_, directory) => {
     if (directory['path'] !== '') {
       setRootResourcePath(directory['path']);
+    }
+  });
+
+  ipcMain.on('set-path', (_, directory) => {
+    if (directory['path'] !== '') {
+      setResourcePath(directory['type'], directory['path']);
     }
   });
 

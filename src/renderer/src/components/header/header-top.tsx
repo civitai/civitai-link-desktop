@@ -6,7 +6,7 @@ import { TbPlugConnected, TbPlugConnectedX } from 'react-icons/tb';
 import logoDark from '@/assets/logo_dark_mode.png';
 import logoLight from '@/assets/logo_light_mode.png';
 import { useCallback } from 'react';
-import { Settings } from 'lucide-react';
+import { Settings } from '@/components/settings';
 
 export function HeaderTop() {
   const { connectionStatus } = useElectron();
