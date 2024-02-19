@@ -87,15 +87,15 @@ Hop into the development channel in our [Discord server](https://discord.gg/UwX5
 
 Apache License 2.0 - Please have a look at the [LICENSE](/LICENSE) for more details.
 
-[contributors-shield]: https://img.shields.io/github/contributors/civitai/civitai.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/civitai/civitai-link-desktop.svg?style=for-the-badge
 [contributors-url]: https://github.com/civitai/civitai-link-desktop/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/civitai/civitai.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/civitai/civitai-link-desktop.svg?style=for-the-badge
 [forks-url]: https://github.com/civitai/civitai-link-desktop/network/members
-[stars-shield]: https://img.shields.io/github/stars/civitai/civitai.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/civitai/civitai-link-desktop.svg?style=for-the-badge
 [stars-url]: https://github.com/civitai/civitai-link-desktop/stargazers
-[issues-shield]: https://img.shields.io/github/issues/civitai/civitai.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/civitai/civitai-link-desktop.svg?style=for-the-badge
 [issues-url]: https://github.com/civitai/civitai-link-desktop/issues
-[license-shield]: https://img.shields.io/github/license/civitai/civitai.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/civitai/civitai-link-desktop.svg?style=for-the-badge
 [license-url]: https://github.com/civitai/civitai-link-desktop/blob/master/LICENSE
 [discord-shield]: https://img.shields.io/discord/1037799583784370196?style=for-the-badge
 [discord-url]: https://discord.gg/UwX5wKwm6c
