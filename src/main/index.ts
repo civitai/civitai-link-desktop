@@ -1,6 +1,14 @@
 // import { updateElectronApp } from 'update-electron-app';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
-import { BrowserWindow, app, ipcMain, shell, dialog } from 'electron';
+import {
+  BrowserWindow,
+  app,
+  ipcMain,
+  shell,
+  dialog,
+  Tray,
+  nativeImage,
+} from 'electron';
 import { join } from 'path';
 import logo from '../../resources/favicon@2x.png?asset';
 import {
@@ -11,15 +19,20 @@ import {
   clearSettings,
   store,
   getRootResourcePath,
+  ConnectionStatus,
 } from './store';
 import chokidar from 'chokidar';
 import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
 import { resourcesRemove } from './commands';
 import { checkModelsFolder } from './check-models-folder';
+import logoConnected from '../../resources/favicon-connected@2x.png?asset';
+import logoPending from '../../resources/favicon-pending@2x.png?asset';
+import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 
 // updateElectronApp();
 
 let mainWindow;
+let tray;
 
 //defaults
 let width = 400;
@@ -80,6 +93,14 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  // Set logo to disconnected (red)
+  const icon = nativeImage.createFromPath(logoDisconnected);
+  tray = new Tray(icon);
+  tray.setToolTip('Civitai Link');
+  tray.on('click', () => {
+    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+  });
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
@@ -190,10 +211,23 @@ app.whenReady().then(async () => {
   store.onDidChange('connectionStatus', async (newValue) => {
     mainWindow.webContents.send('connection-status', newValue);
 
-    // TODO: Update this for menu icon to show connection status
+    let icon;
+
+    if (newValue === ConnectionStatus.CONNECTED) {
+      icon = nativeImage.createFromPath(logoConnected);
+    } else if (newValue === ConnectionStatus.DISCONNECTED) {
+      icon = nativeImage.createFromPath(logoDisconnected);
+    } else if (newValue === ConnectionStatus.CONNECTING) {
+      icon = nativeImage.createFromPath(logoPending);
+    }
+
+    tray.setImage(icon);
   });
 
   ipcMain.emit('tray-window-ready', { window: mainWindow });
+
+  // Hides dock icon on macOS but keeps in taskbar
+  app.dock.hide();
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
