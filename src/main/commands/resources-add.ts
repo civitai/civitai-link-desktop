@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io-client';
 import { downloadFile } from '../download-file';
 import { BrowserWindow } from 'electron';
-import { getRootResourcePath, getResourcePath } from '../store';
+import { getResourcePath } from '../store';
 
 type ResourcesAddParams = {
   id: string;
@@ -12,11 +12,7 @@ type ResourcesAddParams = {
 
 export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
-  const rootResourcePath = getRootResourcePath();
   const resourcePath = getResourcePath(payload.type);
-
-  // TODO: Do this if resourcePath is not set
-  const downloadPath = `${rootResourcePath}/${resourcePath}`;
 
   params.socket.emit('commandStatus', {
     status: 'processing',
@@ -39,7 +35,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
     hash: payload.hash,
     modelName: payload.modelName,
     modelVersionName: payload.modelVersionName,
-    downloadPath,
+    downloadPath: resourcePath,
     socket: params.socket,
     mainWindow: params.mainWindow,
   });

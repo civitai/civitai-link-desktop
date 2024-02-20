@@ -38,14 +38,14 @@ const schema = {
   resourcePaths: {
     type: 'object',
     default: {
-      [Resources.CHECKPOINT]: 'Checkpoint',
-      [Resources.CONTROLNET]: 'ControlNet',
-      [Resources.UPSCALER]: 'ESRGAN',
-      [Resources.HYPERNETWORK]: 'hypernetworks',
-      [Resources.TEXTUAL_INVERSION]: 'TextualInversion',
-      [Resources.LORA]: 'Lora',
-      [Resources.LO_CON]: 'LyCORIS',
-      [Resources.VAE]: 'VAE',
+      [Resources.CHECKPOINT]: '',
+      [Resources.CONTROLNET]: '',
+      [Resources.UPSCALER]: '',
+      [Resources.HYPERNETWORK]: '',
+      [Resources.TEXTUAL_INVERSION]: '',
+      [Resources.LORA]: '',
+      [Resources.LO_CON]: '',
+      [Resources.VAE]: '',
     },
   },
   // All of the resources available
@@ -110,6 +110,12 @@ export function getUIStore() {
 export function getResourcePath(path: string) {
   const resource = Resources[path.toUpperCase()];
   const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+
+  if (resourcePaths[resource] === '') {
+    const rootResourcePath = getRootResourcePath();
+
+    return `${rootResourcePath}/${Resources[path.toUpperCase()]}`;
+  }
 
   return resourcePaths[resource];
 }

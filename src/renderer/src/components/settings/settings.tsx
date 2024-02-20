@@ -60,13 +60,13 @@ export function Settings() {
         </div>
         {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
           (key) => (
-            <>
+            <div key={key}>
               <Label>{key === 'DEFAULT' ? 'Root Model' : key} Folder</Label>
               <PathInput
                 defaultPath="Root Models Directory"
                 type={ResourceType[key]}
               />
-            </>
+            </div>
           ),
         )}
         <div className="flex items-center space-x-2 justify-center mt-6">

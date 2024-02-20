@@ -16,7 +16,9 @@ export function PathInput(props: PathInputProps) {
   const [dir, setDir] = useState<string | null>(null);
   const { selectDirectory, setRootResourcePath, setResourcePath } = useApi();
   // TODO: Expose model type paths based on props.type
+  // Test with a Lora and the folder newLora
   const { rootResourcePath } = useElectron();
+  const dirPath = dir || rootResourcePath || props.defaultPath || '';
 
   async function getDir() {
     const selectedDir = await selectDirectory();
@@ -51,7 +53,7 @@ export function PathInput(props: PathInputProps) {
       <div className="w-full flex flex-row justify-between gap-4 items-center">
         <div className="px-4 py-2 border bg-slate-700/20 rounded-lg overflow-hidden w-full">
           <p className="text-ellipsis overflow-hidden dark:text-white/40 text-black/40 cursor-default">
-            {dir || props.defaultPath}
+            {dirPath}
           </p>
         </div>
         <Button onClick={getDir}>
