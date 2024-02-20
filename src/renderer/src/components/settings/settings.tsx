@@ -9,6 +9,7 @@ import { useApi } from '@/hooks/use-api';
 import { FaRegSave } from 'react-icons/fa';
 import { Label } from '../ui/label';
 import { toast } from '../ui/use-toast';
+import React from 'react';
 
 export function Settings() {
   const { clearSettings, key } = useElectron();
@@ -45,7 +46,7 @@ export function Settings() {
       <SheetHeader>
         <SheetTitle>Settings</SheetTitle>
       </SheetHeader>
-      <div className="grid gap-4 my-4">
+      <div className="max-w-full grid gap-4 my-4">
         <Label>Civitai Link Key</Label>
         <div className="flex items-center space-x-4 justify-center">
           <Input
@@ -60,13 +61,13 @@ export function Settings() {
         </div>
         {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
           (key) => (
-            <div key={key}>
+            <React.Fragment key={key}>
               <Label>{key === 'DEFAULT' ? 'Root Model' : key} Folder</Label>
               <PathInput
                 defaultPath="Root Models Directory"
                 type={ResourceType[key]}
               />
-            </div>
+            </React.Fragment>
           ),
         )}
         <div className="flex items-center space-x-2 justify-center mt-6">
