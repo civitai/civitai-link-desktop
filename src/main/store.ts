@@ -12,9 +12,9 @@ export enum Resources {
   CONTROLNET = 'ControlNet',
   UPSCALER = 'Upscaler',
   HYPERNETWORK = 'Hypernetwork',
-  TEXTUAL_INVERSION = 'TextualInversion',
+  TEXTUALINVERSION = 'TextualInversion',
   LORA = 'Lora',
-  LO_CON = 'LoCon',
+  LOCON = 'LoCon',
   VAE = 'VAE',
 }
 
@@ -42,9 +42,9 @@ const schema = {
       [Resources.CONTROLNET]: '',
       [Resources.UPSCALER]: '',
       [Resources.HYPERNETWORK]: '',
-      [Resources.TEXTUAL_INVERSION]: '',
+      [Resources.TEXTUALINVERSION]: '',
       [Resources.LORA]: '',
-      [Resources.LO_CON]: '',
+      [Resources.LOCON]: '',
       [Resources.VAE]: '',
     },
   },

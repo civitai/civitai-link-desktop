@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { GoFileDirectory } from 'react-icons/go';
 import { useApi } from '@/hooks/use-api';
@@ -13,19 +13,35 @@ type PathInputProps = {
 };
 
 export function PathInput(props: PathInputProps) {
-  const [dir, setDir] = useState<string | null>(null);
-  const { selectDirectory, setRootResourcePath, setResourcePath } = useApi();
-  // TODO: Expose model type paths based on props.type
-  // Test with a Lora and the folder newLora
+  const {
+    selectDirectory,
+    setRootResourcePath,
+    setResourcePath,
+    getResourcePath,
+  } = useApi();
   const { rootResourcePath } = useElectron();
-  const dirPath = dir || rootResourcePath || props.defaultPath || '';
+  const [dirPath, setDirPath] = useState<string | null>();
+
+  useEffect(() => {
+    const fetchResourcePath = async () => {
+      const resourecePath = await getResourcePath(props.type);
+
+      if (props.type === ResourceType.DEFAULT) {
+        setDirPath(rootResourcePath);
+      } else {
+        setDirPath(resourecePath);
+      }
+    };
+
+    fetchResourcePath();
+  }, []);
 
   async function getDir() {
     const selectedDir = await selectDirectory();
     const directory =
       selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
-    setDir(directory);
+    setDirPath(directory);
 
     if (props.type !== ResourceType.DEFAULT) {
       setResourcePath(props.type, directory);

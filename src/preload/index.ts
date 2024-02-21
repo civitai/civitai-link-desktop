@@ -19,6 +19,8 @@ const api = {
       type,
       path,
     }),
+  getResourcePath: (type: ResourceType) =>
+    ipcRenderer.invoke('get-resource-path', type),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

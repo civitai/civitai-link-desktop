@@ -12,6 +12,7 @@ declare global {
       closeApp: () => void;
       resourceRemove: (resource: Resource) => void;
       setResourcePath: (type: ResourceType, path: string) => void;
+      getResourcePath: (type: ResourceType) => string;
     };
   }
 
