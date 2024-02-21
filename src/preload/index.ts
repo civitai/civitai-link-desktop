@@ -14,6 +14,13 @@ const api = {
   closeApp: () => ipcRenderer.send('close-app'),
   resourceRemove: (resource: Resource) =>
     ipcRenderer.send('resource-remove', resource),
+  setResourcePath: (type: ResourceType, path: string) =>
+    ipcRenderer.send('set-path', {
+      type,
+      path,
+    }),
+  getResourcePath: (type: ResourceType) =>
+    ipcRenderer.invoke('get-resource-path', type),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

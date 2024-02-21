@@ -12,9 +12,9 @@ export enum Resources {
   CONTROLNET = 'ControlNet',
   UPSCALER = 'Upscaler',
   HYPERNETWORK = 'Hypernetwork',
-  TEXTUAL_INVERSION = 'TextualInversion',
+  TEXTUALINVERSION = 'TextualInversion',
   LORA = 'Lora',
-  LO_CON = 'LoCon',
+  LOCON = 'LoCon',
   VAE = 'VAE',
 }
 
@@ -38,14 +38,14 @@ const schema = {
   resourcePaths: {
     type: 'object',
     default: {
-      [Resources.CHECKPOINT]: 'Checkpoint',
-      [Resources.CONTROLNET]: 'ControlNet',
-      [Resources.UPSCALER]: 'ESRGAN',
-      [Resources.HYPERNETWORK]: 'hypernetworks',
-      [Resources.TEXTUAL_INVERSION]: 'TextualInversion',
-      [Resources.LORA]: 'Lora',
-      [Resources.LO_CON]: 'LyCORIS',
-      [Resources.VAE]: 'VAE',
+      [Resources.CHECKPOINT]: '',
+      [Resources.CONTROLNET]: '',
+      [Resources.UPSCALER]: '',
+      [Resources.HYPERNETWORK]: '',
+      [Resources.TEXTUALINVERSION]: '',
+      [Resources.LORA]: '',
+      [Resources.LOCON]: '',
+      [Resources.VAE]: '',
     },
   },
   // All of the resources available
@@ -111,7 +111,22 @@ export function getResourcePath(path: string) {
   const resource = Resources[path.toUpperCase()];
   const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
 
+  if (resourcePaths[resource] === '') {
+    const rootResourcePath = getRootResourcePath();
+
+    return `${rootResourcePath}/${Resources[path.toUpperCase()]}`;
+  }
+
   return resourcePaths[resource];
+}
+
+export function setResourcePath(resource: string, path: string) {
+  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+
+  return store.set('resourcePaths', {
+    ...resourcePaths,
+    [resource]: path,
+  });
 }
 
 // TODO: Activities should be based on the action type 'resources:add' etc.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { GoFileDirectory } from 'react-icons/go';
 import { useApi } from '@/hooks/use-api';
@@ -13,27 +13,49 @@ type PathInputProps = {
 };
 
 export function PathInput(props: PathInputProps) {
-  const [dir, setDir] = useState<string | null>(null);
-  const { selectDirectory, setRootResourcePath } = useApi();
+  const {
+    selectDirectory,
+    setRootResourcePath,
+    setResourcePath,
+    getResourcePath,
+  } = useApi();
   const { rootResourcePath } = useElectron();
+  const [dirPath, setDirPath] = useState<string | null>();
+
+  useEffect(() => {
+    const fetchResourcePath = async () => {
+      const resourecePath = await getResourcePath(props.type);
+
+      if (props.type === ResourceType.DEFAULT) {
+        setDirPath(rootResourcePath);
+      } else {
+        setDirPath(resourecePath);
+      }
+    };
+
+    fetchResourcePath();
+  }, []);
 
   async function getDir() {
     const selectedDir = await selectDirectory();
     const directory =
       selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
-    setDir(directory);
+    setDirPath(directory);
 
     if (props.type !== ResourceType.DEFAULT) {
-      // TODO: use setPath but have it merge with root path
-      // setRootResourcePath('model', directory);
-      // setRootResourcePath('lora', `${directory}/Lora`);
+      setResourcePath(props.type, directory);
+
+      toast({
+        title: `${props.type} Model directory set`,
+        description: 'Root Model directory has been set successfully',
+      });
     } else {
       setRootResourcePath(directory);
 
       toast({
-        title: 'Model directory set',
-        description: 'Model directory has been set successfully',
+        title: 'Root Model directory set',
+        description: 'Root Model directory has been set successfully',
       });
     }
 
@@ -47,7 +69,7 @@ export function PathInput(props: PathInputProps) {
       <div className="w-full flex flex-row justify-between gap-4 items-center">
         <div className="px-4 py-2 border bg-slate-700/20 rounded-lg overflow-hidden w-full">
           <p className="text-ellipsis overflow-hidden dark:text-white/40 text-black/40 cursor-default">
-            {dir || rootResourcePath || props.defaultPath}
+            {dirPath}
           </p>
         </div>
         <Button onClick={getDir}>

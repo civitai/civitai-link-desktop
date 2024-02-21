@@ -1,8 +1,13 @@
 export enum ResourceType {
-  MODEL = 'model',
-  LORA = 'lora',
-  LYCORIS = 'lycoris',
   DEFAULT = 'default',
+  CHECKPOINT = 'Checkpoint',
+  CONTROLNET = 'ControlNet',
+  UPSCALER = 'Upscaler',
+  HYPERNETWORK = 'Hypernetwork',
+  TEXTUAL_INVERSION = 'TextualInversion',
+  LORA = 'Lora',
+  LO_CON = 'LoCon',
+  VAE = 'VAE',
 }
 
 export enum ConnectionStatus {

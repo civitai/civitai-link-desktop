@@ -30,6 +30,7 @@ export function ActivityItem(props: ItemProps) {
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload, resourceRemove } = useApi();
   const { removeActivity } = useElectron();
+  const isNotDone = progress !== 0 && progress < 100;
 
   useEffect(() => {
     if (props.id) {
@@ -82,7 +83,7 @@ export function ActivityItem(props: ItemProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center">
+        <div className="flex items-center pt-2">
           {props.previewImageUrl ? (
             <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
               <img
@@ -92,28 +93,28 @@ export function ActivityItem(props: ItemProps) {
               />
             </div>
           ) : null}
-          <div className="space-y-1 w-full">
-            <a
-              href={props.civitaiUrl}
-              target="_blank"
-              className="text-sm leading-none dark:text-[#c1c2c5] font-bold"
-            >
-              {props.modelName}
+          <div className="space-y-2 w-full whitespace-nowrap overflow-hidden">
+            <a href={props.civitaiUrl} target="_blank">
+              <p className="text-sm leading-none dark:text-[#c1c2c5] font-bold text-ellipsis overflow-hidden">
+                {props.modelName}
+              </p>
             </a>
-            <div className="flex items-center justify-between py-1">
-              <div className="flex items-center space-x-1">
-                <p className="text-xs dark:text-[#c1c2c5]">{props.name}</p>
-              </div>
-              <FaTrashAlt
-                color="red"
-                className="cursor-pointer"
-                onClick={removeResource}
-              />
+            <div className="flex items-center justify-between space-x-1">
+              <p className="text-xs dark:text-[#c1c2c5] text-ellipsis overflow-hidden">
+                {props.name}
+              </p>
+              {!isNotDone ? (
+                <FaTrashAlt
+                  color="red"
+                  className="cursor-pointer"
+                  onClick={removeResource}
+                />
+              ) : null}
             </div>
           </div>
         </div>
       </CardContent>
-      {progress !== 0 && progress < 100 ? (
+      {isNotDone ? (
         <CardFooter className="flex-col items-start">
           <div className="flex w-full items-center my-2 ">
             <Progress value={progress} className="mr-2" />

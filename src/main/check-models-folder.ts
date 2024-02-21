@@ -9,7 +9,8 @@ export function checkModelsFolder() {
   const files = listDirectory();
 
   files.forEach(async (file) => {
-    const filePath = path.join(modelDirectory, 'Lora', file);
+    const filePath = path.join(modelDirectory, file);
+
     // Hash files
     const modelHash = await hash(filePath);
 
@@ -18,9 +19,13 @@ export function checkModelsFolder() {
 
     // If not, fetch from API and add to store
     if (!resource) {
-      const model = await getModelByHash(modelHash);
+      try {
+        const model = await getModelByHash(modelHash);
 
-      addResource(model);
+        addResource(model);
+      } catch {
+        console.error('Error hash', modelHash, file);
+      }
     }
   });
 }

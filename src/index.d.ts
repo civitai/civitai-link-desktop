@@ -11,6 +11,8 @@ declare global {
       cancelDownload: (id: string) => void;
       closeApp: () => void;
       resourceRemove: (resource: Resource) => void;
+      setResourcePath: (type: ResourceType, path: string) => void;
+      getResourcePath: (type: ResourceType) => string;
     };
   }
 
@@ -38,10 +40,15 @@ declare global {
   };
 
   enum ResourceType {
-    MODEL = 'model',
-    LORA = 'lora',
-    LYCORIS = 'lycoris',
     DEFAULT = 'default',
+    CHECKPOINT = 'Checkpoint',
+    CONTROLNET = 'ControlNet',
+    UPSCALER = 'Upscaler',
+    HYPERNETWORK = 'Hypernetwork',
+    TEXTUAL_INVERSION = 'TextualInversion',
+    LORA = 'Lora',
+    LO_CON = 'LoCon',
+    VAE = 'VAE',
   }
 
   type Payload = {
