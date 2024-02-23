@@ -42,38 +42,40 @@ export function Settings() {
   };
 
   return (
-    <SheetContent className="w-full overflow-y-scroll">
+    <SheetContent className="w-full p-0">
       <SheetHeader>
-        <SheetTitle>Settings</SheetTitle>
+        <SheetTitle className="py-4">Settings</SheetTitle>
       </SheetHeader>
-      <div className="max-w-full grid gap-4 my-4">
-        <Label>Civitai Link Key</Label>
-        <div className="flex items-center space-x-4 justify-center">
-          <Input
-            type="text"
-            value={inputValue || ''}
-            onChange={(e) => handleSetInputValue(e.target.value)}
-            className="overflow-ellipsis"
-          />
-          <Button onClick={submitSetKey} disabled={!inputValue}>
-            <FaRegSave />
-          </Button>
-        </div>
-        {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
-          (key) => (
-            <React.Fragment key={key}>
-              <Label>{key === 'DEFAULT' ? 'Root Model' : key} Folder</Label>
-              <PathInput
-                defaultPath="Root Models Directory"
-                type={ResourceType[key]}
-              />
-            </React.Fragment>
-          ),
-        )}
-        <div className="flex items-center space-x-2 justify-center mt-6">
-          <Button onClick={() => clearSettings()} variant="destructive">
-            Reset Settings
-          </Button>
+      <div className="h-full overflow-y-auto pb-20 w-full px-4">
+        <div className="grid gap-4 my-4">
+          <Label>Civitai Link Key</Label>
+          <div className="flex items-center space-x-4 justify-center">
+            <Input
+              type="text"
+              value={inputValue || ''}
+              onChange={(e) => handleSetInputValue(e.target.value)}
+              className="overflow-ellipsis"
+            />
+            <Button onClick={submitSetKey} disabled={!inputValue}>
+              <FaRegSave />
+            </Button>
+          </div>
+          {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
+            (key) => (
+              <React.Fragment key={key}>
+                <Label>{key === 'DEFAULT' ? 'Root Model' : key} Folder</Label>
+                <PathInput
+                  defaultPath="Root Models Directory"
+                  type={ResourceType[key]}
+                />
+              </React.Fragment>
+            ),
+          )}
+          <div className="flex items-center space-x-2 justify-center mt-6">
+            <Button onClick={() => clearSettings()} variant="destructive">
+              Reset Settings
+            </Button>
+          </div>
         </div>
       </div>
     </SheetContent>
