@@ -47,11 +47,18 @@ function App() {
       ) : (
         <div className="container mx-auto p-4 space-y-8">
           <div>
-            <p>Copy the shortcode provided on the Civitai website and paste it into the input.</p>
-            <Input type="text" placeholder="Civitai Link Key" onChange={(e) => handleSetInputValue(e.target.value)} />
+            <p>
+              Copy the shortcode provided on the Civitai website and paste it
+              into the input.
+            </p>
+            <Input
+              type="text"
+              placeholder="Civitai Link Key"
+              onChange={(e) => handleSetInputValue(e.target.value)}
+            />
           </div>
           <div>
-            <p>Set the default model folder for your A1111 installation.</p>
+            <p>Set the default model folder.</p>
             <PathInput
               defaultPath="Root Models Directory"
               type={ResourceType.DEFAULT}
@@ -59,7 +66,10 @@ function App() {
             />
           </div>
           <div className="space-x-4 justify-center flex">
-            <Button onClick={submitSetKey} disabled={!inputValue || !folderValue}>
+            <Button
+              onClick={submitSetKey}
+              disabled={!inputValue || !folderValue}
+            >
               Continue
             </Button>
           </div>
