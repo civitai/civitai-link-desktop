@@ -8,6 +8,7 @@ import {
   dialog,
   Tray,
   nativeImage,
+  Menu,
 } from 'electron';
 import { join } from 'path';
 import logo from '../../resources/favicon@2x.png?asset';
@@ -106,6 +107,18 @@ app.whenReady().then(async () => {
         ? mainWindow.hide()
         : mainWindow.show();
   });
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Quit',
+      type: 'normal',
+      click: () => {
+        app.quit();
+      },
+      role: 'quit',
+    },
+  ]);
+
+  tray.setContextMenu(contextMenu);
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
