@@ -100,7 +100,11 @@ app.whenReady().then(async () => {
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
   tray.on('click', () => {
-    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+    mainWindow.isDestroyed()
+      ? createWindow()
+      : mainWindow.isVisible()
+        ? mainWindow.hide()
+        : mainWindow.show();
   });
 
   // Set app user model id for windows
