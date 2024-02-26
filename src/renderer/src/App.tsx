@@ -5,9 +5,9 @@ import { Activity } from '@/components/activity';
 import { PathInput } from '@/components/path-input';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useApi } from '@/hooks/use-api';
 import { ResourceType } from '@/types';
+import { CodeInput } from './components/code-input';
 
 function App() {
   const { appLoading, key } = useElectron();
@@ -46,20 +46,24 @@ function App() {
           </div>
         </>
       ) : (
-        <div className="container mx-auto p-4 space-y-8">
+        <div className="container mx-auto p-6 space-y-8">
           <div>
-            <p>
+            <img src={logo} alt="logo" className="w-8 h-8" />
+          </div>
+          <div>
+            <p className="mb-2">
               Copy the shortcode provided on the Civitai website and paste it
               into the input.
             </p>
-            <Input
+            {/* <Input
               type="text"
               placeholder="Civitai Link Key"
               onChange={(e) => handleSetInputValue(e.target.value)}
-            />
+            /> */}
+            <CodeInput />
           </div>
           <div>
-            <p>Set the default model folder.</p>
+            <p className="mb-2">Set the default model folder.</p>
             <PathInput
               defaultPath="Root Models Directory"
               type={ResourceType.DEFAULT}
@@ -70,6 +74,8 @@ function App() {
             <Button
               onClick={submitSetKey}
               disabled={!inputValue || !folderValue}
+              variant="secondary"
+              className="w-full rounded-full"
             >
               Continue
             </Button>

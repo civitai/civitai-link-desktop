@@ -69,11 +69,11 @@ export function PathInput(props: PathInputProps) {
       <div className="w-full flex flex-row justify-between gap-4 items-center">
         <div className="px-4 py-2 border bg-slate-700/20 rounded-lg overflow-hidden w-full">
           <p className="text-ellipsis overflow-hidden dark:text-white/40 text-black/40 cursor-default">
-            {dirPath}
+            {dirPath || 'Select a directory'}
           </p>
         </div>
-        <Button onClick={getDir}>
-          <GoFileDirectory />
+        <Button onClick={getDir} className="p-3">
+          <GoFileDirectory size={24} />
         </Button>
       </div>
     </div>

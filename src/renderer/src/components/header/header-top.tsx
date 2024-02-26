@@ -1,17 +1,14 @@
-import { FaCog } from 'react-icons/fa';
-import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet } from '@/components/ui/sheet';
 import { useElectron } from '@/providers/electron';
 import { ConnectionStatus } from '@/types';
 import { TbPlugConnected, TbPlugConnectedX } from 'react-icons/tb';
-import logoDark from '@/assets/logo_dark_mode.png';
-import logoLight from '@/assets/logo_light_mode.png';
 import { useCallback } from 'react';
 import { Settings } from '@/components/settings';
 import { DropdownMenuDemo } from './header-dropdown-menu';
+import logo from '@/assets/logo.png';
 
 export function HeaderTop() {
   const { connectionStatus } = useElectron();
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   const connectionRender = useCallback(
     (connectionStatus: ConnectionStatus) => {
@@ -33,7 +30,7 @@ export function HeaderTop() {
     <Sheet>
       <div className="flex items-center px-4 pt-4">
         <div className="flex space-x-2 items-center">
-          <img src={systemTheme ? logoDark : logoLight} alt="Civitai" />
+          <img src={logo} alt="logo" className="w-8 h-8" />
           {connectionRender(connectionStatus)}
         </div>
         <div className="ml-auto flex items-center space-x-4">
