@@ -3,10 +3,16 @@ import { useState } from 'react';
 export function CodeInput() {
   const [segments, setSegments] = useState(new Array(6).fill(''));
 
+  // TODO: handleSetInputValue
+  // Should this be done in a useEffect?
+
   function onPaste(event: React.ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
     const pasted = event.clipboardData.getData('text/plain');
-    setSegments(pasted.split('').slice(0, segments.length));
+
+    if (pasted.length === 6) {
+      setSegments(pasted.split('').slice(0, segments.length));
+    }
   }
 
   function update(index: number) {
@@ -52,7 +58,7 @@ function SingleInput({ id, value, onPaste, onInput }: SingleInputProps) {
       id={`code-${id}`}
       value={value}
       onInput={onInput}
-      className="block w-12 h-16 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-background dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+      className="focus:outline-primary-foreground block w-12 h-16 py-3 text-sm font-extrabold text-center text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-background dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
       required
     />
   );

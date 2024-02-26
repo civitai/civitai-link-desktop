@@ -64,6 +64,7 @@ export function PathInput(props: PathInputProps) {
     }
   }
 
+  // TODO: Check if it was cancel vs. selection
   return (
     <div className="overflow-hidden">
       <div className="w-full flex flex-row justify-between gap-4 items-center">
