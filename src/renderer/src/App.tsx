@@ -36,7 +36,8 @@ function App() {
 
   return (
     <div className="h-lvh">
-      <div className="titlebar" />
+      {/* This is used if you want a custom drag top bar */}
+      {/* <div className="titlebar" /> */}
       {key ? (
         <>
           <Header />

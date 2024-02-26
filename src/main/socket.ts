@@ -150,7 +150,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
       `Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`,
     );
 
-    if (payload['client'] === 0) {
+    if (payload['client'] === 0 && payload['sd'] === 0) {
       setConnectionStatus(ConnectionStatus.CONNECTING);
     } else {
       setConnectionStatus(ConnectionStatus.CONNECTED);
