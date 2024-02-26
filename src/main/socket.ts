@@ -142,13 +142,19 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
     console.log('Kicked from instance. Clearing key.');
     setKey(null);
     setUpgradeKey(null);
+    setConnectionStatus(ConnectionStatus.CONNECTING);
   });
 
   socket.on('roomPresence', (payload) => {
     console.log(
       `Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`,
     );
-    setConnectionStatus(ConnectionStatus.CONNECTED);
+
+    if (payload['client'] === 0) {
+      setConnectionStatus(ConnectionStatus.CONNECTING);
+    } else {
+      setConnectionStatus(ConnectionStatus.CONNECTED);
+    }
   });
 
   socket.on('upgradeKey', (payload) => {
