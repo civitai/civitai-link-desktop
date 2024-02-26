@@ -55,7 +55,6 @@ const browserWindowOptions = DEBUG
       show: true,
       frame: framed,
       fullscreenable: false,
-      resizable: false,
       useContentSize: true,
       transparent: true,
       alwaysOnTop: true,
@@ -70,6 +69,7 @@ function createWindow() {
     width: width,
     maxWidth: width,
     useContentSize: true,
+    resizable: false,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {

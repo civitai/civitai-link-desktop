@@ -7,6 +7,7 @@ import logoDark from '@/assets/logo_dark_mode.png';
 import logoLight from '@/assets/logo_light_mode.png';
 import { useCallback } from 'react';
 import { Settings } from '@/components/settings';
+import { DropdownMenuDemo } from './header-dropdown-menu';
 
 export function HeaderTop() {
   const { connectionStatus } = useElectron();
@@ -36,9 +37,7 @@ export function HeaderTop() {
           {connectionRender(connectionStatus)}
         </div>
         <div className="ml-auto flex items-center space-x-4">
-          <SheetTrigger>
-            <FaCog size={18} className="cursor-pointer" />
-          </SheetTrigger>
+          <DropdownMenuDemo />
         </div>
       </div>
       <Settings />
