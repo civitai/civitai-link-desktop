@@ -31,7 +31,11 @@ export function Settings() {
               Danger Zone
             </p>
             <div className="py-10  flex flex-col justify-center">
-              <Button onClick={() => clearSettings()} variant="destructive">
+              <Button
+                onClick={() => clearSettings()}
+                variant="destructive"
+                className="py-4"
+              >
                 Reset Settings
               </Button>
             </div>

@@ -110,6 +110,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setActivityList(message.activities);
       setFileList(message.files);
       setRootResourcePath(message.rootResourcePath);
+      setConnectionStatus(message.connectionStatus);
     });
 
     return () => {

@@ -105,6 +105,7 @@ export function getUIStore() {
     rootResourcePath: store.get('rootResourcePath'),
     activities: store.get('activities'),
     files: store.get('resources'),
+    connectionStatus: store.get('connectionStatus'),
   };
 }
 

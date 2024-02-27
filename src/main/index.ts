@@ -346,10 +346,7 @@ app.whenReady().then(async () => {
     }
 
     tray.setImage(icon);
-    mainWindow.webContents.send(
-      'connection-status',
-      ConnectionStatus[newValue as ConnectionStatus],
-    );
+    mainWindow.webContents.send('connection-status', newValue);
   });
 
   if (!DEBUG) {
