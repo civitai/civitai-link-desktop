@@ -41,6 +41,8 @@ export function PathInput(props: PathInputProps) {
     const directory =
       selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
+    if (directory === '') return;
+
     setDirPath(directory);
 
     if (props.type !== ResourceType.DEFAULT) {
@@ -64,19 +66,16 @@ export function PathInput(props: PathInputProps) {
     }
   }
 
-  // TODO: Check if it was cancel vs. selection
   return (
-    <div className="overflow-hidden">
-      <div className="w-full flex flex-row justify-between gap-4 items-center">
-        <div className="px-4 py-2 border bg-slate-700/20 rounded-lg overflow-hidden w-full">
-          <p className="text-ellipsis overflow-hidden dark:text-white/40 text-black/40 cursor-default">
-            {dirPath || 'Select a directory'}
-          </p>
-        </div>
-        <Button onClick={getDir} className="p-3">
-          <GoFileDirectory size={24} />
-        </Button>
+    <div className="flex flex-row gap-x-4 items-center overflow-hidden">
+      <div className="p-2 border border-[#373A40] bg-[#2C2E33] rounded-lg overflow-hidden shrink">
+        <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40 cursor-default">
+          {dirPath || 'Select a directory'}
+        </p>
       </div>
+      <Button onClick={getDir} className="p-3 min-h-14 min-w-14">
+        <GoFileDirectory size={24} />
+      </Button>
     </div>
   );
 }

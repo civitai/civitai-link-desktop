@@ -246,6 +246,7 @@ app.whenReady().then(async () => {
 
   ipcMain.on('set-root-path', (_, directory) => {
     if (directory['path'] !== '') {
+      console.log('Setting root path', directory);
       setRootResourcePath(directory['path']);
     }
   });

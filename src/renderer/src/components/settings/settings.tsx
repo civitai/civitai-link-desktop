@@ -4,7 +4,6 @@ import { PathInput } from '@/components/path-input';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
 import { Label } from '../ui/label';
-import React from 'react';
 
 export function Settings() {
   const { clearSettings } = useElectron();
@@ -15,16 +14,16 @@ export function Settings() {
         <SheetTitle className="py-4">Settings</SheetTitle>
       </SheetHeader>
       <div className="h-full overflow-y-auto pb-20 w-full px-4">
-        <div className="grid gap-4 my-4">
+        <div className="grid gap-6">
           {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
             (key) => (
-              <React.Fragment key={key}>
+              <div className="flex flex-col gap-y-4 overflow-hidden" key={key}>
                 <Label>{key === 'DEFAULT' ? 'Root Model' : key} Folder</Label>
                 <PathInput
                   defaultPath="Root Models Directory"
                   type={ResourceType[key]}
                 />
-              </React.Fragment>
+              </div>
             ),
           )}
           <div className="bg-red-200 border border-red-400 pt-2 px-10 rounded mt-6">
