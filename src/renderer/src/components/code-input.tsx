@@ -1,8 +1,9 @@
-import { useState } from 'react';
+type CodeInputProps = {
+  segments: string[];
+  setSegments: (segments: string[]) => void;
+};
 
-export function CodeInput() {
-  const [segments, setSegments] = useState(new Array(6).fill(''));
-
+export function CodeInput({ segments, setSegments }: CodeInputProps) {
   // TODO: handleSetInputValue
   // Should this be done in a useEffect?
 
