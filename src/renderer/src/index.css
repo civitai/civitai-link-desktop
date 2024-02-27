@@ -2,16 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  overflow: hidden;
-}
-
-.titlebar {
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
-  height: 1.5rem;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -58,7 +48,7 @@ body {
     --primary: 225 3% 76%;
     --primary-foreground: 222.2 47.4% 11.2%;
  
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 212 81% 54%;
     --secondary-foreground: 210 40% 98%;
  
     --muted: 217.2 32.6% 17.5%;
@@ -81,6 +71,6 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-auto;
   }
 }

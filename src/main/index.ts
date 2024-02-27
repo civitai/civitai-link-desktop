@@ -68,7 +68,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: width,
     maxWidth: width,
-    useContentSize: true,
+    // useContentSize: true,
     resizable: false,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
@@ -88,8 +88,9 @@ function createWindow() {
     }
 
     // Pass upgradeKey to window
-    if (upgradeKey)
+    if (upgradeKey) {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
+    }
 
     mainWindow.webContents.send('store-ready', getUIStore());
     mainWindow.webContents.send('app-ready', true);
@@ -115,7 +116,6 @@ function setWindowAutoHide() {
   mainWindow.on('blur', () => {
     if (!mainWindow.webContents.isDevToolsOpened()) {
       mainWindow.hide();
-      ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
     }
   });
   if (framed) {
@@ -129,12 +129,10 @@ function setWindowAutoHide() {
 function toggleWindow() {
   if (mainWindow.isVisible()) {
     mainWindow.hide();
-    ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
     return;
   }
 
   showWindow();
-  ipcMain.emit('tray-window-visible', { window: mainWindow, tray: tray });
 }
 
 function alignWindow() {
@@ -208,7 +206,6 @@ app.whenReady().then(async () => {
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
   tray.on('click', () => {
-    ipcMain.emit('tray-window-clicked', { window: mainWindow, tray: tray });
     toggleWindow();
   });
 
@@ -249,6 +246,7 @@ app.whenReady().then(async () => {
 
   ipcMain.on('set-root-path', (_, directory) => {
     if (directory['path'] !== '') {
+      console.log('Setting root path', directory);
       setRootResourcePath(directory['path']);
     }
   });
@@ -270,6 +268,13 @@ app.whenReady().then(async () => {
   ipcMain.on('close-app', async () => {
     console.log('Closing app');
     app.quit();
+  });
+
+  ipcMain.on('open-root-model-folder', () => {
+    const rootResourcePath = getRootResourcePath();
+    if (rootResourcePath) {
+      shell.openPath(rootResourcePath);
+    }
   });
 
   ipcMain.handle('dialog:openDirectory', async () => {
@@ -330,8 +335,6 @@ app.whenReady().then(async () => {
   });
 
   store.onDidChange('connectionStatus', async (newValue) => {
-    mainWindow.webContents.send('connection-status', newValue);
-
     let icon;
 
     if (newValue === ConnectionStatus.CONNECTED) {
@@ -343,14 +346,13 @@ app.whenReady().then(async () => {
     }
 
     tray.setImage(icon);
+    mainWindow.webContents.send('connection-status', newValue);
   });
 
   if (!DEBUG) {
     setWindowAutoHide();
     alignWindow();
   }
-
-  ipcMain.emit('tray-window-ready', { window: mainWindow });
 
   // Hides dock icon on macOS but keeps in taskbar
   app.dock.hide();

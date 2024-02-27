@@ -13,6 +13,7 @@ declare global {
       resourceRemove: (resource: Resource) => void;
       setResourcePath: (type: ResourceType, path: string) => void;
       getResourcePath: (type: ResourceType) => string;
+      openRootModelFolder: () => void;
     };
   }
 
@@ -26,6 +27,19 @@ declare global {
     id?: string;
     downloadDate?: string;
     previewImageUrl?: string;
+    civitaiUrl?: string;
+    downloading?: boolean;
+  };
+
+  enum ActivityType {
+    Downloaded = 'downloaded',
+    Deleted = 'deleted',
+  }
+
+  type ActivityItem = {
+    name: string;
+    date: string;
+    type: ActivityType;
     civitaiUrl?: string;
   };
 

@@ -25,5 +25,8 @@ export function useApi() {
     getResourcePath: async (type: ResourceType) => {
       return await window.api.getResourcePath(type);
     },
+    openRootModelFolder: async () => {
+      return await window.api.openRootModelFolder();
+    },
   };
 }

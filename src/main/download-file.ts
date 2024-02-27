@@ -5,7 +5,6 @@ import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addActivity, addResource } from './store';
 import { resourcesList } from './commands';
-import { getModelByHash } from './civitai-api';
 
 type DownloadFileParams = {
   id: string;
@@ -15,7 +14,6 @@ type DownloadFileParams = {
 } & Resource;
 
 export async function downloadFile(params: DownloadFileParams) {
-  const hashLowercase = params.hash.toLowerCase();
   console.log('Connecting …');
   const controller = new AbortController();
   const { data, headers } = await axios({
@@ -64,6 +62,7 @@ export async function downloadFile(params: DownloadFileParams) {
         progress,
         speed,
         remainingTime: remaining_time,
+        downloading: true,
       });
 
       // Updates the progress bar
@@ -81,7 +80,7 @@ export async function downloadFile(params: DownloadFileParams) {
         resource: {
           downloadDate: current_time,
           totalLength,
-          hash: hashLowercase,
+          hash: params.hash,
           url: params.url,
           type: params.type,
           name: params.name,
@@ -97,19 +96,18 @@ export async function downloadFile(params: DownloadFileParams) {
   data.on('end', async function () {
     console.log("Downloaded to: '" + params.downloadPath + "'!");
     const timestamp = new Date().toISOString();
-    const { previewImageUrl, civitaiUrl } = await getModelByHash(hashLowercase);
 
     const fileData = {
       downloadDate: timestamp,
       totalLength,
-      hash: hashLowercase,
+      hash: params.hash,
       url: params.url,
       type: params.type,
       name: params.name,
       modelName: params.modelName,
       modelVersionName: params.modelVersionName,
-      previewImageUrl,
-      civitaiUrl,
+      previewImageUrl: params.previewImageUrl,
+      civitaiUrl: params.civitaiUrl,
     };
     addActivity(fileData);
     addResource(fileData);
@@ -132,6 +130,7 @@ export async function downloadFile(params: DownloadFileParams) {
       progress: 100,
       speed,
       remainingTime: remaining_time,
+      downloading: false,
     });
 
     // Send newly added resource to server
