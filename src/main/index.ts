@@ -68,7 +68,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: width,
     maxWidth: width,
-    useContentSize: true,
+    // useContentSize: true,
     resizable: false,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),

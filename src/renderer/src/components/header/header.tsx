@@ -30,7 +30,7 @@ export function Header() {
 
   return (
     <Sheet>
-      <div className="flex items-center px-4 pt-4 mb-4">
+      <div className="sticky top-0 flex items-center px-4 pt-4 mb-4 select-none">
         <div className="flex space-x-4 items-center">
           <img src={logo} alt="logo" className="w-8 h-8" />
           <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2">

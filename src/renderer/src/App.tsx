@@ -15,7 +15,7 @@ function App() {
     );
 
   return (
-    <div className="h-lvh">
+    <>
       {key ? (
         <>
           <Header />
@@ -24,7 +24,7 @@ function App() {
       ) : (
         <Intro />
       )}
-    </div>
+    </>
   );
 }
 
