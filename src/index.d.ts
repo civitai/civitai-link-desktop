@@ -31,6 +31,18 @@ declare global {
     downloading?: boolean;
   };
 
+  enum ActivityType {
+    Downloaded = 'downloaded',
+    Deleted = 'deleted',
+  }
+
+  type ActivityItem = {
+    name: string;
+    date: string;
+    type: ActivityType;
+    civitaiUrl?: string;
+  };
+
   type ResourcesMap = {
     [k: string]: Resource;
   };
