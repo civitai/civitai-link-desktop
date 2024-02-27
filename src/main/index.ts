@@ -338,8 +338,6 @@ app.whenReady().then(async () => {
   });
 
   store.onDidChange('connectionStatus', async (newValue) => {
-    mainWindow.webContents.send('connection-status', newValue);
-
     let icon;
 
     if (newValue === ConnectionStatus.CONNECTED) {
@@ -351,6 +349,10 @@ app.whenReady().then(async () => {
     }
 
     tray.setImage(icon);
+    mainWindow.webContents.send(
+      'connection-status',
+      ConnectionStatus[newValue as ConnectionStatus],
+    );
   });
 
   if (!DEBUG) {

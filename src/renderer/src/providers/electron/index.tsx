@@ -18,7 +18,8 @@ type ElectronContextType = {
   key?: string | null;
   appLoading: boolean;
   clearSettings: () => void;
-  activityList: ResourcesMap;
+  activityList: ResourcesMap; // TODO: Change this type
+  fileList: ResourcesMap;
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
   removeActivity: (param: RemoveActivityParams) => void;
@@ -29,6 +30,7 @@ const defaultValue: ElectronContextType = {
   appLoading: true,
   clearSettings: () => {},
   activityList: {},
+  fileList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
   removeActivity: () => {},
@@ -41,6 +43,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
   const [activityList, setActivityList] = useState<ResourcesMap>({});
+  const [fileList, setFileList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     ConnectionStatus.DISCONNECTED,
@@ -48,6 +51,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Remove activity from list
   const removeActivity = useCallback(
     ({ hash, title, description }: RemoveActivityParams) => {
       toast({
@@ -60,8 +64,14 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
 
         return rest;
       });
+
+      setFileList((state) => {
+        const { [hash]: rm, ...rest } = state;
+
+        return rest;
+      });
     },
-    [activityList],
+    [activityList, fileList],
   );
 
   useEffect(() => {
@@ -74,12 +84,18 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Update when file downloaded
   useEffect(() => {
     ipcRenderer.on('activity-add', function (_, message) {
-      // @ts-ignore
+      // @ts-ignore // TODO: This typedef will change
       setActivityList((activities) => ({
         [message.hash]: message,
         ...activities,
+      }));
+
+      setFileList((files) => ({
+        [message.hash]: message,
+        ...files,
       }));
     });
 
@@ -88,9 +104,11 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Get initial store on load
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
       setActivityList(message.activities);
+      setFileList(message.files);
       setRootResourcePath(message.rootResourcePath);
     });
 
@@ -166,6 +184,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         connectionStatus,
         rootResourcePath,
         removeActivity,
+        fileList,
       }}
     >
       {children}
