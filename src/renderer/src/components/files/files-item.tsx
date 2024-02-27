@@ -22,7 +22,7 @@ dayjs.extend(relativeTime);
 
 type ItemProps = Resource;
 
-export function ActivityItem(props: ItemProps) {
+export function FilesItem(props: ItemProps) {
   const [progress, setProgress] = useState(0);
   const [totalLength, setTotalLength] = useState(0);
   const [downloaded, setDownloaded] = useState(0);

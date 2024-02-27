@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Activity } from '../activity';
+import { Files } from '@/components/files';
 
 export function Content() {
   return (
@@ -10,10 +10,10 @@ export function Content() {
           <TabsTrigger value="activities">Activities</TabsTrigger>
         </TabsList>
         <TabsContent value="files">
-          <p>Files</p>
+          <Files />
         </TabsContent>
         <TabsContent value="activities">
-          <Activity />
+          <p>Activities</p>
         </TabsContent>
       </Tabs>
     </div>

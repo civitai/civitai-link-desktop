@@ -1,8 +1,9 @@
 import { useElectron } from '@/providers/electron';
-import { ActivityItem } from './activity-item';
+import { FilesItem } from './files-item';
 import { useMemo } from 'react';
 
-export function Activity() {
+// TODO: Updating name and pull file list
+export function Files() {
   const { activityList } = useElectron();
   const activityKeys = useMemo(() => Object.keys(activityList), [activityList]);
 
@@ -14,7 +15,7 @@ export function Activity() {
     <div>
       {activityKeys?.map((activity) => {
         return (
-          <ActivityItem
+          <FilesItem
             {...activityList[activity]}
             key={activityList[activity].hash}
           />
