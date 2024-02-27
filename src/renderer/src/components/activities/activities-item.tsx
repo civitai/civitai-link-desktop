@@ -1,22 +1,32 @@
-import { DownloadCloud } from 'lucide-react';
+import { DownloadCloud, Trash2 } from 'lucide-react';
+
+enum ActivityType {
+  Downloaded = 'downloaded',
+  Deleted = 'deleted',
+}
 
 type ActivitiesItemProps = {
   name: string;
   date: string;
   type: 'downloaded' | 'deleted';
+  // TODO: Link to model
 };
 
 export function ActivitiesItem() {
   const name = 'SDXL Dragon Style';
+  const type = ActivityType.Downloaded;
 
-  // TODO: Toggle between Downloaded and deleted
   return (
     <div>
-      <h1>2024-02-23</h1>
-      <div className="flex space-x-2 items-center">
-        <DownloadCloud size={20} />
-        <p>
-          Downloaded <b>{name}</b>
+      <p className="text-xs text-[#909296]">2024-02-23</p>
+      <div className="flex space-x-2 items-center mt-2">
+        {type === ActivityType.Downloaded ? (
+          <DownloadCloud size={20} />
+        ) : (
+          <Trash2 size={20} />
+        )}
+        <p className="text-sm capitalize">
+          {type} <b>{name}</b>
         </p>
       </div>
     </div>
