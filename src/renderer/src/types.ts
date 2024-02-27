@@ -16,3 +16,8 @@ export enum ConnectionStatus {
   CONNECTED = 'connected',
   KICKED = 'kicked',
 }
+
+export enum ActivityType {
+  Downloaded = 'downloaded',
+  Deleted = 'deleted',
+}

@@ -1,4 +1,5 @@
 import { DownloadCloud, Trash2 } from 'lucide-react';
+import { ActivityType } from '@/types';
 
 export function ActivitiesItem() {
   const name = 'SDXL Dragon Style';
