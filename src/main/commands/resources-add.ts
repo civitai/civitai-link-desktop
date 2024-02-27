@@ -2,6 +2,7 @@ import { Socket } from 'socket.io-client';
 import { downloadFile } from '../download-file';
 import { BrowserWindow } from 'electron';
 import { getResourcePath } from '../store';
+import { getModelByHash } from '../civitai-api';
 
 type ResourcesAddParams = {
   id: string;
@@ -12,7 +13,9 @@ type ResourcesAddParams = {
 
 export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
+  const hashLowercase = payload.hash.toLowerCase();
   const resourcePath = getResourcePath(payload.type);
+  const { previewImageUrl, civitaiUrl } = await getModelByHash(hashLowercase);
 
   params.socket.emit('commandStatus', {
     status: 'processing',
@@ -25,6 +28,8 @@ export async function resourcesAdd(params: ResourcesAddParams) {
     id: params.id,
     downloadDate: new Date().toISOString(),
     ...payload,
+    previewImageUrl,
+    civitaiUrl,
   });
 
   await downloadFile({
@@ -32,11 +37,13 @@ export async function resourcesAdd(params: ResourcesAddParams) {
     name: payload.name,
     url: payload.url,
     type: payload.type,
-    hash: payload.hash,
+    hash: hashLowercase,
     modelName: payload.modelName,
     modelVersionName: payload.modelVersionName,
     downloadPath: resourcePath,
     socket: params.socket,
     mainWindow: params.mainWindow,
+    previewImageUrl,
+    civitaiUrl,
   });
 }

@@ -1,5 +1,11 @@
 import { DownloadCloud } from 'lucide-react';
 
+type ActivitiesItemProps = {
+  name: string;
+  date: string;
+  type: 'downloaded' | 'deleted';
+};
+
 export function ActivitiesItem() {
   const name = 'SDXL Dragon Style';
 
