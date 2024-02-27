@@ -4,9 +4,6 @@ type CodeInputProps = {
 };
 
 export function CodeInput({ segments, setSegments }: CodeInputProps) {
-  // TODO: handleSetInputValue
-  // Should this be done in a useEffect?
-
   function onPaste(event: React.ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
     const pasted = event.clipboardData.getData('text/plain');

@@ -1,4 +1,4 @@
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,7 +10,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FaCog } from 'react-icons/fa';
 import { useApi } from '@/hooks/use-api';
 import { SheetTrigger } from '../ui/sheet';
 
@@ -21,7 +20,7 @@ export function DropdownMenuDemo() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="none">
-          <FaCog size={18} />
+          <MoreVertical />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">

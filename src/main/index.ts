@@ -88,8 +88,9 @@ function createWindow() {
     }
 
     // Pass upgradeKey to window
-    if (upgradeKey)
+    if (upgradeKey) {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
+    }
 
     mainWindow.webContents.send('store-ready', getUIStore());
     mainWindow.webContents.send('app-ready', true);
@@ -270,6 +271,13 @@ app.whenReady().then(async () => {
   ipcMain.on('close-app', async () => {
     console.log('Closing app');
     app.quit();
+  });
+
+  ipcMain.on('open-root-model-folder', () => {
+    const rootResourcePath = getRootResourcePath();
+    if (rootResourcePath) {
+      shell.openPath(rootResourcePath);
+    }
   });
 
   ipcMain.handle('dialog:openDirectory', async () => {

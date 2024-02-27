@@ -13,6 +13,7 @@ declare global {
       resourceRemove: (resource: Resource) => void;
       setResourcePath: (type: ResourceType, path: string) => void;
       getResourcePath: (type: ResourceType) => string;
+      openRootModelFolder: () => void;
     };
   }
 
