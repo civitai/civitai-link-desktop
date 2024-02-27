@@ -1,6 +1,6 @@
 {
   "name": "civitai-link",
-  "version": "1.2.1",
+  "version": "1.4.0",
   "description": "Download Civitai models to your Stable Diffusion models folder",
   "main": "./out/main/index.js",
   "author": "civitai.com",
