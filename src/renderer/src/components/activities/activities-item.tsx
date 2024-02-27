@@ -1,17 +1,5 @@
 import { DownloadCloud, Trash2 } from 'lucide-react';
 
-enum ActivityType {
-  Downloaded = 'downloaded',
-  Deleted = 'deleted',
-}
-
-type ActivitiesItemProps = {
-  name: string;
-  date: string;
-  type: 'downloaded' | 'deleted';
-  // TODO: Link to model
-};
-
 export function ActivitiesItem() {
   const name = 'SDXL Dragon Style';
   const type = ActivityType.Downloaded;
