@@ -38,7 +38,7 @@ export function Header() {
             <p className="text-sm">My SD Instance</p>
           </div>
         </div>
-        <div className="ml-auto flex items-center">
+        <div className="ml-auto flex items-center gap-x-4">
           <Folder
             className="cursor-pointer"
             onClick={() => openRootModelFolder()}
