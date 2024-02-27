@@ -1,13 +1,7 @@
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';
 import duration from 'dayjs/plugin/duration';
@@ -24,8 +18,6 @@ type ItemProps = Resource;
 
 export function FilesItem(props: ItemProps) {
   const [progress, setProgress] = useState(0);
-  const [totalLength, setTotalLength] = useState(0);
-  const [downloaded, setDownloaded] = useState(0);
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload, resourceRemove } = useApi();
@@ -38,8 +30,6 @@ export function FilesItem(props: ItemProps) {
         `resource-download:${props.id}`,
         function (_, message) {
           setProgress(message.progress);
-          setTotalLength(message.totalLength);
-          setDownloaded(message.downloaded);
           setSpeed(message.speed);
           setRemainingTime(message.remainingTime);
         },
@@ -82,63 +72,76 @@ export function FilesItem(props: ItemProps) {
           ) : null}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center pt-2">
-          {props.previewImageUrl ? (
-            <div className="min-w-9 h-9 mr-2 items-center overflow-hidden rounded">
-              <img
-                src={props.previewImageUrl}
-                alt={props.modelName}
-                className="h-full w-full object-cover object-center"
-              />
+      {!isNotDone ? (
+        <CardContent>
+          <div className="flex items-center pt-2">
+            {props.previewImageUrl ? (
+              <div className="min-w-9 h-9 mr-2 items-center overflow-hidden rounded">
+                <img
+                  src={props.previewImageUrl}
+                  alt={props.modelName}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
+            ) : (
+              <div className="bg-card w-9 h-9 mr-2 rounded flex items-center justify-center">
+                <Image size={16} />
+              </div>
+            )}
+            <div className="space-y-1 w-full whitespace-nowrap overflow-hidden relative pr-8">
+              <a href={props.civitaiUrl} target="_blank">
+                <p className="text-sm leading-none dark:text-[#F1F3F5] font-bold text-ellipsis overflow-hidden">
+                  {props.modelName}
+                </p>
+              </a>
+              <p className="text-xs dark:text-[#909296] text-ellipsis overflow-hidden">
+                {props.name}
+              </p>
+              {!isNotDone ? (
+                <Trash2
+                  color="red"
+                  className="cursor-pointer absolute right-0 bottom-0"
+                  onClick={removeResource}
+                  size={20}
+                />
+              ) : null}
             </div>
-          ) : (
-            <div className="bg-card w-9 h-9 mr-2 rounded flex items-center justify-center">
-              <Image size={16} />
-            </div>
-          )}
-          <div className="space-y-1 w-full whitespace-nowrap overflow-hidden relative">
+          </div>
+        </CardContent>
+      ) : (
+        <CardContent className="space-y-2">
+          <div className="flex justify-between">
             <a href={props.civitaiUrl} target="_blank">
               <p className="text-sm leading-none dark:text-[#F1F3F5] font-bold text-ellipsis overflow-hidden">
                 {props.modelName}
               </p>
             </a>
-            <p className="text-xs dark:text-[#909296] text-ellipsis overflow-hidden">
-              {props.name}
-            </p>
-            {!isNotDone ? (
-              <Trash2
-                color="red"
-                className="cursor-pointer absolute right-0 bottom-0"
-                onClick={removeResource}
-                size={20}
-              />
-            ) : null}
+            <div>
+              <p className="text-sm font-medium leading-none">
+                {prettyBytes(speed)}/s
+              </p>
+            </div>
           </div>
-        </div>
-      </CardContent>
-      {isNotDone ? (
-        <CardFooter className="flex-col items-start">
-          <div className="flex w-full items-center my-2 ">
-            <Progress value={progress} className="mr-2" />
-            <div className="cursor-pointer" onClick={cancelAndRemoveDownload}>
-              <AiOutlineCloseCircle size={24} />
+          <div className="flex items-center">
+            <div className="flex w-full items-center">
+              <Progress value={progress} className="mr-2" />
+              <div className="cursor-pointer" onClick={cancelAndRemoveDownload}>
+                <AiOutlineCloseCircle size={16} />
+              </div>
             </div>
           </div>
           <div className="flex-row flex justify-between w-full">
             <div>
               <p className="text-sm font-medium leading-none">
-                {dayjs.duration({ seconds: remainingTime }).humanize()} -{' '}
-                {prettyBytes(speed)}/sec
+                {Math.floor(progress)}%
               </p>
             </div>
             <p className="text-sm font-medium leading-none">
-              {prettyBytes(downloaded)} / {prettyBytes(totalLength)} -{' '}
-              {Math.floor(progress)}%
+              {dayjs.duration({ seconds: remainingTime }).humanize()} remaining
             </p>
           </div>
-        </CardFooter>
-      ) : null}
+        </CardContent>
+      )}
     </Card>
   );
 }
