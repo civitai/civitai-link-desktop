@@ -3,43 +3,11 @@ import { SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { PathInput } from '@/components/path-input';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
-import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import { useApi } from '@/hooks/use-api';
-import { FaRegSave } from 'react-icons/fa';
 import { Label } from '../ui/label';
-import { toast } from '../ui/use-toast';
 import React from 'react';
 
 export function Settings() {
-  const { clearSettings, key } = useElectron();
-  const { setKey } = useApi();
-  const [inputValue, setInputValue] = useState<string | null>(key || '');
-
-  useEffect(() => {
-    setInputValue(key || '');
-  }, [key]);
-
-  const submitSetKey = async () => {
-    if (inputValue) {
-      setKey(inputValue);
-
-      toast({
-        title: 'Link Key Updated',
-        description: 'Link key has been updated successfully',
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Link Key Empty',
-        description: 'No link key provided',
-      });
-    }
-  };
-
-  const handleSetInputValue = (value: string) => {
-    setInputValue(value);
-  };
+  const { clearSettings } = useElectron();
 
   return (
     <SheetContent className="w-full p-0">
@@ -48,18 +16,6 @@ export function Settings() {
       </SheetHeader>
       <div className="h-full overflow-y-auto pb-20 w-full px-4">
         <div className="grid gap-4 my-4">
-          <Label>Civitai Link Key</Label>
-          <div className="flex items-center space-x-4 justify-center">
-            <Input
-              type="text"
-              value={inputValue || ''}
-              onChange={(e) => handleSetInputValue(e.target.value)}
-              className="overflow-ellipsis"
-            />
-            <Button onClick={submitSetKey} disabled={!inputValue}>
-              <FaRegSave />
-            </Button>
-          </div>
           {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
             (key) => (
               <React.Fragment key={key}>
@@ -71,10 +27,15 @@ export function Settings() {
               </React.Fragment>
             ),
           )}
-          <div className="flex items-center space-x-2 justify-center mt-6">
-            <Button onClick={() => clearSettings()} variant="destructive">
-              Reset Settings
-            </Button>
+          <div className="bg-red-200 border border-red-400 pt-2 px-10 rounded mt-6">
+            <p className="text-center text-black font-bold uppercase">
+              Danger Zone
+            </p>
+            <div className="py-10  flex flex-col justify-center">
+              <Button onClick={() => clearSettings()} variant="destructive">
+                Reset Settings
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -116,7 +116,6 @@ function setWindowAutoHide() {
   mainWindow.on('blur', () => {
     if (!mainWindow.webContents.isDevToolsOpened()) {
       mainWindow.hide();
-      ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
     }
   });
   if (framed) {
@@ -130,12 +129,10 @@ function setWindowAutoHide() {
 function toggleWindow() {
   if (mainWindow.isVisible()) {
     mainWindow.hide();
-    ipcMain.emit('tray-window-hidden', { window: mainWindow, tray: tray });
     return;
   }
 
   showWindow();
-  ipcMain.emit('tray-window-visible', { window: mainWindow, tray: tray });
 }
 
 function alignWindow() {
@@ -209,7 +206,6 @@ app.whenReady().then(async () => {
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
   tray.on('click', () => {
-    ipcMain.emit('tray-window-clicked', { window: mainWindow, tray: tray });
     toggleWindow();
   });
 
@@ -359,8 +355,6 @@ app.whenReady().then(async () => {
     setWindowAutoHide();
     alignWindow();
   }
-
-  ipcMain.emit('tray-window-ready', { window: mainWindow });
 
   // Hides dock icon on macOS but keeps in taskbar
   app.dock.hide();

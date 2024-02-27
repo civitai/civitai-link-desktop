@@ -60,7 +60,7 @@ export function FilesItem(props: ItemProps) {
     <Card className="mb-4 bg-transparent">
       <CardHeader>
         <CardTitle className="justify-between flex-row flex">
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2">
             <Badge variant="modelTag">{props.type}</Badge>
             <Badge variant="outline">{props.modelVersionName}</Badge>
           </div>
@@ -90,7 +90,7 @@ export function FilesItem(props: ItemProps) {
             )}
             <div className="space-y-1 w-full whitespace-nowrap overflow-hidden relative pr-8">
               <a href={props.civitaiUrl} target="_blank">
-                <p className="text-sm leading-none dark:text-[#F1F3F5] font-bold text-ellipsis overflow-hidden">
+                <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
                   {props.modelName}
                 </p>
               </a>
@@ -112,12 +112,12 @@ export function FilesItem(props: ItemProps) {
         <CardContent className="space-y-2">
           <div className="flex justify-between">
             <a href={props.civitaiUrl} target="_blank">
-              <p className="text-sm leading-none dark:text-[#F1F3F5] font-bold text-ellipsis overflow-hidden">
+              <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
                 {props.modelName}
               </p>
             </a>
             <div>
-              <p className="text-sm font-medium leading-none">
+              <p className="text-xs text-[#909296] leading-none">
                 {prettyBytes(speed)}/s
               </p>
             </div>
@@ -132,11 +132,11 @@ export function FilesItem(props: ItemProps) {
           </div>
           <div className="flex-row flex justify-between w-full">
             <div>
-              <p className="text-sm font-medium leading-none">
+              <p className="text-xs text-[#909296] leading-none">
                 {Math.floor(progress)}%
               </p>
             </div>
-            <p className="text-sm font-medium leading-none">
+            <p className="text-xs text-[#909296] leading-none">
               {dayjs.duration({ seconds: remainingTime }).humanize()} remaining
             </p>
           </div>
