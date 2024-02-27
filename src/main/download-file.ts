@@ -62,6 +62,7 @@ export async function downloadFile(params: DownloadFileParams) {
         progress,
         speed,
         remainingTime: remaining_time,
+        downloading: true,
       });
 
       // Updates the progress bar
@@ -129,6 +130,7 @@ export async function downloadFile(params: DownloadFileParams) {
       progress: 100,
       speed,
       remainingTime: remaining_time,
+      downloading: false,
     });
 
     // Send newly added resource to server

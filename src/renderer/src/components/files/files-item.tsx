@@ -17,12 +17,13 @@ dayjs.extend(relativeTime);
 type ItemProps = Resource;
 
 export function FilesItem(props: ItemProps) {
+  const [isDownloading, setIsDownloading] = useState(props.downloading);
   const [progress, setProgress] = useState(0);
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload, resourceRemove } = useApi();
   const { removeActivity } = useElectron();
-  const isNotDone = progress !== 0 && progress < 100;
+  const isNotDone = isDownloading && progress < 100;
 
   useEffect(() => {
     if (props.id) {
@@ -32,6 +33,7 @@ export function FilesItem(props: ItemProps) {
           setProgress(message.progress);
           setSpeed(message.speed);
           setRemainingTime(message.remainingTime);
+          setIsDownloading(message.downloading);
         },
       );
     }

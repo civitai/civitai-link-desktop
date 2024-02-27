@@ -28,6 +28,7 @@ declare global {
     downloadDate?: string;
     previewImageUrl?: string;
     civitaiUrl?: string;
+    downloading?: boolean;
   };
 
   type ResourcesMap = {

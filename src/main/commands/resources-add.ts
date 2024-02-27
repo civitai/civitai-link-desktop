@@ -30,6 +30,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
     ...payload,
     previewImageUrl,
     civitaiUrl,
+    downloading: true,
   });
 
   await downloadFile({
