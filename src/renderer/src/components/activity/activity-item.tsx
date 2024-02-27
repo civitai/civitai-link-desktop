@@ -15,7 +15,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
-import { FaCloudDownloadAlt, FaTrashAlt } from 'react-icons/fa';
+import { DownloadCloud, Trash2, Image } from 'lucide-react';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -67,16 +67,16 @@ export function ActivityItem(props: ItemProps) {
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 bg-transparent">
       <CardHeader>
         <CardTitle className="justify-between flex-row flex">
           <div className="flex items-center space-x-1">
-            <Badge color="primary">{props.type}</Badge>
+            <Badge variant="modelTag">{props.type}</Badge>
             <Badge variant="outline">{props.modelVersionName}</Badge>
           </div>
           {props.downloadDate ? (
-            <p className="text-sm text-muted-foreground flex items-center">
-              <FaCloudDownloadAlt className="mr-1" />
+            <p className="text-sm font-normal text-[#909296] flex items-center">
+              <DownloadCloud className="mr-1" size={16} color="#909296" />
               {dayjs(props.downloadDate).format('YYYY-MM-DD')}
             </p>
           ) : null}
@@ -85,32 +85,35 @@ export function ActivityItem(props: ItemProps) {
       <CardContent>
         <div className="flex items-center pt-2">
           {props.previewImageUrl ? (
-            <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
+            <div className="min-w-9 h-9 mr-2 items-center overflow-hidden rounded">
               <img
                 src={props.previewImageUrl}
                 alt={props.modelName}
                 className="h-full w-full object-cover object-center"
               />
             </div>
-          ) : null}
-          <div className="space-y-2 w-full whitespace-nowrap overflow-hidden">
+          ) : (
+            <div className="bg-card w-9 h-9 mr-2 rounded flex items-center justify-center">
+              <Image size={16} />
+            </div>
+          )}
+          <div className="space-y-1 w-full whitespace-nowrap overflow-hidden relative">
             <a href={props.civitaiUrl} target="_blank">
-              <p className="text-sm leading-none dark:text-[#c1c2c5] font-bold text-ellipsis overflow-hidden">
+              <p className="text-sm leading-none dark:text-[#F1F3F5] font-bold text-ellipsis overflow-hidden">
                 {props.modelName}
               </p>
             </a>
-            <div className="flex items-center justify-between space-x-1">
-              <p className="text-xs dark:text-[#c1c2c5] text-ellipsis overflow-hidden">
-                {props.name}
-              </p>
-              {!isNotDone ? (
-                <FaTrashAlt
-                  color="red"
-                  className="cursor-pointer"
-                  onClick={removeResource}
-                />
-              ) : null}
-            </div>
+            <p className="text-xs dark:text-[#909296] text-ellipsis overflow-hidden">
+              {props.name}
+            </p>
+            {!isNotDone ? (
+              <Trash2
+                color="red"
+                className="cursor-pointer absolute right-0 bottom-0"
+                onClick={removeResource}
+                size={20}
+              />
+            ) : null}
           </div>
         </div>
       </CardContent>
