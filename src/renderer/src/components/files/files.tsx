@@ -1,6 +1,7 @@
 import { useElectron } from '@/providers/electron';
 import { FilesItem } from './files-item';
 import { useMemo } from 'react';
+import { Files as FilesIcon } from 'lucide-react';
 
 export function Files() {
   const { fileList } = useElectron();
@@ -8,6 +9,15 @@ export function Files() {
 
   if (fileKeys.length === 0) {
     return <p>No Files</p>;
+  }
+
+  if (fileKeys.length === 0) {
+    return (
+      <div className="flex items-center justify-center">
+        <FilesIcon />
+        <p className="ml-2 text-center text-sm">No Files</p>
+      </div>
+    );
   }
 
   return (

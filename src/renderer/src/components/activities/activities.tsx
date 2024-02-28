@@ -2,6 +2,7 @@ import { useElectron } from '@/providers/electron';
 import { ActivitiesItem } from './activities-item';
 import { useMemo } from 'react';
 import { ActivityType } from '@/types';
+import { Activity } from 'lucide-react';
 
 export function Activities() {
   const { activityList } = useElectron();
@@ -23,7 +24,12 @@ export function Activities() {
   ];
 
   if (activities.length === 0) {
-    return <p>No Activities</p>;
+    return (
+      <div className="flex items-center justify-center">
+        <Activity />
+        <p className="ml-2 text-center text-sm">No Activity</p>
+      </div>
+    );
   }
 
   return (
