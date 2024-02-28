@@ -56,13 +56,19 @@ const schema = {
   },
   // More historical activities < 30
   activities: {
-    type: 'object',
-    default: {},
+    type: 'array',
+    default: [],
+  },
+};
+
+const migrations = {
+  '>=1.4.0': (store: Store) => {
+    store.set('activities', []);
   },
 };
 
 // @ts-ignore
-export const store = new Store({ schema });
+export const store = new Store({ schema, migrations });
 
 export function setKey(key: string | null) {
   store.set('key', key);
@@ -131,24 +137,17 @@ export function setResourcePath(resource: string, path: string) {
   });
 }
 
-// TODO: Activities should be based on the action type 'resources:add' etc.
-export function addActivity(activity: Resource) {
-  const activities = store.get('activities') as ResourcesMap;
-  const activityToAdd = { ...activity, hash: activity.hash.toLowerCase() };
+export function updateActivity(activity: ActivityItem) {
+  const activities = store.get('activities') as ActivityItem[];
 
   // Only keep last 30 activities
-  if (Object.keys(activities).length > 30) {
-    const [_, ...rest] = Object.entries(activities);
+  if (activities.length > 30) {
+    const clonedActivities = [...activities];
+    clonedActivities.pop();
 
-    return store.set('activities', {
-      [activityToAdd.hash]: activityToAdd,
-      ...Object.fromEntries(rest),
-    });
+    return store.set('activities', [activity, ...clonedActivities]);
   } else {
-    return store.set('activities', {
-      [activityToAdd.hash]: activityToAdd,
-      ...activities,
-    });
+    return store.set('activities', [activity, ...activities]);
   }
 }
 
@@ -168,14 +167,6 @@ export function removeResource(hash: string) {
   delete resources[hash.toLowerCase()];
 
   return store.set('resources', resources);
-}
-
-export function removeActivity(hash: string) {
-  const activities = store.get('activities') as ResourcesMap;
-
-  delete activities[hash.toLowerCase()];
-
-  return store.set('activities', activities);
 }
 
 export function lookupResource(hash: string) {

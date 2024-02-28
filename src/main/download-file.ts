@@ -3,7 +3,7 @@ import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
-import { addActivity, addResource } from './store';
+import { updateActivity, addResource } from './store';
 import { resourcesList } from './commands';
 
 type DownloadFileParams = {
@@ -109,7 +109,15 @@ export async function downloadFile(params: DownloadFileParams) {
       previewImageUrl: params.previewImageUrl,
       civitaiUrl: params.civitaiUrl,
     };
-    addActivity(fileData);
+
+    const activity: ActivityItem = {
+      name: params.name,
+      date: timestamp,
+      type: 'downloaded' as ActivityType,
+      civitaiUrl: params.civitaiUrl,
+    };
+
+    updateActivity(activity);
     addResource(fileData);
 
     console.log("Move file to: '" + filePath + "'!");

@@ -18,7 +18,7 @@ type ElectronContextType = {
   key?: string | null;
   appLoading: boolean;
   clearSettings: () => void;
-  activityList: ResourcesMap; // TODO: Change this type
+  activityList: ActivityItem[];
   fileList: ResourcesMap;
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
@@ -29,7 +29,7 @@ const defaultValue: ElectronContextType = {
   key: null,
   appLoading: true,
   clearSettings: () => {},
-  activityList: {},
+  activityList: [],
   fileList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
@@ -42,7 +42,7 @@ export const useElectron = () => useContext(ElectronContext);
 export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
-  const [activityList, setActivityList] = useState<ResourcesMap>({});
+  const [activityList, setActivityList] = useState<ActivityItem[]>([]);
   const [fileList, setFileList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
@@ -57,12 +57,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       toast({
         title,
         description,
-      });
-
-      setActivityList((state) => {
-        const { [hash]: rm, ...rest } = state;
-
-        return rest;
       });
 
       setFileList((state) => {
@@ -172,7 +166,9 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);
-    setActivityList({});
+    setActivityList([]);
+    setConnectionStatus(ConnectionStatus.DISCONNECTED);
+    setRootResourcePath(null);
   };
 
   return (
