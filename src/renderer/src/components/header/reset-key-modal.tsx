@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import {
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -20,6 +21,7 @@ export function ResetKeyModal() {
     const segmentsString = segments.join('');
     if (segmentsString && segmentsString.length === 6) {
       setKey(segmentsString);
+      setSegments(new Array(6).fill(''));
     } else {
       console.log('No input value');
     }
@@ -38,14 +40,16 @@ export function ResetKeyModal() {
       </DialogHeader>
       <CodeInput segments={segments} setSegments={setSegments} />
       <DialogFooter>
-        <Button
-          onClick={submitSetKey}
-          disabled={segments.join('').length !== 6}
-          variant="secondary"
-          className="w-full rounded-full py-2"
-        >
-          Reconnect
-        </Button>
+        <DialogClose asChild>
+          <Button
+            onClick={submitSetKey}
+            disabled={segments.join('').length !== 6}
+            variant="secondary"
+            className="w-full rounded-full py-2"
+          >
+            Reconnect
+          </Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   );
