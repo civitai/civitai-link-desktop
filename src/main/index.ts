@@ -9,6 +9,7 @@ import {
   Tray,
   nativeImage,
   screen,
+  Menu,
 } from 'electron';
 import { join } from 'path';
 import {
@@ -194,6 +195,8 @@ function calculateWindowPosition() {
   return { x: x, y: y };
 }
 
+Menu.setApplicationMenu(null);
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -223,6 +226,7 @@ app.whenReady().then(async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'],
     });
+
     if (canceled) {
       return;
     } else {
@@ -230,10 +234,12 @@ app.whenReady().then(async () => {
     }
   });
 
+  // Updates activities in the UI when a change is detected
   store.onDidChange('activities', (newValue) => {
     mainWindow.webContents.send('activity-update', newValue);
   });
 
+  // Updates the UI and Tray icon with the socket connection status
   store.onDidChange('connectionStatus', async (newValue) => {
     let icon;
 
