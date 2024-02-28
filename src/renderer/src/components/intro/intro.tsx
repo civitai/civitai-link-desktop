@@ -46,7 +46,7 @@ export function Intro() {
           onClick={submitSetKey}
           disabled={segments.join('').length !== 6 || !folderValue}
           variant="secondary"
-          className="w-full rounded-full"
+          className="w-full rounded-full py-2"
         >
           Continue
         </Button>

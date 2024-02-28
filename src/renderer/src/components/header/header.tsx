@@ -7,6 +7,8 @@ import { DropdownMenuDemo } from './header-dropdown-menu';
 import { Folder } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { useApi } from '@/hooks/use-api';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { ResetKeyModal } from './reset-key-modal';
 
 export function Header() {
   const { connectionStatus } = useElectron();
@@ -33,10 +35,15 @@ export function Header() {
       <div className="sticky top-0 flex items-center px-4 py-[0.82rem] select-none bg-background z-10">
         <div className="flex space-x-4 items-center">
           <img src={logo} alt="logo" className="w-8 h-8" />
-          <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2">
-            {connectionRender(connectionStatus)}
-            <p className="text-sm">My SD Instance</p>
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2 cursor-pointer">
+                {connectionRender(connectionStatus)}
+                <p className="text-sm">My SD Instance</p>
+              </div>
+            </DialogTrigger>
+            <ResetKeyModal />
+          </Dialog>
         </div>
         <div className="ml-auto flex items-center gap-x-4">
           <Folder
