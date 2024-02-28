@@ -111,7 +111,7 @@ export async function downloadFile(params: DownloadFileParams) {
     };
 
     const activity: ActivityItem = {
-      name: params.name,
+      name: params.modelName,
       date: timestamp,
       type: 'downloaded' as ActivityType,
       civitaiUrl: params.civitaiUrl,

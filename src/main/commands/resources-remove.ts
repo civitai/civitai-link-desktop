@@ -20,7 +20,7 @@ export function resourcesRemove(hash: string) {
   removeResource(hash);
 
   const activity: ActivityItem = {
-    name: resource.name,
+    name: resource.modelName,
     date: timestamp,
     type: 'deleted' as ActivityType,
     civitaiUrl: resource.civitaiUrl,

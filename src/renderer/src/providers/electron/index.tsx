@@ -65,7 +65,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         return rest;
       });
     },
-    [activityList, fileList],
+    [fileList],
   );
 
   useEffect(() => {
@@ -78,15 +78,22 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Update when activity happens
+  useEffect(() => {
+    ipcRenderer.on('activity-update', function (_, activities) {
+      setActivityList(activities);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('activity-update');
+    };
+  }, []);
+
   // Update when file downloaded
   useEffect(() => {
+    // TODO: Look at switching to listen to the store change instead of firing messages
+    // ipcRenderer.on('files-update', function (_, message) {
     ipcRenderer.on('activity-add', function (_, message) {
-      // @ts-ignore // TODO: This typedef will change
-      setActivityList((activities) => ({
-        [message.hash]: message,
-        ...activities,
-      }));
-
       setFileList((files) => ({
         [message.hash]: message,
         ...files,

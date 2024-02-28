@@ -15,7 +15,7 @@ export function Activities() {
   }
 
   return (
-    <div className="flex flex-col gap-y-4 ">
+    <div className="flex flex-col gap-y-4 mb-4">
       {activityList.map((activity, key) => (
         <ActivitiesItem {...activity} key={`${name}-${key}`} />
       ))}
