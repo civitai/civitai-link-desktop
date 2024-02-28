@@ -11,27 +11,23 @@ import {
   screen,
 } from 'electron';
 import { join } from 'path';
-import logo from '../../resources/favicon@2x.png?asset';
 import {
   getUIStore,
   getUpgradeKey,
-  setRootResourcePath,
-  setKey,
-  clearSettings,
   store,
-  getRootResourcePath,
   ConnectionStatus,
-  setResourcePath,
   getResourcePath,
 } from './store';
-import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
-import { resourcesRemove } from './commands';
+import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
+import { eventsListeners } from './events';
+// import { folderWatcher } from './folder-watcher';
+
+// Assets
+import logo from '../../resources/favicon@2x.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
-import { eventsListeners } from './events';
-// import { folderWatcher } from './folder-watcher';
 
 // updateElectronApp();
 
@@ -217,24 +213,7 @@ app.whenReady().then(async () => {
   createWindow();
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
-  eventsListeners();
-
-  // TODO: Move this to eventListeners passing in mainWindow
-  ipcMain.on('resource-remove', (_, resource: Resource) => {
-    const updatedResources = resourcesRemove(resource.hash);
-    socketCommandStatus({
-      type: 'resources:remove',
-      status: 'success',
-      resource,
-    });
-    socketCommandStatus({
-      type: 'resources:list',
-      resources: updatedResources,
-    });
-    mainWindow.webContents.send('resource-remove', {
-      resource,
-    });
-  });
+  eventsListeners({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
