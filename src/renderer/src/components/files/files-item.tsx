@@ -26,7 +26,7 @@ export function FilesItem(props: ItemProps) {
   const isNotDone = isDownloading && progress < 100;
 
   useEffect(() => {
-    if (props.id) {
+    if (props.id && isDownloading) {
       window.electron.ipcRenderer.on(
         `resource-download:${props.id}`,
         function (_, message) {
@@ -43,7 +43,7 @@ export function FilesItem(props: ItemProps) {
         `resource-download:${props.id}`,
       );
     };
-  }, []);
+  }, [isDownloading]);
 
   const cancelAndRemoveDownload = () => {
     cancelDownload(props.id || '');

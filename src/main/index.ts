@@ -24,13 +24,14 @@ import {
   setResourcePath,
   getResourcePath,
 } from './store';
-import chokidar from 'chokidar';
 import { socketIOConnect, socketEmit, socketCommandStatus } from './socket';
 import { resourcesRemove } from './commands';
 import { checkModelsFolder } from './check-models-folder';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
+import { eventsListeners } from './events';
+// import { folderWatcher } from './folder-watcher';
 
 // updateElectronApp();
 
@@ -215,19 +216,10 @@ app.whenReady().then(async () => {
   checkModelsFolder();
   createWindow();
   socketIOConnect({ mainWindow, app });
+  // folderWatcher();
+  eventsListeners();
 
-  ipcMain.on('set-key', (_, key) => {
-    console.log('Setting key', key);
-    setKey(key);
-    socketEmit({
-      eventName: 'join',
-      payload: key,
-      cb: () => {
-        console.log(`Joined room ${key}`);
-      },
-    });
-  });
-
+  // TODO: Move this to eventListeners passing in mainWindow
   ipcMain.on('resource-remove', (_, resource: Resource) => {
     const updatedResources = resourcesRemove(resource.hash);
     socketCommandStatus({
@@ -244,37 +236,8 @@ app.whenReady().then(async () => {
     });
   });
 
-  ipcMain.on('set-root-path', (_, directory) => {
-    if (directory['path'] !== '') {
-      console.log('Setting root path', directory);
-      setRootResourcePath(directory['path']);
-    }
-  });
-
-  ipcMain.on('set-path', (_, directory) => {
-    if (directory['path'] !== '') {
-      setResourcePath(directory['type'], directory['path']);
-    }
-  });
-
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
-  });
-
-  ipcMain.on('clear-settings', () => {
-    clearSettings();
-  });
-
-  ipcMain.on('close-app', async () => {
-    console.log('Closing app');
-    app.quit();
-  });
-
-  ipcMain.on('open-root-model-folder', () => {
-    const rootResourcePath = getRootResourcePath();
-    if (rootResourcePath) {
-      shell.openPath(rootResourcePath);
-    }
   });
 
   ipcMain.handle('dialog:openDirectory', async () => {
@@ -285,52 +248,6 @@ app.whenReady().then(async () => {
       return;
     } else {
       return filePaths[0];
-    }
-  });
-
-  let watcher;
-  const rootResourcePath = getRootResourcePath();
-
-  if (rootResourcePath && rootResourcePath !== '') {
-    // @ts-ignore
-    watcher = chokidar
-      .watch(rootResourcePath, { ignored: /(^|[\/\\])\../ })
-      .on('add, unlink', (event, path) => {
-        console.log('Watching model directory: ', rootResourcePath);
-        console.log(event, path);
-        // Generate hash from file
-
-        // event === 'add'
-        // Lookup hash in store
-        // Add if doesnt exist
-
-        // const resourceList = resourcesList();
-        // socketCommandStatus({ type: 'resources:list', resources: resourceList });
-        // resources.append({'type': type, 'name': name, 'hash': hash, 'path': filename, 'hasPreview': has_preview(filename), 'hasInfo': has_info(filename) })
-
-        // event === 'unlink'
-        // Remove hash from store
-        // TODO: This wont work because we need to read the file to get the hash
-      });
-  }
-
-  // This is in case the directory changes
-  // We want to stop watching the current directory and start watching the new one
-  store.onDidChange('rootResourcePath', async (newValue: unknown) => {
-    const path = newValue as string;
-
-    if (path && path !== '') {
-      await watcher.close();
-
-      // @ts-ignore
-      watcher = chokidar
-        .watch(path, { ignored: /(^|[\/\\])\../ })
-        .on('add, unlink', (event, path) => {
-          console.log(event, path);
-
-          // @ts-ignore
-          console.log('Model directory changed to: ', newValue.model);
-        });
     }
   });
 

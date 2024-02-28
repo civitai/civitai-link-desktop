@@ -26,9 +26,11 @@ export function ActivitiesItem({
         ) : (
           <Trash2 size={20} />
         )}
-        <p className="text-sm capitalize">
-          {type} <b>{name}</b>
-        </p>
+        <a href={civitaiUrl} target="_blank">
+          <p className="text-sm capitalize">
+            {type} <b>{name}</b>
+          </p>
+        </a>
       </div>
     </div>
   );
