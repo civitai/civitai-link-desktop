@@ -18,7 +18,7 @@ type ElectronContextType = {
   key?: string | null;
   appLoading: boolean;
   clearSettings: () => void;
-  activityList: ResourcesMap; // TODO: Change this type
+  activityList: ActivityItem[];
   fileList: ResourcesMap;
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
@@ -29,7 +29,7 @@ const defaultValue: ElectronContextType = {
   key: null,
   appLoading: true,
   clearSettings: () => {},
-  activityList: {},
+  activityList: [],
   fileList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
@@ -42,7 +42,7 @@ export const useElectron = () => useContext(ElectronContext);
 export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
-  const [activityList, setActivityList] = useState<ResourcesMap>({});
+  const [activityList, setActivityList] = useState<ActivityItem[]>([]);
   const [fileList, setFileList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
@@ -59,19 +59,13 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         description,
       });
 
-      setActivityList((state) => {
-        const { [hash]: rm, ...rest } = state;
-
-        return rest;
-      });
-
       setFileList((state) => {
         const { [hash]: rm, ...rest } = state;
 
         return rest;
       });
     },
-    [activityList, fileList],
+    [fileList],
   );
 
   useEffect(() => {
@@ -84,15 +78,22 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Update when activity happens
+  useEffect(() => {
+    ipcRenderer.on('activity-update', function (_, activities) {
+      setActivityList(activities);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('activity-update');
+    };
+  }, []);
+
   // Update when file downloaded
   useEffect(() => {
+    // TODO: Look at switching to listen to the store change instead of firing messages
+    // ipcRenderer.on('files-update', function (_, message) {
     ipcRenderer.on('activity-add', function (_, message) {
-      // @ts-ignore // TODO: This typedef will change
-      setActivityList((activities) => ({
-        [message.hash]: message,
-        ...activities,
-      }));
-
       setFileList((files) => ({
         [message.hash]: message,
         ...files,
@@ -172,7 +173,9 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);
-    setActivityList({});
+    setActivityList([]);
+    setConnectionStatus(ConnectionStatus.DISCONNECTED);
+    setRootResourcePath(null);
   };
 
   return (

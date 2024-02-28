@@ -230,6 +230,10 @@ app.whenReady().then(async () => {
     }
   });
 
+  store.onDidChange('activities', (newValue) => {
+    mainWindow.webContents.send('activity-update', newValue);
+  });
+
   store.onDidChange('connectionStatus', async (newValue) => {
     let icon;
 
