@@ -24,7 +24,7 @@ import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
 // import { folderWatcher } from './folder-watcher';
 
-// Assets
+// Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
@@ -125,12 +125,7 @@ function setWindowAutoHide() {
 }
 
 function toggleWindow() {
-  if (mainWindow.isVisible()) {
-    mainWindow.hide();
-    return;
-  }
-
-  showWindow();
+  mainWindow.isDestroyed() ? createWindow() : showWindow();
 }
 
 function alignWindow() {
@@ -145,7 +140,7 @@ function alignWindow() {
 
 function showWindow() {
   alignWindow();
-  mainWindow.show();
+  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
 }
 
 function calculateWindowPosition() {

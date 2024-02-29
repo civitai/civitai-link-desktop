@@ -5,6 +5,13 @@ import { useApi } from '@/hooks/use-api';
 import { ResourceType } from '@/types';
 import { useElectron } from '@/providers/electron';
 import { toast } from './ui/use-toast';
+import { ellipsis } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type PathInputProps = {
   defaultPath?: string;
@@ -68,11 +75,20 @@ export function PathInput(props: PathInputProps) {
 
   return (
     <div className="flex flex-row gap-x-4 items-center overflow-hidden">
-      <div className="p-2 border border-[#373A40] bg-[#2C2E33] rounded-lg overflow-hidden shrink">
-        <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40 cursor-default">
-          {dirPath || 'Select a directory'}
-        </p>
-      </div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger className="text-left">
+            <div className="p-2 border border-[#373A40] bg-[#2C2E33] rounded-lg overflow-hidden shrink">
+              <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40 cursor-default">
+                {ellipsis({ str: dirPath || 'Select a directory' })}
+              </p>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-[360px] ml-4 bg-background">
+            <p>{dirPath}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <Button onClick={getDir} className="p-3 min-h-14 min-w-14">
         <GoFileDirectory size={24} />
       </Button>

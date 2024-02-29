@@ -24,7 +24,7 @@ export function Intro() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div>
-        <img src={logo} alt="logo" className="w-8 h-8" />
+        <img src={logo} alt="logo" className="w-10 h-10" />
       </div>
       <div>
         <p className="mb-2">

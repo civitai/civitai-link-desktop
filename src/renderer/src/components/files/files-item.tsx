@@ -1,7 +1,7 @@
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';
 import duration from 'dayjs/plugin/duration';
@@ -59,26 +59,12 @@ export function FilesItem(props: ItemProps) {
   };
 
   return (
-    <Card className="mb-4 bg-transparent">
-      <CardHeader>
-        <CardTitle className="justify-between flex-row flex">
-          <div className="flex items-center space-x-2">
-            <Badge variant="modelTag">{props.type}</Badge>
-            <Badge variant="outline">{props.modelVersionName}</Badge>
-          </div>
-          {props.downloadDate ? (
-            <p className="text-sm font-normal text-[#909296] flex items-center">
-              <DownloadCloud className="mr-1" size={16} color="#909296" />
-              {dayjs(props.downloadDate).format('YYYY-MM-DD')}
-            </p>
-          ) : null}
-        </CardTitle>
-      </CardHeader>
+    <Card className="mb-2 bg-transparent group">
       {!isNotDone ? (
         <CardContent>
-          <div className="flex items-center pt-2">
+          <div className="flex relative">
             {props.previewImageUrl ? (
-              <div className="min-w-9 h-9 mr-2 items-center overflow-hidden rounded">
+              <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
                 <img
                   src={props.previewImageUrl}
                   alt={props.modelName}
@@ -86,28 +72,42 @@ export function FilesItem(props: ItemProps) {
                 />
               </div>
             ) : (
-              <div className="bg-card w-9 h-9 mr-2 rounded flex items-center justify-center">
-                <Image size={16} />
+              <div className="bg-card w-12 h-12 mr-2 rounded flex items-center justify-center">
+                <Image size={24} />
               </div>
             )}
-            <div className="space-y-1 w-full whitespace-nowrap overflow-hidden relative pr-8">
-              <a href={props.civitaiUrl} target="_blank">
-                <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
-                  {props.modelName}
+            <div className="w-full whitespace-nowrap overflow-hidden pr-8 justify-between flex flex-col flex-1">
+              <div>
+                <a href={props.civitaiUrl} target="_blank">
+                  <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
+                    {props.modelName}
+                  </p>
+                </a>
+              </div>
+              <div className="flex items-center space-x-2 group-hover:hidden">
+                <Badge variant="modelTag">{props.type}</Badge>
+                <Badge variant="outline">{props.modelVersionName}</Badge>
+              </div>
+              <div className="justify-center hidden group-hover:flex flex-col">
+                {props.downloadDate ? (
+                  <p className="text-[10px] font-normal text-[#909296] flex items-center">
+                    <DownloadCloud className="mr-1" size={12} color="#909296" />
+                    {dayjs(props.downloadDate).fromNow()}
+                  </p>
+                ) : null}
+                <p className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden">
+                  {props.name}
                 </p>
-              </a>
-              <p className="text-xs dark:text-[#909296] text-ellipsis overflow-hidden">
-                {props.name}
-              </p>
-              {!isNotDone ? (
-                <Trash2
-                  color="red"
-                  className="cursor-pointer absolute right-0 bottom-0"
-                  onClick={removeResource}
-                  size={20}
-                />
-              ) : null}
+              </div>
             </div>
+            {!isNotDone ? (
+              <Trash2
+                color="#F15252"
+                className="cursor-pointer absolute group-hover:flex hidden top-1/2 right-0 transform -translate-y-1/2"
+                onClick={removeResource}
+                size={20}
+              />
+            ) : null}
           </div>
         </CardContent>
       ) : (

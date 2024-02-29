@@ -11,7 +11,7 @@ export function Settings() {
   return (
     <SheetContent className="w-full p-0">
       <SheetHeader>
-        <SheetTitle className="py-4">Settings</SheetTitle>
+        <SheetTitle className="pb-4">Settings</SheetTitle>
       </SheetHeader>
       <div className="h-full overflow-y-auto pb-20 w-full px-4">
         <div className="grid gap-6">
@@ -26,11 +26,11 @@ export function Settings() {
               </div>
             ),
           )}
-          <div className="bg-red-200 border border-red-400 pt-2 px-10 rounded mt-6">
-            <p className="text-center text-black font-bold uppercase">
+          <div className="bg-red-200 border border-red-400 py-4 px-10 rounded mt-6">
+            <p className="text-center text-black font-bold uppercase mb-2">
               Danger Zone
             </p>
-            <div className="py-10  flex flex-col justify-center">
+            <div className="flex flex-col justify-center">
               <Button
                 onClick={() => clearSettings()}
                 variant="destructive"

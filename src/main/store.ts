@@ -1,4 +1,5 @@
 import Store, { Schema } from 'electron-store';
+import path from 'path';
 
 export enum ConnectionStatus {
   DISCONNECTED = 'disconnected',
@@ -105,14 +106,17 @@ export function getUIStore() {
   };
 }
 
-export function getResourcePath(path: string) {
-  const resource = Resources[path.toUpperCase()];
+export function getResourcePath(resourcePath: string) {
+  const resource = Resources[resourcePath.toUpperCase()];
   const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
 
   if (resourcePaths[resource] === '') {
     const rootResourcePath = getRootResourcePath();
 
-    return `${rootResourcePath}/${Resources[path.toUpperCase()]}`;
+    return path.resolve(
+      rootResourcePath,
+      Resources[resourcePath.toUpperCase()],
+    );
   }
 
   return resourcePaths[resource];
