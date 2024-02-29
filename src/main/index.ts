@@ -23,18 +23,12 @@ import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
 // import { folderWatcher } from './folder-watcher';
-import { isMac } from './utils/check-os';
 
 // Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
-
-// White Logo Assets
-import logoConnectedWhite from '../../resources/white-favicon-connected@2x.png?asset';
-import logoPendingWhite from '../../resources/white-favicon-pending@2x.png?asset';
-import logoDisconnectedWhite from '../../resources/white-favicon-disconnected@2x.png?asset';
 
 // updateElectronApp();
 
@@ -203,9 +197,7 @@ Menu.setApplicationMenu(null);
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   // Set logo to disconnected (red)
-  const icon = nativeImage.createFromPath(
-    isMac ? logoDisconnectedWhite : logoDisconnected,
-  );
+  const icon = nativeImage.createFromPath(logoDisconnected);
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
   tray.on('click', () => {
@@ -247,15 +239,11 @@ app.whenReady().then(async () => {
     let icon;
 
     if (newValue === ConnectionStatus.CONNECTED) {
-      icon = nativeImage.createFromPath(
-        isMac ? logoConnectedWhite : logoConnected,
-      );
+      icon = nativeImage.createFromPath(logoConnected);
     } else if (newValue === ConnectionStatus.DISCONNECTED) {
-      icon = nativeImage.createFromPath(
-        isMac ? logoDisconnectedWhite : logoDisconnected,
-      );
+      icon = nativeImage.createFromPath(logoDisconnected);
     } else if (newValue === ConnectionStatus.CONNECTING) {
-      icon = nativeImage.createFromPath(isMac ? logoPendingWhite : logoPending);
+      icon = nativeImage.createFromPath(logoPending);
     }
 
     tray.setImage(icon);
