@@ -1,4 +1,4 @@
-import Store from 'electron-store';
+import Store, { Schema } from 'electron-store';
 
 export enum ConnectionStatus {
   DISCONNECTED = 'disconnected',
@@ -18,7 +18,7 @@ export enum Resources {
   VAE = 'VAE',
 }
 
-const schema = {
+const schema: Schema<Record<string, unknown>> = {
   key: {
     type: ['string', 'null'],
     default: null,
@@ -48,27 +48,17 @@ const schema = {
       [Resources.VAE]: '',
     },
   },
-  // All of the resources available
-  // Only used for lookup purposes
   resources: {
     type: 'object',
     default: {},
   },
-  // More historical activities < 30
-  activities: {
+  activitiesList: {
     type: 'array',
     default: [],
   },
 };
 
-const migrations = {
-  '>=1.4.0': (store: Store) => {
-    store.set('activities', []);
-  },
-};
-
-// @ts-ignore
-export const store = new Store({ schema, migrations });
+export const store = new Store({ schema });
 
 export function setKey(key: string | null) {
   store.set('key', key);
@@ -109,7 +99,7 @@ export function setRootResourcePath(path: string) {
 export function getUIStore() {
   return {
     rootResourcePath: store.get('rootResourcePath'),
-    activities: store.get('activities'),
+    activities: store.get('activitiesList'),
     files: store.get('resources'),
     connectionStatus: store.get('connectionStatus'),
   };
@@ -138,16 +128,16 @@ export function setResourcePath(resource: string, path: string) {
 }
 
 export function updateActivity(activity: ActivityItem) {
-  const activities = store.get('activities') as ActivityItem[];
+  const activities = store.get('activitiesList') as ActivityItem[];
 
   // Only keep last 30 activities
   if (activities.length > 30) {
     const clonedActivities = [...activities];
     clonedActivities.pop();
 
-    return store.set('activities', [activity, ...clonedActivities]);
+    return store.set('activitiesList', [activity, ...clonedActivities]);
   } else {
-    return store.set('activities', [activity, ...activities]);
+    return store.set('activitiesList', [activity, ...activities]);
   }
 }
 
