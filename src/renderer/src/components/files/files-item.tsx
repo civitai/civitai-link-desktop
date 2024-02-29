@@ -59,10 +59,10 @@ export function FilesItem(props: ItemProps) {
   };
 
   return (
-    <Card className="mb-2 bg-transparent">
+    <Card className="mb-2 bg-transparent group">
       {!isNotDone ? (
         <CardContent>
-          <div className="flex group relative">
+          <div className="flex relative">
             {props.previewImageUrl ? (
               <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
                 <img
