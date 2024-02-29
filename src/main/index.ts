@@ -23,12 +23,18 @@ import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
 // import { folderWatcher } from './folder-watcher';
+import { isMac } from './utils/check-os';
 
-// Assets
+// Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
+
+// White Logo Assets
+import logoConnectedWhite from '../../resources/white-favicon-connected@2x.png?asset';
+import logoPendingWhite from '../../resources/white-favicon-pending@2x.png?asset';
+import logoDisconnectedWhite from '../../resources/white-favicon-disconnected@2x.png?asset';
 
 // updateElectronApp();
 
@@ -125,12 +131,7 @@ function setWindowAutoHide() {
 }
 
 function toggleWindow() {
-  if (mainWindow.isVisible()) {
-    mainWindow.hide();
-    return;
-  }
-
-  showWindow();
+  mainWindow.isDestroyed() ? createWindow() : showWindow();
 }
 
 function alignWindow() {
@@ -145,7 +146,7 @@ function alignWindow() {
 
 function showWindow() {
   alignWindow();
-  mainWindow.show();
+  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
 }
 
 function calculateWindowPosition() {
@@ -202,7 +203,9 @@ Menu.setApplicationMenu(null);
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   // Set logo to disconnected (red)
-  const icon = nativeImage.createFromPath(logoDisconnected);
+  const icon = nativeImage.createFromPath(
+    isMac ? logoDisconnectedWhite : logoDisconnected,
+  );
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
   tray.on('click', () => {
@@ -244,11 +247,15 @@ app.whenReady().then(async () => {
     let icon;
 
     if (newValue === ConnectionStatus.CONNECTED) {
-      icon = nativeImage.createFromPath(logoConnected);
+      icon = nativeImage.createFromPath(
+        isMac ? logoConnectedWhite : logoConnected,
+      );
     } else if (newValue === ConnectionStatus.DISCONNECTED) {
-      icon = nativeImage.createFromPath(logoDisconnected);
+      icon = nativeImage.createFromPath(
+        isMac ? logoDisconnectedWhite : logoDisconnected,
+      );
     } else if (newValue === ConnectionStatus.CONNECTING) {
-      icon = nativeImage.createFromPath(logoPending);
+      icon = nativeImage.createFromPath(isMac ? logoPendingWhite : logoPending);
     }
 
     tray.setImage(icon);
