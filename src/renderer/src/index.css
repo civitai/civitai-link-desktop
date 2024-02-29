@@ -67,6 +67,9 @@
 }
  
 @layer base {
+  ::-webkit-scrollbar {
+    display: none;
+  }
   * {
     @apply border-border;
   }
