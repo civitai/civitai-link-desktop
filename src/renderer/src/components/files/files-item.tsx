@@ -92,7 +92,7 @@ export function FilesItem(props: ItemProps) {
                 {props.downloadDate ? (
                   <p className="text-[10px] font-normal text-[#909296] flex items-center">
                     <DownloadCloud className="mr-1" size={12} color="#909296" />
-                    {dayjs(props.downloadDate).format('YYYY-MM-DD')}
+                    {dayjs(props.downloadDate).fromNow()}
                   </p>
                 ) : null}
                 <p className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden">
