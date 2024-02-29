@@ -84,7 +84,7 @@ export function PathInput(props: PathInputProps) {
               </p>
             </div>
           </TooltipTrigger>
-          <TooltipContent className="max-w-[360px] ml-4">
+          <TooltipContent className="max-w-[360px] ml-4 bg-background">
             <p>{dirPath}</p>
           </TooltipContent>
         </Tooltip>
