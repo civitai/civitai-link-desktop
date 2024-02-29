@@ -11,7 +11,7 @@ export function Settings() {
   return (
     <SheetContent className="w-full p-0">
       <SheetHeader>
-        <SheetTitle className="py-4">Settings</SheetTitle>
+        <SheetTitle className="pb-4">Settings</SheetTitle>
       </SheetHeader>
       <div className="h-full overflow-y-auto pb-20 w-full px-4">
         <div className="grid gap-6">

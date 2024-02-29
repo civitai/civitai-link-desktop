@@ -34,7 +34,7 @@ export function Header() {
     <Sheet>
       <div className="sticky top-0 flex items-center px-4 py-[0.82rem] select-none bg-background z-10">
         <div className="flex space-x-4 items-center">
-          <img src={logo} alt="logo" className="w-8 h-8" />
+          <img src={logo} alt="logo" className="w-10 h-10" />
           <Dialog>
             <DialogTrigger asChild>
               <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2 cursor-pointer">

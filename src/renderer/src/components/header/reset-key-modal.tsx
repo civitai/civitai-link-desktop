@@ -31,7 +31,7 @@ export function ResetKeyModal() {
     <DialogContent className="max-w-[360px] rounded p-4">
       <DialogHeader>
         <DialogTitle>
-          <img src={logo} alt="logo" className="w-8 h-8 mb-4" />
+          <img src={logo} alt="logo" className="w-10 h-10 mb-4" />
         </DialogTitle>
         <DialogDescription className="text-white text-left">
           Copy the shortcode provided on the Civitai website and paste it onto

@@ -5,11 +5,10 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useApi } from '@/hooks/use-api';
-import { SheetTrigger } from '../ui/sheet';
+import { SheetTrigger } from '@/components/ui/sheet';
 
 export function DropdownMenuDemo() {
   const { closeApp } = useApi();
@@ -33,7 +32,6 @@ export function DropdownMenuDemo() {
         <DropdownMenuItem onClick={() => closeApp()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Quit Civitai Link</span>
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
