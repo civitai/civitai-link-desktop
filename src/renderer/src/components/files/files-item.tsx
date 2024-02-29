@@ -76,14 +76,10 @@ export function FilesItem(props: ItemProps) {
                 <Image size={24} />
               </div>
             )}
-            <div className="w-full whitespace-nowrap overflow-hidden relative pr-8 justify-between flex flex-col flex-1">
+            <div className="w-full whitespace-nowrap overflow-hidden pr-8 justify-between flex flex-col flex-1">
               <div>
-                <a
-                  href={props.civitaiUrl}
-                  target="_blank"
-                  className="inline-block"
-                >
-                  <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden pt-1">
+                <a href={props.civitaiUrl} target="_blank">
+                  <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
                     {props.modelName}
                   </p>
                 </a>
@@ -92,8 +88,14 @@ export function FilesItem(props: ItemProps) {
                 <Badge variant="modelTag">{props.type}</Badge>
                 <Badge variant="outline">{props.modelVersionName}</Badge>
               </div>
-              <div className="items-center hidden group-hover:flex">
-                <p className="text-xs dark:text-[#909296] text-ellipsis overflow-hidden">
+              <div className="justify-center hidden group-hover:flex flex-col">
+                {props.downloadDate ? (
+                  <p className="text-[10px] font-normal text-[#909296] flex items-center">
+                    <DownloadCloud className="mr-1" size={12} color="#909296" />
+                    {dayjs(props.downloadDate).format('YYYY-MM-DD')}
+                  </p>
+                ) : null}
+                <p className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden">
                   {props.name}
                 </p>
               </div>
