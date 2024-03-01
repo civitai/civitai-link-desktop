@@ -57,6 +57,7 @@ const browserWindowOptions = DEBUG
       transparent: true,
       alwaysOnTop: true,
       skipTaskbar: true,
+      thickFrame: false,
     };
 
 function createWindow() {
