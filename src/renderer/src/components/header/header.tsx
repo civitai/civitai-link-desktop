@@ -39,7 +39,7 @@ export function Header() {
             <DialogTrigger asChild>
               <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2 cursor-pointer">
                 {connectionRender(connectionStatus)}
-                <p className="text-sm">My SD Instance</p>
+                <p className="text-sm">Link Connection</p>
               </div>
             </DialogTrigger>
             <ResetKeyModal />

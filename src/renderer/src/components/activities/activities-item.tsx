@@ -1,6 +1,9 @@
 import { DownloadCloud, Trash2 } from 'lucide-react';
 import { ActivityType } from '@/types';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 type ActivitiesItemProps = {
   name: string;
@@ -17,20 +20,20 @@ export function ActivitiesItem({
 }: ActivitiesItemProps) {
   return (
     <div>
-      <p className="text-xs text-[#909296]">
-        {dayjs(date).format('YYYY-MM-DD')}
-      </p>
       <div className="flex space-x-2 items-center mt-2">
         {type === ActivityType.Downloaded ? (
           <DownloadCloud size={20} />
         ) : (
           <Trash2 size={20} />
         )}
-        <a href={civitaiUrl} target="_blank">
-          <p className="text-sm capitalize">
-            {type} <b>{name}</b>
-          </p>
-        </a>
+        <div>
+          <a href={civitaiUrl} target="_blank">
+            <p className="text-sm capitalize">
+              {type} <b>{name}</b>
+            </p>
+          </a>
+          <p className="text-xs text-[#909296]">{dayjs(date).fromNow()}</p>
+        </div>
       </div>
     </div>
   );
