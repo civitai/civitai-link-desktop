@@ -178,6 +178,15 @@ export async function downloadFile(params: DownloadFileParams) {
         id: params.id,
       });
 
+      const activity: ActivityItem = {
+        name: params.modelName,
+        date: new Date().toISOString(),
+        type: 'cancelled' as ActivityType,
+        civitaiUrl: params.civitaiUrl,
+      };
+
+      updateActivity(activity);
+
       // Remove from temp folder
       fs.unlinkSync(tempFilePath);
     }

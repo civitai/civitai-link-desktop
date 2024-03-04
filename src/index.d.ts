@@ -35,6 +35,8 @@ declare global {
   enum ActivityType {
     Downloaded = 'downloaded',
     Deleted = 'deleted',
+    Cancelled = 'cancelled',
+    Downloading = 'downloading',
   }
 
   type ActivityItem = {
