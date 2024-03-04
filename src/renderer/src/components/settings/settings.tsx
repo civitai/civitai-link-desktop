@@ -3,7 +3,7 @@ import { SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { PathInput } from '@/components/path-input';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
-import { Label } from '../ui/label';
+import { Label } from '@/components/ui/label';
 
 export function Settings() {
   const { clearSettings } = useElectron();

@@ -5,6 +5,7 @@ import { CodeInput } from '@/components/code-input';
 import logo from '@/assets/logo.png';
 import { useState } from 'react';
 import { useApi } from '@/hooks/use-api';
+import { Label } from '@/components/ui/label';
 
 export function Intro() {
   const [segments, setSegments] = useState<string[]>(new Array(6).fill(''));
@@ -33,8 +34,8 @@ export function Intro() {
         </p>
         <CodeInput segments={segments} setSegments={setSegments} />
       </div>
-      <div>
-        <p className="mb-2">Set the default model folder.</p>
+      <div className="flex flex-col gap-y-4 overflow-hidden">
+        <Label>Set the default model folder</Label>
         <PathInput
           defaultPath="Root Models Directory"
           type={ResourceType.DEFAULT}
