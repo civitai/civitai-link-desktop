@@ -42,7 +42,7 @@ export function ActivitiesItem({
   return (
     <div>
       <div className="flex space-x-2 items-center mt-2">
-        {ActivityItemIcon({ type })}
+        <div className="w-5">{ActivityItemIcon({ type })}</div>
         <div>
           <a href={civitaiUrl} target="_blank">
             <p className="text-sm capitalize">
