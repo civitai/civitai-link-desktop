@@ -1,7 +1,12 @@
 import { getModelByHash } from './civitai-api';
 import { hash } from './hash';
 import { listDirectory } from './list-directory';
-import { addResource, getRootResourcePath, lookupResource } from './store';
+import {
+  addResource,
+  getRootResourcePath,
+  lookupResource,
+  updatedResource,
+} from './store';
 import path from 'path';
 
 export function checkModelsFolder() {
@@ -17,12 +22,17 @@ export function checkModelsFolder() {
     // Check if exists in store
     const resource = lookupResource(modelHash);
 
+    // In case no path is stored, update it
+    if (resource && !resource.localPath) {
+      updatedResource({ ...resource, localPath: filePath });
+    }
+
     // If not, fetch from API and add to store
     if (!resource) {
       try {
         const model = await getModelByHash(modelHash);
 
-        addResource(model);
+        addResource({ ...model, localPath: filePath });
       } catch {
         console.error('Error hash', modelHash, file);
       }

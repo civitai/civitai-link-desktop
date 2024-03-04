@@ -169,6 +169,15 @@ export function lookupResource(hash: string) {
   return resources[hash.toLowerCase()];
 }
 
+export function updatedResource(resource: Resource) {
+  const resources = store.get('resources') as ResourcesMap;
+
+  return store.set('resources', {
+    ...resources,
+    [resource.hash]: resource,
+  });
+}
+
 export function getResources() {
   return store.get('resources') as ResourcesMap;
 }
