@@ -108,6 +108,7 @@ export async function downloadFile(params: DownloadFileParams) {
       modelVersionName: params.modelVersionName,
       previewImageUrl: params.previewImageUrl,
       civitaiUrl: params.civitaiUrl,
+      localPath: filePath,
     };
 
     const activity: ActivityItem = {

@@ -10,11 +10,17 @@ import { resourcesList } from './resources-list';
 
 export function resourcesRemove(hash: string) {
   const resource = lookupResource(hash);
-  const resourcePath = getResourcePath(resource.type);
+  const defaultResourcePath = getResourcePath(resource.type);
   const timestamp = new Date().toISOString();
+  const resourcePath =
+    resource.localPath || path.join(defaultResourcePath, resource.name);
 
-  // Remove from disk
-  fs.unlinkSync(path.join(resourcePath, resource.name));
+  try {
+    // Remove from disk
+    fs.unlinkSync(resourcePath);
+  } catch (e) {
+    console.error('Error removing resource from disk', e);
+  }
 
   // Remove from resources and activity
   removeResource(hash);
