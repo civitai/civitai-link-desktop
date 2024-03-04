@@ -41,6 +41,10 @@ export function socketEmit({ eventName, payload, cb }: socketEmitParams) {
   socket.emit(eventName, payload, cb);
 }
 
+export function leaveSocketRoom() {
+  socket.emit('leave');
+}
+
 type socketIOConnectParams = {
   mainWindow: BrowserWindow;
   app: Electron.App;
