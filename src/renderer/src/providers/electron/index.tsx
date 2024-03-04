@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { ConnectionStatus } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
+import { useApi } from '@/hooks/use-api';
 
 type RemoveActivityParams = {
   hash: string;
@@ -50,6 +51,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   );
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const { toast } = useToast();
+  const { cancelDownload } = useApi();
 
   // Remove activity from list
   const removeActivity = useCallback(
@@ -178,6 +180,23 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       ipcRenderer.removeAllListeners('resource-remove');
     };
   }, []);
+
+  // This is a super hacky way to cancel downloads
+  useEffect(() => {
+    ipcRenderer.on('activity-cancel', function (_, { id }) {
+      const fileKeys = Object.keys(fileList);
+      const fileToRemove = fileKeys.find((file) => fileList[file].id === id);
+      cancelDownload(id);
+
+      if (fileToRemove) {
+        removeActivity({
+          hash: fileList[fileToRemove].hash,
+          title: 'Download canceled',
+          description: `The download for ${fileList[fileToRemove].modelName} has been canceled.`,
+        });
+      }
+    });
+  });
 
   const clearSettings = () => {
     window.api.clearSettings();

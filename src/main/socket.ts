@@ -92,12 +92,12 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         activitiesClear();
         break;
       case 'activities:cancel':
-        activitiesCancel();
+        activitiesCancel({ mainWindow, activityId: payload.activityId });
         break;
       case 'resources:list':
         socketCommandStatus({
           id: payload.id,
-          type: payload['type'],
+          type: payload.type,
           status: 'success',
           resources: resourceList,
         });
@@ -107,7 +107,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
           mainWindow.webContents.send('error', 'Resource already exists');
         } else {
           resourcesAdd({
-            id: payload['id'],
+            id: payload.id,
             payload: payload.resource,
             socket,
             mainWindow,

@@ -162,9 +162,10 @@ export async function downloadFile(params: DownloadFileParams) {
 
   data.pipe(writer);
 
-  ipcMain.on('cancel-download', (_, id) => {
+  function cancelDownload(id: string) {
+    console.log('test', id);
     if (params.id === id) {
-      console.log('Download canceled');
+      console.log('Download canceled', params.id);
 
       // Abort download w/ Axios
       controller.abort();
@@ -180,5 +181,7 @@ export async function downloadFile(params: DownloadFileParams) {
       // Remove from temp folder
       fs.unlinkSync(tempFilePath);
     }
-  });
+  }
+
+  ipcMain.once('cancel-download', (_, id) => cancelDownload(id));
 }
