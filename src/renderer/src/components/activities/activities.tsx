@@ -53,7 +53,6 @@ export function Activities() {
     );
   }
 
-  // TODO: Fix sticky top
   return (
     <div className="flex flex-col gap-y-4 mb-4 bg-background">
       {Object.keys(activities).map((date, key) => {

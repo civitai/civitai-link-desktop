@@ -231,8 +231,13 @@ app.whenReady().then(async () => {
   });
 
   // Updates activities in the UI when a change is detected
-  store.onDidChange('activities', (newValue) => {
+  store.onDidChange('activitiesList', (newValue) => {
     mainWindow.webContents.send('activity-update', newValue);
+  });
+
+  // Updates all files once changed (Happens when file finishes download)
+  store.onDidChange('resources', (newValue) => {
+    mainWindow.webContents.send('files-update', newValue);
   });
 
   // Updates the UI and Tray icon with the socket connection status

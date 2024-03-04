@@ -29,6 +29,7 @@ declare global {
     previewImageUrl?: string;
     civitaiUrl?: string;
     downloading?: boolean;
+    localPath?: string;
   };
 
   enum ActivityType {
