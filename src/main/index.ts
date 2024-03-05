@@ -8,7 +8,6 @@ import {
   dialog,
   Tray,
   nativeImage,
-  screen,
   Menu,
 } from 'electron';
 import { join } from 'path';
@@ -38,9 +37,6 @@ let tray;
 //defaults
 let width = 400;
 let height = 600;
-
-let margin_x = 0;
-let margin_y = 0;
 let framed = false;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
