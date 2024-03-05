@@ -79,8 +79,8 @@ export function PathInput(props: PathInputProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger className="text-left w-full">
-              <div className="p-2 border border-[#373A40] bg-[#2C2E33] rounded-lg overflow-hidden shrink">
-                <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40 cursor-default">
+              <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden shrink cursor-default">
+                <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40">
                   {ellipsis({ str: dirPath || 'Select a directory' })}
                 </p>
               </div>
