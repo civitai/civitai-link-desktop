@@ -6,6 +6,7 @@ import { eventClearSettings } from './clear-settings';
 import { eventSetRootPath } from './set-root-path';
 import { eventSetPath } from './set-path';
 import { eventResourceRemove } from './resource-remove';
+import { eventInit } from './init';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -21,4 +22,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('clear-settings', eventClearSettings);
   ipcMain.on('close-app', eventCloseApp);
   ipcMain.on('open-root-model-folder', eventOpenRootModelFolder);
+  ipcMain.on('init', eventInit);
 }

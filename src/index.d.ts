@@ -14,6 +14,7 @@ declare global {
       setResourcePath: (type: ResourceType, path: string) => void;
       getResourcePath: (type: ResourceType) => string;
       openRootModelFolder: () => void;
+      init: () => void;
     };
   }
 

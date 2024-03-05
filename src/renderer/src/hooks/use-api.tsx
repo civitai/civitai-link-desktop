@@ -28,5 +28,8 @@ export function useApi() {
     openRootModelFolder: async () => {
       return await window.api.openRootModelFolder();
     },
+    init: async () => {
+      return await window.api.init();
+    },
   };
 }

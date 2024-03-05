@@ -11,12 +11,13 @@ export function Intro() {
   const [segments, setSegments] = useState<string[]>(new Array(6).fill(''));
   const [folderValue, setFolderValue] = useState<string | null>(null);
 
-  const { setKey } = useApi();
+  const { setKey, init } = useApi();
 
   const submitSetKey = async () => {
     const segmentsString = segments.join('');
     if (segmentsString && segmentsString.length === 6) {
       setKey(segmentsString);
+      init();
     } else {
       console.log('No input value');
     }

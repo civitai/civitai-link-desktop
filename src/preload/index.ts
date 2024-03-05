@@ -22,6 +22,7 @@ const api = {
   getResourcePath: (type: ResourceType) =>
     ipcRenderer.invoke('get-resource-path', type),
   openRootModelFolder: () => ipcRenderer.send('open-root-model-folder'),
+  init: () => ipcRenderer.send('init'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

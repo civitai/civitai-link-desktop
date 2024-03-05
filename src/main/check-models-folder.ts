@@ -10,7 +10,9 @@ import {
 import path from 'path';
 
 export function checkModelsFolder() {
+  // Init load is null
   const modelDirectory = getRootResourcePath();
+  // Init load is empty []
   const files = listDirectory();
 
   files.forEach(async (file) => {
