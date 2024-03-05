@@ -138,65 +138,18 @@ function toggleWindow() {
 }
 
 function alignWindow() {
-  const position = calculateWindowPosition();
+  const trayBounds = tray.getBounds();
   mainWindow.setBounds({
     width: width,
     height: height,
-    x: position.x,
-    y: position.y,
+    x: trayBounds.x,
+    y: trayBounds.y,
   });
 }
 
 function showWindow() {
   alignWindow();
   mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-}
-
-function calculateWindowPosition() {
-  const screenBounds = screen.getPrimaryDisplay().size;
-  const trayBounds = tray.getBounds();
-
-  //where is the icon on the screen?
-  let trayPos = 4; // 1:top-left 2:top-right 3:bottom-left 4.bottom-right
-  trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
-  trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
-
-  let DEFAULT_MARGIN = { x: margin_x, y: margin_y };
-  let x;
-  let y;
-
-  //calculate the new window position
-  switch (trayPos) {
-    case 1: // for TOP - LEFT
-      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
-      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
-      break;
-
-    case 2: // for TOP - RIGHT
-      x = Math.floor(
-        trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
-      );
-      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
-      break;
-
-    case 3: // for BOTTOM - LEFT
-      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
-      y = Math.floor(
-        trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
-      );
-      break;
-
-    case 4: // for BOTTOM - RIGHT
-      x = Math.floor(
-        trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
-      );
-      y = Math.floor(
-        trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
-      );
-      break;
-  }
-
-  return { x: x, y: y };
 }
 
 Menu.setApplicationMenu(null);
@@ -222,6 +175,9 @@ app.whenReady().then(async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory'],
     });
+
+    // Fix closed window when dialog takes focus Windows
+    mainWindow.show();
 
     if (canceled) {
       return;
