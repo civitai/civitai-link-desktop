@@ -23,7 +23,9 @@ export function Files() {
   return (
     <div className="pt-2">
       {fileKeys?.map((file) => {
-        return <FilesItem {...fileList[file]} key={fileList[file].hash} />;
+        return (
+          <FilesItem resource={fileList[file]} key={fileList[file].hash} />
+        );
       })}
     </div>
   );

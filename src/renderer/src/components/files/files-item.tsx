@@ -9,26 +9,27 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
-import { DownloadCloud, Trash2, Image } from 'lucide-react';
+import { DownloadCloud, Image } from 'lucide-react';
+import { FileItemDelete } from './file-item-delete';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
-type ItemProps = Resource;
+type FilesItemProps = { resource: Resource };
 
-export function FilesItem(props: ItemProps) {
-  const [isDownloading, setIsDownloading] = useState(props.downloading);
+export function FilesItem({ resource }: FilesItemProps) {
+  const [isDownloading, setIsDownloading] = useState(resource.downloading);
   const [progress, setProgress] = useState(0);
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
-  const { cancelDownload, resourceRemove } = useApi();
+  const { cancelDownload } = useApi();
   const { removeActivity } = useElectron();
   const isNotDone = isDownloading && progress < 100;
 
   useEffect(() => {
-    if (props.id && isDownloading) {
+    if (resource.id && isDownloading) {
       window.electron.ipcRenderer.on(
-        `resource-download:${props.id}`,
+        `resource-download:${resource.id}`,
         function (_, message) {
           setProgress(message.progress);
           setSpeed(message.speed);
@@ -40,22 +41,18 @@ export function FilesItem(props: ItemProps) {
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners(
-        `resource-download:${props.id}`,
+        `resource-download:${resource.id}`,
       );
     };
   }, [isDownloading]);
 
   const cancelAndRemoveDownload = () => {
-    cancelDownload(props.id || '');
+    cancelDownload(resource.id || '');
     removeActivity({
-      hash: props.hash,
+      hash: resource.hash,
       title: 'Download canceled',
-      description: `The download for ${props.modelName} has been canceled.`,
+      description: `The download for ${resource.modelName} has been canceled.`,
     });
-  };
-
-  const removeResource = () => {
-    resourceRemove(props);
   };
 
   return (
@@ -63,11 +60,11 @@ export function FilesItem(props: ItemProps) {
       {!isNotDone ? (
         <CardContent>
           <div className="flex relative">
-            {props.previewImageUrl ? (
+            {resource.previewImageUrl ? (
               <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
                 <img
-                  src={props.previewImageUrl}
-                  alt={props.modelName}
+                  src={resource.previewImageUrl}
+                  alt={resource.modelName}
                   className="h-full w-full object-cover object-center"
                 />
               </div>
@@ -78,44 +75,37 @@ export function FilesItem(props: ItemProps) {
             )}
             <div className="w-full whitespace-nowrap overflow-hidden pr-8 justify-between flex flex-col flex-1">
               <div>
-                <a href={props.civitaiUrl} target="_blank">
+                <a href={resource.civitaiUrl} target="_blank">
                   <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
-                    {props.modelName}
+                    {resource.modelName}
                   </p>
                 </a>
               </div>
               <div className="flex items-center space-x-2 group-hover:hidden">
-                <Badge variant="modelTag">{props.type}</Badge>
-                <Badge variant="outline">{props.modelVersionName}</Badge>
+                <Badge variant="modelTag">{resource.type}</Badge>
+                <Badge variant="outline">{resource.modelVersionName}</Badge>
               </div>
               <div className="justify-center hidden group-hover:flex flex-col">
-                {props.downloadDate ? (
+                {resource.downloadDate ? (
                   <p className="text-[10px] font-normal text-[#909296] flex items-center">
                     <DownloadCloud className="mr-1" size={12} color="#909296" />
-                    {dayjs(props.downloadDate).fromNow()}
+                    {dayjs(resource.downloadDate).fromNow()}
                   </p>
                 ) : null}
                 <p className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden">
-                  {props.name}
+                  {resource.name}
                 </p>
               </div>
             </div>
-            {!isNotDone ? (
-              <Trash2
-                color="#F15252"
-                className="cursor-pointer absolute group-hover:flex hidden top-1/2 right-0 transform -translate-y-1/2"
-                onClick={removeResource}
-                size={20}
-              />
-            ) : null}
+            {!isNotDone ? <FileItemDelete resource={resource} /> : null}
           </div>
         </CardContent>
       ) : (
         <CardContent className="space-y-2">
           <div className="flex justify-between">
-            <a href={props.civitaiUrl} target="_blank">
+            <a href={resource.civitaiUrl} target="_blank">
               <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
-                {props.modelName}
+                {resource.modelName}
               </p>
             </a>
             <div>
