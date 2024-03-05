@@ -196,6 +196,10 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         });
       }
     });
+
+    return () => {
+      ipcRenderer.removeAllListeners('activity-cancel');
+    };
   });
 
   const clearSettings = () => {
