@@ -86,6 +86,14 @@ function createWindow() {
       mainWindow.webContents.openDevTools();
     }
 
+    // Set logo to disconnected (red)
+    const icon = nativeImage.createFromPath(logoDisconnected);
+    tray = new Tray(icon);
+    tray.setToolTip('Civitai Link');
+    tray.on('click', () => {
+      toggleWindow();
+    });
+
     // Pass upgradeKey to window
     if (upgradeKey) {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
@@ -197,14 +205,6 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  // Set logo to disconnected (red)
-  const icon = nativeImage.createFromPath(logoDisconnected);
-  tray = new Tray(icon);
-  tray.setToolTip('Civitai Link');
-  tray.on('click', () => {
-    toggleWindow();
-  });
-
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron');
 
@@ -258,7 +258,6 @@ app.whenReady().then(async () => {
 
   if (!DEBUG) {
     setWindowAutoHide();
-    alignWindow();
   }
 
   // Hides dock icon on macOS but keeps in taskbar
