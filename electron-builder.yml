@@ -1,5 +1,6 @@
 appId: com.civitai.link
-productName: civitai-link
+productName: Civitai Link
+copyright: Copyright © year 2024
 directories:
   buildResources: build
 files:
@@ -12,7 +13,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: civitai-link
+  executableName: Civitai Link
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

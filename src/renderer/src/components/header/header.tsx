@@ -36,12 +36,19 @@ export function Header() {
         <div className="flex space-x-4 items-center">
           <img src={logo} alt="logo" className="w-10 h-10" />
           <Dialog>
-            <DialogTrigger asChild>
-              <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2 cursor-pointer">
+            {connectionStatus === ConnectionStatus.CONNECTED ? (
+              <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2">
                 {connectionRender(connectionStatus)}
-                <p className="text-sm">Link Connection</p>
+                <p className="text-sm capitalize">connected</p>
               </div>
-            </DialogTrigger>
+            ) : (
+              <DialogTrigger asChild>
+                <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2 cursor-pointer">
+                  {connectionRender(connectionStatus)}
+                  <p className="text-sm capitalize">disconnected</p>
+                </div>
+              </DialogTrigger>
+            )}
             <ResetKeyModal />
           </Dialog>
         </div>

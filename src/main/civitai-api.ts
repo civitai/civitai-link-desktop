@@ -23,7 +23,7 @@ type ResponsePayload = {
 };
 
 // TODO: Create ignore list for not found models?
-// TODO: Filter NSFW images if selected in settings
+// TODO: Filter NSFW images if selected in settings - default false
 export const getModelByHash = async (hash: string): Promise<Resource> => {
   try {
     const { data }: ResponsePayload = await axios.get(
