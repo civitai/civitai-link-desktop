@@ -7,17 +7,22 @@ import { updateActivity, addResource } from './store';
 import { resourcesList } from './commands';
 
 type DownloadFileParams = {
-  id: string;
-  downloadPath: string;
   socket: Socket;
   mainWindow: BrowserWindow;
-} & Resource;
+  resource: Resource;
+  downloadPath: string;
+};
 
-export async function downloadFile(params: DownloadFileParams) {
+export async function downloadFile({
+  socket,
+  mainWindow,
+  downloadPath,
+  resource,
+}: DownloadFileParams) {
   console.log('Connecting …');
   const controller = new AbortController();
   const { data, headers } = await axios({
-    url: params.url,
+    url: resource.url,
     method: 'GET',
     responseType: 'stream',
     signal: controller.signal,
@@ -25,6 +30,7 @@ export async function downloadFile(params: DownloadFileParams) {
   const totalLength = parseInt(headers['content-length'], 10);
 
   console.log('Starting download');
+
   let elapsed_time = 0;
   const start_time = Date.now();
   let current = 0;
@@ -32,10 +38,10 @@ export async function downloadFile(params: DownloadFileParams) {
   let remaining_time = (totalLength - current) / speed;
   let progress = (current / totalLength) * 100;
   let downloaded = 0;
-  const dirPath = path.resolve(__dirname, '', params.downloadPath);
+  const dirPath = path.resolve(__dirname, '', downloadPath);
   const tempDirPath = path.resolve(dirPath, 'temp');
-  const tempFilePath = path.resolve(tempDirPath, params.name);
-  const filePath = path.resolve(dirPath, params.name);
+  const tempFilePath = path.resolve(tempDirPath, resource.name);
+  const filePath = path.resolve(dirPath, resource.name);
   const REPORT_INTERVAL = 1000;
   let last_reported_time = Date.now();
 
@@ -56,7 +62,7 @@ export async function downloadFile(params: DownloadFileParams) {
 
     if (current_time - last_reported_time > REPORT_INTERVAL) {
       // Updates the UI with the current progress
-      params.mainWindow.webContents.send(`resource-download:${params.id}`, {
+      mainWindow.webContents.send(`resource-download:${resource.id}`, {
         totalLength,
         downloaded,
         progress,
@@ -66,26 +72,21 @@ export async function downloadFile(params: DownloadFileParams) {
       });
 
       // Updates the progress bar
-      params.mainWindow.setProgressBar(downloaded / totalLength);
+      mainWindow.setProgressBar(downloaded / totalLength);
 
       // Send progress to server
-      params.socket.emit('commandStatus', {
+      socket.emit('commandStatus', {
         status: 'processing',
         progress,
         remainingTime: remaining_time,
         speed,
         updatedAt: new Date().toISOString(),
         type: 'resources:add',
-        id: params.id,
+        id: resource.id,
         resource: {
           downloadDate: current_time,
           totalLength,
-          hash: params.hash,
-          url: params.url,
-          type: params.type,
-          name: params.name,
-          modelName: params.modelName,
-          modelVersionName: params.modelVersionName,
+          ...resource,
         },
       });
 
@@ -94,28 +95,21 @@ export async function downloadFile(params: DownloadFileParams) {
   });
 
   data.on('end', async function () {
-    console.log("Downloaded to: '" + params.downloadPath + "'!");
+    console.log("Downloaded to: '" + downloadPath + "'!");
     const timestamp = new Date().toISOString();
 
     const fileData = {
       downloadDate: timestamp,
       totalLength,
-      hash: params.hash,
-      url: params.url,
-      type: params.type,
-      name: params.name,
-      modelName: params.modelName,
-      modelVersionName: params.modelVersionName,
-      previewImageUrl: params.previewImageUrl,
-      civitaiUrl: params.civitaiUrl,
       localPath: filePath,
+      ...resource,
     };
 
     const activity: ActivityItem = {
-      name: params.modelName,
+      name: resource.modelName,
       date: timestamp,
       type: 'downloaded' as ActivityType,
-      civitaiUrl: params.civitaiUrl,
+      civitaiUrl: resource.civitaiUrl,
     };
 
     updateActivity(activity);
@@ -126,14 +120,14 @@ export async function downloadFile(params: DownloadFileParams) {
 
     new Notification({
       title: 'Download Complete',
-      body: params.name,
+      body: resource.name,
     }).show();
 
     // Reset progress bar
-    params.mainWindow.setProgressBar(-1);
+    mainWindow.setProgressBar(-1);
 
     // Updates the UI with the final progress
-    params.mainWindow.webContents.send(`resource-download:${params.id}`, {
+    mainWindow.webContents.send(`resource-download:${resource.id}`, {
       totalLength,
       downloaded,
       progress: 100,
@@ -143,18 +137,18 @@ export async function downloadFile(params: DownloadFileParams) {
     });
 
     // Send newly added resource to server
-    params.socket.emit('commandStatus', {
+    socket.emit('commandStatus', {
       status: 'success',
       progress: 100,
       updatedAt: timestamp,
       resource: fileData,
-      id: params.id,
+      id: resource.id,
       type: 'resources:add',
     });
 
     // Send entire list of resources to server
     const newPayload = resourcesList();
-    params.socket.emit('commandStatus', {
+    socket.emit('commandStatus', {
       type: 'resources:list',
       resources: newPayload,
     });
@@ -164,25 +158,25 @@ export async function downloadFile(params: DownloadFileParams) {
 
   function cancelDownload(id: string) {
     console.log('test', id);
-    if (params.id === id) {
-      console.log('Download canceled', params.id);
+    if (resource.id === id) {
+      console.log('Download canceled', resource.id);
 
       // Abort download w/ Axios
       controller.abort();
 
-      params.mainWindow.setProgressBar(-1);
+      mainWindow.setProgressBar(-1);
 
       // Let server know its canceled
-      params.socket.emit('commandStatus', {
+      socket.emit('commandStatus', {
         status: 'canceled',
-        id: params.id,
+        id: resource.id,
       });
 
       const activity: ActivityItem = {
-        name: params.modelName,
+        name: resource.modelName,
         date: new Date().toISOString(),
         type: 'cancelled' as ActivityType,
-        civitaiUrl: params.civitaiUrl,
+        civitaiUrl: resource.civitaiUrl,
       };
 
       updateActivity(activity);

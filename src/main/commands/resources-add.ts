@@ -44,17 +44,19 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   updateActivity(activity);
 
   await downloadFile({
-    id: params.id,
-    name: payload.name,
-    url: payload.url,
-    type: payload.type,
-    hash: hashLowercase,
-    modelName: payload.modelName,
-    modelVersionName: payload.modelVersionName,
+    resource: {
+      id: params.id,
+      name: payload.name,
+      url: payload.url,
+      type: payload.type,
+      hash: hashLowercase,
+      modelName: payload.modelName,
+      modelVersionName: payload.modelVersionName,
+      previewImageUrl,
+      civitaiUrl,
+    },
     downloadPath: resourcePath,
     socket: params.socket,
     mainWindow: params.mainWindow,
-    previewImageUrl,
-    civitaiUrl,
   });
 }
