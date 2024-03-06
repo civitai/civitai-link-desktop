@@ -1,25 +1,25 @@
 import { FilesItem } from './files-item';
-import { useMemo, useState } from 'react';
-import { Files as FilesIcon, Search, XCircle } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useMemo } from 'react'; // , useState
+import { Files as FilesIcon } from 'lucide-react'; // , Search, XCircle
+// import { Input } from '@/components/ui/input';
 import { useFile } from '@/providers/files';
-import { useDebounce } from '@/hooks/use-debounce';
+// import { useDebounce } from '@/hooks/use-debounce';
 
 export function Files() {
-  const { fileList, filterFiles, filteredFileList } = useFile();
-  const [searchTerm, setSearchTerm] = useState('');
+  const { fileList } = useFile(); // , filterFiles, filteredFileList
+  // const [searchTerm, setSearchTerm] = useState('');
   const fileKeys = useMemo(() => Object.keys(fileList), [fileList]);
 
-  const clearFilter = () => {
-    setSearchTerm('');
-    filterFiles('');
-  };
+  // const clearFilter = () => {
+  //   setSearchTerm('');
+  //   filterFiles('');
+  // };
 
-  const search = () => {
-    filterFiles(searchTerm);
-  };
+  // const search = () => {
+  //   filterFiles(searchTerm);
+  // };
 
-  const debouncedOnChange = useDebounce(search);
+  // const debouncedOnChange = useDebounce(search);
 
   return (
     <div>
