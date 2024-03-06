@@ -45,6 +45,15 @@ export async function downloadFile({
   const REPORT_INTERVAL = 1000;
   let last_reported_time = Date.now();
 
+  const newPayload = resourcesList();
+  socket.emit('commandStatus', {
+    type: 'resources:list',
+    resources: [
+      { ...resource, downloading: true, status: 'processing' },
+      ...newPayload,
+    ],
+  });
+
   // Creates temp folder if it doesnt exist, also ensures that the main dir exists
   if (!fs.existsSync(tempDirPath)) {
     fs.mkdirSync(tempDirPath, { recursive: true });
@@ -170,6 +179,12 @@ export async function downloadFile({
       socket.emit('commandStatus', {
         status: 'canceled',
         id: resource.id,
+      });
+
+      const newPayload = resourcesList();
+      socket.emit('commandStatus', {
+        type: 'resources:list',
+        resources: newPayload,
       });
 
       const activity: ActivityItem = {
