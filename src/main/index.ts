@@ -9,6 +9,7 @@ import {
   Tray,
   nativeImage,
   Menu,
+  screen,
 } from 'electron';
 import { join } from 'path';
 import {
@@ -36,6 +37,9 @@ let tray;
 
 //defaults
 let width = 400;
+let height = 600;
+let margin_x = 10;
+let margin_y = 10;
 let framed = false;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -125,7 +129,7 @@ function toggleWindow() {
 }
 
 function alignWindow() {
-  const position = getWindowPosition();
+  const position = calculateWindowPosition();
   mainWindow.setPosition(position.x, position.y, false);
 }
 
@@ -139,67 +143,52 @@ function showWindow() {
   }
 }
 
-const getWindowPosition = () => {
-  const windowBounds = mainWindow.getBounds();
+function calculateWindowPosition() {
+  const screenBounds = screen.getPrimaryDisplay().size;
   const trayBounds = tray.getBounds();
 
-  // Center window horizontally below the tray icon
-  const x = Math.round(
-    trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2,
-  );
+  //where is the icon on the screen?
+  let trayPos = 4; // 1:top-left 2:top-right 3:bottom-left 4.bottom-right
+  trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
+  trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
 
-  // Position window 4 pixels vertically below the tray icon
-  const y = Math.round(trayBounds.y + trayBounds.height + 4);
+  let DEFAULT_MARGIN = { x: margin_x, y: margin_y };
+  let x;
+  let y;
+
+  //calculate the new window position
+  switch (trayPos) {
+    case 1: // for TOP - LEFT
+      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
+      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
+      break;
+
+    case 2: // for TOP - RIGHT
+      x = Math.floor(
+        trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
+      );
+      y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
+      break;
+
+    case 3: // for BOTTOM - LEFT
+      x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
+      y = Math.floor(
+        trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
+      );
+      break;
+
+    case 4: // for BOTTOM - RIGHT
+      x = Math.floor(
+        trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
+      );
+      y = Math.floor(
+        trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
+      );
+      break;
+  }
 
   return { x: x, y: y };
-};
-
-// function calculateWindowPosition() {
-//   const screenBounds = screen.getPrimaryDisplay().size;
-//   const trayBounds = tray.getBounds();
-
-//   //where is the icon on the screen?
-//   let trayPos = 4; // 1:top-left 2:top-right 3:bottom-left 4.bottom-right
-//   trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
-//   trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
-
-//   let DEFAULT_MARGIN = { x: margin_x, y: margin_y };
-//   let x;
-//   let y;
-
-//   //calculate the new window position
-//   switch (trayPos) {
-//     case 1: // for TOP - LEFT
-//       x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
-//       y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
-//       break;
-
-//     case 2: // for TOP - RIGHT
-//       x = Math.floor(
-//         trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
-//       );
-//       y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
-//       break;
-
-//     case 3: // for BOTTOM - LEFT
-//       x = Math.floor(trayBounds.x + DEFAULT_MARGIN.x + trayBounds.width / 2);
-//       y = Math.floor(
-//         trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
-//       );
-//       break;
-
-//     case 4: // for BOTTOM - RIGHT
-//       x = Math.floor(
-//         trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
-//       );
-//       y = Math.floor(
-//         trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
-//       );
-//       break;
-//   }
-
-//   return { x: x, y: y };
-// }
+}
 
 Menu.setApplicationMenu(null);
 
