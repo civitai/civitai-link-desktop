@@ -17,20 +17,24 @@ type RemoveActivityParams = {
 type FileContextType = {
   fileList: ResourcesMap;
   removeActivity: (param: RemoveActivityParams) => void;
+  filteredFileList: ResourcesMap;
+  filterFiles: (search: string) => void;
 };
 
 const defaultValue: FileContextType = {
   fileList: {},
   removeActivity: () => {},
+  filteredFileList: {},
+  filterFiles: () => {},
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
 export const useFile = () => useContext(FileContext);
 
-// TODO: Remove these from ElectronProvider
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [fileList, setFileList] = useState<ResourcesMap>({});
+  const [filteredFileList, setFilteredFileList] = useState<ResourcesMap>({});
   const { toast } = useToast();
   const { cancelDownload } = useApi();
 
@@ -47,6 +51,30 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
         return rest;
       });
+    },
+    [fileList],
+  );
+
+  // TODO: Debounce, delay
+  const filterFiles = useCallback(
+    (search: string) => {
+      if (!search) {
+        setFilteredFileList(fileList);
+        return;
+      }
+
+      const filtered = Object.values(fileList)
+        .filter((file) => {
+          return file.modelName.toLowerCase().includes(search.toLowerCase());
+        })
+        .reduce<Record<string, Resource>>((acc, file) => {
+          return {
+            ...acc,
+            [file.hash]: file,
+          };
+        }, {});
+
+      setFilteredFileList(filtered);
     },
     [fileList],
   );
@@ -80,6 +108,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
       setFileList(message.files);
+      setFilteredFileList(message.files);
     });
 
     return () => {
@@ -127,6 +156,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       value={{
         fileList,
         removeActivity,
+        filteredFileList,
+        filterFiles,
       }}
     >
       {children}
