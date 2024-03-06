@@ -1,11 +1,11 @@
-import { useElectron } from '@/providers/electron';
 import { FilesItem } from './files-item';
 import { useMemo } from 'react';
 import { Files as FilesIcon, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useFile } from '@/providers/files';
 
 export function Files() {
-  const { fileList } = useElectron();
+  const { fileList } = useFile();
   const fileKeys = useMemo(() => Object.keys(fileList), [fileList]);
 
   if (fileKeys.length === 0) {

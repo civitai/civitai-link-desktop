@@ -1,29 +1,14 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { ConnectionStatus } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
-import { useApi } from '@/hooks/use-api';
-
-type RemoveActivityParams = {
-  hash: string;
-  title: string;
-  description: string;
-};
 
 type ElectronContextType = {
   key?: string | null;
   appLoading: boolean;
   clearSettings: () => void;
   activityList: ActivityItem[];
-  fileList: ResourcesMap;
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
-  removeActivity: (param: RemoveActivityParams) => void;
   settings: { nsfw: boolean };
 };
 
@@ -32,10 +17,8 @@ const defaultValue: ElectronContextType = {
   appLoading: true,
   clearSettings: () => {},
   activityList: [],
-  fileList: {},
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
-  removeActivity: () => {},
   settings: { nsfw: false },
 };
 
@@ -46,7 +29,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [key, setKey] = useState<string | null>(null);
   const [activityList, setActivityList] = useState<ActivityItem[]>([]);
-  const [fileList, setFileList] = useState<ResourcesMap>({});
   const [appLoading, setAppLoading] = useState<boolean>(true);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     ConnectionStatus.DISCONNECTED,
@@ -54,24 +36,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const [settings, setSettings] = useState({ nsfw: false });
   const { toast } = useToast();
-  const { cancelDownload } = useApi();
-
-  // Remove activity from list
-  const removeActivity = useCallback(
-    ({ hash, title, description }: RemoveActivityParams) => {
-      toast({
-        title,
-        description,
-      });
-
-      setFileList((state) => {
-        const { [hash]: rm, ...rest } = state;
-
-        return rest;
-      });
-    },
-    [fileList],
-  );
 
   useEffect(() => {
     ipcRenderer.on('upgrade-key', function (_, message) {
@@ -94,36 +58,10 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Update when download starts
-  useEffect(() => {
-    ipcRenderer.on('activity-add', function (_, message) {
-      setFileList((files) => ({
-        [message.hash]: message,
-        ...files,
-      }));
-    });
-
-    return () => {
-      ipcRenderer.removeAllListeners('activity-add');
-    };
-  }, []);
-
-  // Update when download finishes
-  useEffect(() => {
-    ipcRenderer.on('files-update', function (_, files) {
-      setFileList(files);
-    });
-
-    return () => {
-      ipcRenderer.removeAllListeners('files-update');
-    };
-  }, []);
-
   // Get initial store on load
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
       setActivityList(message.activities);
-      setFileList(message.files);
       setRootResourcePath(message.rootResourcePath);
       setConnectionStatus(message.connectionStatus);
       setSettings(message.settings);
@@ -145,8 +83,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Bug: When reloading the UI it does not get an update about connection status
-  // Instead it uses the default set in useState
   useEffect(() => {
     ipcRenderer.on('connection-status', function (_, message) {
       setConnectionStatus(message);
@@ -170,41 +106,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       ipcRenderer.removeAllListeners('connection-status');
     };
   }, []);
-
-  useEffect(() => {
-    ipcRenderer.on('resource-remove', function (_, { resource }) {
-      removeActivity({
-        hash: resource.hash,
-        title: 'Resource removed',
-        description: `${resource.modelName} has been removed.`,
-      });
-    });
-
-    return () => {
-      ipcRenderer.removeAllListeners('resource-remove');
-    };
-  }, []);
-
-  // This is a super hacky way to cancel downloads
-  useEffect(() => {
-    ipcRenderer.on('activity-cancel', function (_, { id }) {
-      const fileKeys = Object.keys(fileList);
-      const fileToRemove = fileKeys.find((file) => fileList[file].id === id);
-      cancelDownload(id);
-
-      if (fileToRemove) {
-        removeActivity({
-          hash: fileList[fileToRemove].hash,
-          title: 'Download canceled',
-          description: `The download for ${fileList[fileToRemove].modelName} has been canceled.`,
-        });
-      }
-    });
-
-    return () => {
-      ipcRenderer.removeAllListeners('activity-cancel');
-    };
-  });
 
   useEffect(() => {
     ipcRenderer.on('settings-update', function (_, newSettings) {
@@ -233,8 +134,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         activityList,
         connectionStatus,
         rootResourcePath,
-        removeActivity,
-        fileList,
         settings,
       }}
     >

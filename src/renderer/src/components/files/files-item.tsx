@@ -8,9 +8,9 @@ import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
-import { useElectron } from '@/providers/electron';
 import { DownloadCloud, Image } from 'lucide-react';
 import { FileItemDelete } from './file-item-delete';
+import { useFile } from '@/providers/files';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -23,7 +23,7 @@ export function FilesItem({ resource }: FilesItemProps) {
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload } = useApi();
-  const { removeActivity } = useElectron();
+  const { removeActivity } = useFile();
   const isNotDone = isDownloading && progress < 100;
 
   useEffect(() => {
