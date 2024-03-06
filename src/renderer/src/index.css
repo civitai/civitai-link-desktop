@@ -72,6 +72,8 @@
   }
   * {
     @apply border-border;
+    scrollbar-width: thin;
+    scrollbar-color: black rgba(0, 0, 0, 0);
   }
   body {
     @apply bg-background text-foreground overflow-auto;
