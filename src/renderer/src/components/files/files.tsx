@@ -8,10 +8,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 export function Files() {
   const { fileList, filterFiles, filteredFileList } = useFile();
   const [searchTerm, setSearchTerm] = useState('');
-  const fileKeys = useMemo(
-    () => Object.keys(filteredFileList),
-    [filteredFileList],
-  );
+  const fileKeys = useMemo(() => Object.keys(fileList), [fileList]);
 
   const clearFilter = () => {
     setSearchTerm('');
@@ -26,7 +23,7 @@ export function Files() {
 
   return (
     <div>
-      <div className="fixed z-10 bg-background py-2 pr-8 w-full">
+      {/* <div className="fixed z-10 bg-background py-2 pr-8 w-full">
         <div className="relative">
           <Search
             className="absolute left-2 top-3 h-4 w-4 text-muted-foreground"
@@ -49,8 +46,9 @@ export function Files() {
             />
           ) : null}
         </div>
-      </div>
-      <div className="pt-14">
+      </div> */}
+      {/* <div className="pt-14"> */}
+      <div className="pt-2">
         {fileKeys?.map((file) => {
           return (
             <FilesItem resource={fileList[file]} key={fileList[file].hash} />

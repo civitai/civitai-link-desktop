@@ -55,7 +55,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     [fileList],
   );
 
-  // TODO: Debounce, delay
   const filterFiles = useCallback(
     (search: string) => {
       if (!search) {
@@ -78,6 +77,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     },
     [fileList],
   );
+
+  // useEffect(() => {
+  //   setFilteredFileList(fileList);
+  // }, [fileList]);
 
   // Update when download starts
   useEffect(() => {

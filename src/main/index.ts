@@ -23,6 +23,7 @@ import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
 // import { folderWatcher } from './folder-watcher';
+import { isMac } from './utils/check-os';
 
 // Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
@@ -38,8 +39,8 @@ let tray;
 //defaults
 let width = 400;
 let height = 600;
-let margin_x = 10;
-let margin_y = 10;
+let margin_x = 0;
+let margin_y = isMac ? 20 : 40;
 let framed = false;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
