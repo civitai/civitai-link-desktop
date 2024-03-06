@@ -24,6 +24,7 @@ type ElectronContextType = {
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
   removeActivity: (param: RemoveActivityParams) => void;
+  settings: { nsfw: boolean };
 };
 
 const defaultValue: ElectronContextType = {
@@ -35,6 +36,7 @@ const defaultValue: ElectronContextType = {
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
   removeActivity: () => {},
+  settings: { nsfw: false },
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -50,6 +52,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     ConnectionStatus.DISCONNECTED,
   );
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
+  const [settings, setSettings] = useState({ nsfw: false });
   const { toast } = useToast();
   const { cancelDownload } = useApi();
 
@@ -123,6 +126,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setFileList(message.files);
       setRootResourcePath(message.rootResourcePath);
       setConnectionStatus(message.connectionStatus);
+      setSettings(message.settings);
     });
 
     return () => {
@@ -202,6 +206,16 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   });
 
+  useEffect(() => {
+    ipcRenderer.on('settings-update', function (_, newSettings) {
+      setSettings(newSettings);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('settings-update');
+    };
+  });
+
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);
@@ -221,6 +235,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         rootResourcePath,
         removeActivity,
         fileList,
+        settings,
       }}
     >
       {children}

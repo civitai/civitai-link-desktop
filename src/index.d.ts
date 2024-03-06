@@ -15,6 +15,7 @@ declare global {
       getResourcePath: (type: ResourceType) => string;
       openRootModelFolder: () => void;
       init: () => void;
+      setNSFW: (nsfw: boolean) => void;
     };
   }
 

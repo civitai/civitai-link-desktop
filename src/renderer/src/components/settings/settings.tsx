@@ -4,9 +4,13 @@ import { PathInput } from '@/components/path-input';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useApi } from '@/hooks/use-api';
 
 export function Settings() {
-  const { clearSettings } = useElectron();
+  const { clearSettings, settings } = useElectron();
+  const { setNSFW } = useApi();
+  // Need to get if currently checked from provider
 
   return (
     <SheetContent className="w-full p-0">
@@ -15,10 +19,27 @@ export function Settings() {
       </SheetHeader>
       <div className="h-full overflow-y-auto pb-20 w-full px-4">
         <div className="grid gap-6">
+          <h1 className="text-xl">General Settings</h1>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="nsfw"
+              checked={settings.nsfw}
+              onCheckedChange={(checked: boolean) => setNSFW(checked)}
+            />
+            <label
+              htmlFor="nsfw"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Add NSFW images to model preview
+            </label>
+          </div>
+          <h1 className="text-xl">Model Settings</h1>
           {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
             (key) => (
               <div className="flex flex-col gap-y-4 overflow-hidden" key={key}>
-                <Label>{key === 'DEFAULT' ? 'Root Model' : key} Folder</Label>
+                <Label className="text-primary">
+                  {key === 'DEFAULT' ? 'Root Model' : key} Folder
+                </Label>
                 <PathInput
                   defaultPath="Root Models Directory"
                   type={ResourceType[key]}

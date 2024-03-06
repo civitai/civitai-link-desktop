@@ -23,6 +23,7 @@ const api = {
     ipcRenderer.invoke('get-resource-path', type),
   openRootModelFolder: () => ipcRenderer.send('open-root-model-folder'),
   init: () => ipcRenderer.send('init'),
+  setNSFW: (nsfw: boolean) => ipcRenderer.send('set-nsfw', nsfw),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

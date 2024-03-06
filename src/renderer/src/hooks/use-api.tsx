@@ -31,5 +31,8 @@ export function useApi() {
     init: async () => {
       return await window.api.init();
     },
+    setNSFW: async (nsfw: boolean) => {
+      return await window.api.setNSFW(nsfw);
+    },
   };
 }

@@ -61,7 +61,7 @@ export function FilesItem({ resource }: FilesItemProps) {
         <CardContent>
           <div className="flex relative">
             {resource.previewImageUrl ? (
-              <div className="min-w-12 h-12 mr-2 items-center overflow-hidden rounded">
+              <div className="w-12 h-12 mr-2 items-center overflow-hidden rounded">
                 <img
                   src={resource.previewImageUrl}
                   alt={resource.modelName}

@@ -57,6 +57,12 @@ const schema: Schema<Record<string, unknown>> = {
     type: 'array',
     default: [],
   },
+  settings: {
+    type: 'object',
+    default: {
+      nsfw: false,
+    },
+  },
 };
 
 export const store = new Store({ schema });
@@ -103,6 +109,7 @@ export function getUIStore() {
     activities: store.get('activitiesList'),
     files: store.get('resources'),
     connectionStatus: store.get('connectionStatus'),
+    settings: store.get('settings'),
   };
 }
 
@@ -180,4 +187,16 @@ export function updatedResource(resource: Resource) {
 
 export function getResources() {
   return store.get('resources') as ResourcesMap;
+}
+
+type Settings = {
+  nsfw: boolean;
+};
+
+export function getSettings() {
+  return store.get('settings') as Settings;
+}
+
+export function setSettings(settings: Settings) {
+  return store.set('settings', settings);
 }

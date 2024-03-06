@@ -208,6 +208,10 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('connection-status', newValue);
   });
 
+  store.onDidChange('settings', (newValue) => {
+    mainWindow.webContents.send('settings-update', newValue);
+  });
+
   if (!DEBUG) {
     setWindowAutoHide();
   }

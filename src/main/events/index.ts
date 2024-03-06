@@ -7,6 +7,7 @@ import { eventSetRootPath } from './set-root-path';
 import { eventSetPath } from './set-path';
 import { eventResourceRemove } from './resource-remove';
 import { eventInit } from './init';
+import { eventSetNSFW } from './set-nsfw';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -23,4 +24,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('close-app', eventCloseApp);
   ipcMain.on('open-root-model-folder', eventOpenRootModelFolder);
   ipcMain.on('init', eventInit);
+  ipcMain.on('set-nsfw', eventSetNSFW);
 }
