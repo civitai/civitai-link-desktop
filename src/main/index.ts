@@ -129,19 +129,29 @@ function toggleWindow() {
 }
 
 function alignWindow() {
-  const position = calculateWindowPosition();
-  mainWindow.setBounds({
-    width: width,
-    height: height,
-    x: position.x,
-    y: position.y,
-  });
+  const position = getWindowPosition();
+  mainWindow.setPosition(position.x, position.y, false);
 }
 
 function showWindow() {
   alignWindow();
   mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
 }
+
+const getWindowPosition = () => {
+  const windowBounds = mainWindow.getBounds();
+  const trayBounds = tray.getBounds();
+
+  // Center window horizontally below the tray icon
+  const x = Math.round(
+    trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2,
+  );
+
+  // Position window 4 pixels vertically below the tray icon
+  const y = Math.round(trayBounds.y + trayBounds.height + 4);
+
+  return { x: x, y: y };
+};
 
 function calculateWindowPosition() {
   const screenBounds = screen.getPrimaryDisplay().size;
