@@ -1,7 +1,8 @@
 import { useElectron } from '@/providers/electron';
 import { FilesItem } from './files-item';
 import { useMemo } from 'react';
-import { Files as FilesIcon } from 'lucide-react';
+import { Files as FilesIcon, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export function Files() {
   const { fileList } = useElectron();
@@ -20,13 +21,23 @@ export function Files() {
     );
   }
 
+  // TODO: Debounce, fileList, filteredList - add to provider
+  // clear button
   return (
-    <div className="pt-2">
-      {fileKeys?.map((file) => {
-        return (
-          <FilesItem resource={fileList[file]} key={fileList[file].hash} />
-        );
-      })}
+    <div>
+      <div className="fixed z-10 bg-background py-2 pr-8 w-full">
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search" className="pl-8" />
+        </div>
+      </div>
+      <div className="pt-14">
+        {fileKeys?.map((file) => {
+          return (
+            <FilesItem resource={fileList[file]} key={fileList[file].hash} />
+          );
+        })}
+      </div>
     </div>
   );
 }
