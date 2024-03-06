@@ -5,12 +5,15 @@ import App from './App';
 import { ThemeProvider } from './components/theme-provider';
 import { ElectronProvider } from './providers/electron';
 import { Toaster } from './components/ui/toaster';
+import { FileProvider } from './providers/files';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="civitai-theme">
       <ElectronProvider>
-        <App />
+        <FileProvider>
+          <App />
+        </FileProvider>
       </ElectronProvider>
     </ThemeProvider>
     <Toaster />

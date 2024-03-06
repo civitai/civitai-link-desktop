@@ -9,7 +9,6 @@ import {
   Tray,
   nativeImage,
   Menu,
-  screen,
 } from 'electron';
 import { join } from 'path';
 import {
@@ -37,9 +36,6 @@ let tray;
 
 //defaults
 let width = 400;
-let height = 600;
-let margin_x = 0;
-let margin_y = 0;
 let framed = false;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -135,7 +131,12 @@ function alignWindow() {
 
 function showWindow() {
   alignWindow();
-  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+
+  if (DEBUG) {
+    mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
+  } else {
+    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+  }
 }
 
 const getWindowPosition = () => {
