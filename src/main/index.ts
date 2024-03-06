@@ -135,7 +135,12 @@ function alignWindow() {
 
 function showWindow() {
   alignWindow();
-  mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+
+  if (DEBUG) {
+    mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
+  } else {
+    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
+  }
 }
 
 const getWindowPosition = () => {
