@@ -10,6 +10,7 @@ import {
   nativeImage,
   Menu,
   screen,
+  nativeTheme,
 } from 'electron';
 import { join } from 'path';
 import {
@@ -23,7 +24,6 @@ import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
 // import { folderWatcher } from './folder-watcher';
-import { isMac } from './utils/check-os';
 
 // Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
@@ -40,7 +40,7 @@ let tray;
 let width = 400;
 let height = 600;
 let margin_x = 0;
-let margin_y = isMac ? 20 : 40;
+let margin_y = 0;
 let framed = false;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -50,7 +50,7 @@ const browserWindowOptions = DEBUG
       titleBarOverlay: true,
     }
   : {
-      show: true,
+      show: false,
       frame: framed,
       fullscreenable: false,
       useContentSize: true,
@@ -58,6 +58,7 @@ const browserWindowOptions = DEBUG
       alwaysOnTop: true,
       skipTaskbar: true,
       thickFrame: false,
+      backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
     };
 
 function createWindow() {
@@ -153,7 +154,7 @@ function calculateWindowPosition() {
   trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
   trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
 
-  let DEFAULT_MARGIN = { x: margin_x, y: margin_y };
+  let DEFAULT_MARGIN = { x: margin_x, y: trayBounds.height / 2 + margin_y };
   let x;
   let y;
 
@@ -166,7 +167,7 @@ function calculateWindowPosition() {
 
     case 2: // for TOP - RIGHT
       x = Math.floor(
-        trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
+        trayBounds.x - width / 2 - DEFAULT_MARGIN.x + trayBounds.width / 2,
       );
       y = Math.floor(trayBounds.y + DEFAULT_MARGIN.y + trayBounds.height / 2);
       break;
@@ -179,9 +180,14 @@ function calculateWindowPosition() {
       break;
 
     case 4: // for BOTTOM - RIGHT
-      x = Math.floor(
-        trayBounds.x - width - DEFAULT_MARGIN.x + trayBounds.width / 2,
+      const pos = Math.floor(
+        trayBounds.x - width / 2 - DEFAULT_MARGIN.x + trayBounds.width / 2,
       );
+      if (pos > screenBounds.width) {
+        x = pos;
+      } else {
+        x = screenBounds.width + width;
+      }
       y = Math.floor(
         trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
       );
