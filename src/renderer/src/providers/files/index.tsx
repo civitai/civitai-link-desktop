@@ -19,6 +19,8 @@ type FileContextType = {
   removeActivity: (param: RemoveActivityParams) => void;
   filteredFileList: ResourcesMap;
   filterFiles: (search: string) => void;
+  searchTerm: string;
+  setSearchTerm: (search: string) => void;
 };
 
 const defaultValue: FileContextType = {
@@ -26,6 +28,8 @@ const defaultValue: FileContextType = {
   removeActivity: () => {},
   filteredFileList: {},
   filterFiles: () => {},
+  searchTerm: '',
+  setSearchTerm: () => {},
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
@@ -33,8 +37,12 @@ export const useFile = () => useContext(FileContext);
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
+  // Full source of files
   const [fileList, setFileList] = useState<ResourcesMap>({});
+  // Filtered source of files (whats displayed)
   const [filteredFileList, setFilteredFileList] = useState<ResourcesMap>({});
+  const [searchTerm, setSearchTerm] = useState('');
+
   const { toast } = useToast();
   const { cancelDownload } = useApi();
 
@@ -46,13 +54,19 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         description,
       });
 
+      setFilteredFileList((state) => {
+        const { [hash]: rm, ...rest } = state;
+
+        return rest;
+      });
+
       setFileList((state) => {
         const { [hash]: rm, ...rest } = state;
 
         return rest;
       });
     },
-    [fileList],
+    [fileList, filteredFileList],
   );
 
   const filterFiles = useCallback(
@@ -78,10 +92,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     [fileList],
   );
 
-  // useEffect(() => {
-  //   setFilteredFileList(fileList);
-  // }, [fileList]);
-
   // Update when download starts
   useEffect(() => {
     ipcRenderer.on('activity-add', function (_, message) {
@@ -89,23 +99,36 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         [message.hash]: message,
         ...files,
       }));
+
+      if (searchTerm || filteredFileList[message.hash]) {
+        setFilteredFileList((files) => ({
+          [message.hash]: message,
+          ...files,
+        }));
+      }
     });
 
     return () => {
       ipcRenderer.removeAllListeners('activity-add');
     };
-  }, []);
+  }, [searchTerm, filteredFileList]);
 
   // Update when download finishes
   useEffect(() => {
     ipcRenderer.on('files-update', function (_, files) {
       setFileList(files);
+
+      if (!searchTerm) {
+        setFilteredFileList(files);
+      } else {
+        filterFiles(searchTerm);
+      }
     });
 
     return () => {
       ipcRenderer.removeAllListeners('files-update');
     };
-  }, []);
+  }, [searchTerm]);
 
   // Get initial store on load
   useEffect(() => {
@@ -161,6 +184,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         removeActivity,
         filteredFileList,
         filterFiles,
+        searchTerm,
+        setSearchTerm,
       }}
     >
       {children}
