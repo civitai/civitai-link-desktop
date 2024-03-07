@@ -41,24 +41,20 @@ let width = 400;
 let height = 600;
 let margin_x = 0;
 let margin_y = 0;
-let framed = false;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 const browserWindowOptions = DEBUG
   ? {
-      show: false,
+      frame: true,
       titleBarOverlay: true,
     }
   : {
-      show: false,
-      frame: framed,
+      frame: false, // Dont frame the tray window
       fullscreenable: false,
-      useContentSize: true,
       transparent: true,
       alwaysOnTop: true,
       skipTaskbar: true,
       thickFrame: false,
-      backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
     };
 
 function createWindow() {
@@ -68,6 +64,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: width,
     maxWidth: width,
+    show: false,
     useContentSize: true,
     resizable: false,
     ...browserWindowOptions,
@@ -75,8 +72,10 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
+      backgroundThrottling: false,
     },
     icon: logo,
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
   });
 
   // Prevents dock icon from appearing on macOS
@@ -108,21 +107,6 @@ function createWindow() {
     mainWindow.showInactive();
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
-  }
-}
-
-function setWindowAutoHide() {
-  mainWindow.hide();
-  mainWindow.on('blur', () => {
-    if (!mainWindow.webContents.isDevToolsOpened()) {
-      mainWindow.hide();
-    }
-  });
-  if (framed) {
-    mainWindow.on('close', function (event) {
-      event.preventDefault();
-      mainWindow.hide();
-    });
   }
 }
 
@@ -225,6 +209,8 @@ app.whenReady().then(async () => {
   // folderWatcher();
   eventsListeners({ mainWindow });
 
+  mainWindow.hide();
+
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
   });
@@ -273,10 +259,6 @@ app.whenReady().then(async () => {
   store.onDidChange('settings', (newValue) => {
     mainWindow.webContents.send('settings-update', newValue);
   });
-
-  if (!DEBUG) {
-    setWindowAutoHide();
-  }
 
   // Hides dock icon on macOS but keeps in taskbar
   app.dock.hide();
