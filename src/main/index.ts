@@ -209,8 +209,6 @@ app.whenReady().then(async () => {
   // folderWatcher();
   eventsListeners({ mainWindow });
 
-  mainWindow.hide();
-
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
   });
