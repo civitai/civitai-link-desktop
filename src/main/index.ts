@@ -204,12 +204,9 @@ app.whenReady().then(async () => {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Quit',
-      click: function () {
-        app.quit();
-      },
+      click: () => app.quit(),
     },
   ]);
-  // tray.setContextMenu(contextMenu);
   tray.on('click', (event) => {
     if (event.ctrlKey) {
       tray.popUpContextMenu(contextMenu);
