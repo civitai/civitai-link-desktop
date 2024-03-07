@@ -180,14 +180,9 @@ function calculateWindowPosition() {
       break;
 
     case 4: // for BOTTOM - RIGHT
-      const pos = Math.floor(
+      x = Math.floor(
         trayBounds.x - width / 2 - DEFAULT_MARGIN.x + trayBounds.width / 2,
       );
-      if (pos > screenBounds.width) {
-        x = pos;
-      } else {
-        x = screenBounds.width + width;
-      }
       y = Math.floor(
         trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
       );
