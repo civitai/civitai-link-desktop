@@ -201,8 +201,21 @@ app.whenReady().then(async () => {
   const icon = nativeImage.createFromPath(logoDisconnected);
   tray = new Tray(icon);
   tray.setToolTip('Civitai Link');
-  tray.on('click', () => {
-    toggleWindow();
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Quit',
+      click: function () {
+        app.quit();
+      },
+    },
+  ]);
+  // tray.setContextMenu(contextMenu);
+  tray.on('click', (event) => {
+    if (event.ctrlKey) {
+      tray.popUpContextMenu(contextMenu);
+    } else {
+      toggleWindow();
+    }
   });
 
   // Set app user model id for windows
