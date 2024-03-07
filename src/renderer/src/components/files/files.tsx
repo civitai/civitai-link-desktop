@@ -1,29 +1,32 @@
 import { FilesItem } from './files-item';
-import { useMemo } from 'react'; // , useState
-import { Files as FilesIcon } from 'lucide-react'; // , Search, XCircle
-// import { Input } from '@/components/ui/input';
+import { useMemo } from 'react';
+import { Files as FilesIcon, Search, XCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useFile } from '@/providers/files';
-// import { useDebounce } from '@/hooks/use-debounce';
+import { useDebounce } from '@/hooks/use-debounce';
 
 export function Files() {
-  const { fileList } = useFile(); // , filterFiles, filteredFileList
-  // const [searchTerm, setSearchTerm] = useState('');
-  const fileKeys = useMemo(() => Object.keys(fileList), [fileList]);
+  const { filterFiles, filteredFileList, searchTerm, setSearchTerm } =
+    useFile();
+  const fileKeys = useMemo(
+    () => Object.keys(filteredFileList),
+    [filteredFileList],
+  );
 
-  // const clearFilter = () => {
-  //   setSearchTerm('');
-  //   filterFiles('');
-  // };
+  const clearFilter = () => {
+    setSearchTerm('');
+    filterFiles('');
+  };
 
-  // const search = () => {
-  //   filterFiles(searchTerm);
-  // };
+  const search = () => {
+    filterFiles(searchTerm);
+  };
 
-  // const debouncedOnChange = useDebounce(search);
+  const debouncedOnChange = useDebounce(search);
 
   return (
     <div>
-      {/* <div className="fixed z-10 bg-background py-2 pr-8 w-full">
+      <div className="fixed z-10 bg-background py-2 pr-8 w-full">
         <div className="relative">
           <Search
             className="absolute left-2 top-3 h-4 w-4 text-muted-foreground"
@@ -46,12 +49,14 @@ export function Files() {
             />
           ) : null}
         </div>
-      </div> */}
-      {/* <div className="pt-14"> */}
-      <div className="pt-2">
+      </div>
+      <div className="pt-14">
         {fileKeys?.map((file) => {
           return (
-            <FilesItem resource={fileList[file]} key={fileList[file].hash} />
+            <FilesItem
+              resource={filteredFileList[file]}
+              key={filteredFileList[file].hash}
+            />
           );
         })}
         {fileKeys.length === 0 ? (
