@@ -16,6 +16,7 @@ declare global {
       openRootModelFolder: () => void;
       init: () => void;
       setNSFW: (nsfw: boolean) => void;
+      openModelFileFolder: (filePath: string) => void;
     };
   }
 

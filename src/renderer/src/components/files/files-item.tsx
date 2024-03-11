@@ -22,7 +22,7 @@ export function FilesItem({ resource }: FilesItemProps) {
   const [progress, setProgress] = useState(0);
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
-  const { cancelDownload } = useApi();
+  const { cancelDownload, openModelFileFolder } = useApi();
   const { removeActivity } = useFile();
   const isNotDone = isDownloading && progress < 100;
 
@@ -92,7 +92,14 @@ export function FilesItem({ resource }: FilesItemProps) {
                     {dayjs(resource.downloadDate).fromNow()}
                   </p>
                 ) : null}
-                <p className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden">
+                <p
+                  className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden cursor-pointer"
+                  onClick={() =>
+                    resource?.localPath
+                      ? openModelFileFolder(resource.localPath)
+                      : alert('Path to file cant be found.')
+                  }
+                >
                   {resource.name}
                 </p>
               </div>

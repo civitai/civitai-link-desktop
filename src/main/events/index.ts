@@ -8,6 +8,7 @@ import { eventSetPath } from './set-path';
 import { eventResourceRemove } from './resource-remove';
 import { eventInit } from './init';
 import { eventSetNSFW } from './set-nsfw';
+import { eventOpenModelFileFolder } from './open-model-file-folder';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -25,4 +26,7 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('open-root-model-folder', eventOpenRootModelFolder);
   ipcMain.on('init', eventInit);
   ipcMain.on('set-nsfw', eventSetNSFW);
+  ipcMain.on('open-model-file-folder', (_, filePath) =>
+    eventOpenModelFileFolder(filePath),
+  );
 }

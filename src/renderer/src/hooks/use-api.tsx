@@ -34,5 +34,8 @@ export function useApi() {
     setNSFW: async (nsfw: boolean) => {
       return await window.api.setNSFW(nsfw);
     },
+    openModelFileFolder: async (filePath: string) => {
+      return await window.api.openModelFileFolder(filePath);
+    },
   };
 }
