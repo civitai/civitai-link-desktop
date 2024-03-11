@@ -110,6 +110,15 @@ function createWindow() {
   }
 }
 
+function setWindowAutoHide() {
+  mainWindow.hide();
+  mainWindow.on('blur', () => {
+    if (!DEBUG) {
+      mainWindow.hide();
+    }
+  });
+}
+
 function toggleWindow() {
   mainWindow.isDestroyed() ? createWindow() : showWindow();
 }
@@ -208,6 +217,7 @@ app.whenReady().then(async () => {
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
   eventsListeners({ mainWindow });
+  setWindowAutoHide();
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
