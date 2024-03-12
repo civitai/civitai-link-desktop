@@ -1,15 +1,12 @@
 import path from 'path';
-import {
-  lookupResource,
-  removeResource,
-  getResourcePath,
-  updateActivity,
-} from '../store';
+import { getResourcePath } from '../store/store';
+import { deleteFile, searchFile } from '../store/files';
+import { updateActivity } from '../store/activities';
 import fs from 'fs';
 import { resourcesList } from './resources-list';
 
 export function resourcesRemove(hash: string) {
-  const resource = lookupResource(hash);
+  const resource = searchFile(hash);
   const defaultResourcePath = getResourcePath(resource.type);
   const timestamp = new Date().toISOString();
   const resourcePath =
@@ -23,7 +20,7 @@ export function resourcesRemove(hash: string) {
   }
 
   // Remove from resources and activity
-  removeResource(hash);
+  deleteFile(hash);
 
   const activity: ActivityItem = {
     name: resource.modelName,

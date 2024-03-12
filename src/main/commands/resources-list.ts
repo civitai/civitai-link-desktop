@@ -1,7 +1,7 @@
-import { getResources } from '../store';
+import { getFiles } from '../store/files';
 
 export function resourcesList() {
-  const resources = getResources();
+  const resources = getFiles();
   let resourceList: Resource[] = [];
 
   for (const resource of Object.values(resources)) {

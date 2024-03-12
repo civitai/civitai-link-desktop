@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { getSettings } from './store';
+import { getSettings } from './store/store';
 
 type ResponsePayload = {
   data: {

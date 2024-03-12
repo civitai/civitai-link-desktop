@@ -19,6 +19,7 @@ export enum Resources {
   VAE = 'VAE',
 }
 
+// TODO: Make this more app status
 const schema: Schema<Record<string, unknown>> = {
   key: {
     type: ['string', 'null'],
@@ -106,8 +107,6 @@ export function setRootResourcePath(path: string) {
 export function getUIStore() {
   return {
     rootResourcePath: store.get('rootResourcePath'),
-    activities: store.get('activitiesList'),
-    files: store.get('resources'),
     connectionStatus: store.get('connectionStatus'),
     settings: store.get('settings'),
   };
@@ -136,57 +135,6 @@ export function setResourcePath(resource: string, path: string) {
     ...resourcePaths,
     [resource]: path,
   });
-}
-
-export function updateActivity(activity: ActivityItem) {
-  const activities = store.get('activitiesList') as ActivityItem[];
-
-  // Only keep last 30 activities
-  if (activities.length > 30) {
-    const clonedActivities = [...activities];
-    clonedActivities.pop();
-
-    return store.set('activitiesList', [activity, ...clonedActivities]);
-  } else {
-    return store.set('activitiesList', [activity, ...activities]);
-  }
-}
-
-export function addResource(resource: Resource) {
-  const resources = store.get('resources') as ResourcesMap;
-  const resourceToAdd = { ...resource, hash: resource.hash.toLowerCase() };
-
-  return store.set('resources', {
-    [resourceToAdd.hash]: resourceToAdd,
-    ...resources,
-  });
-}
-
-export function removeResource(hash: string) {
-  const resources = store.get('resources') as ResourcesMap;
-
-  delete resources[hash.toLowerCase()];
-
-  return store.set('resources', resources);
-}
-
-export function lookupResource(hash: string) {
-  const resources = store.get('resources') as ResourcesMap;
-
-  return resources[hash.toLowerCase()];
-}
-
-export function updatedResource(resource: Resource) {
-  const resources = store.get('resources') as ResourcesMap;
-
-  return store.set('resources', {
-    ...resources,
-    [resource.hash]: resource,
-  });
-}
-
-export function getResources() {
-  return store.get('resources') as ResourcesMap;
 }
 
 type Settings = {
