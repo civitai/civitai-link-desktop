@@ -14,6 +14,7 @@ export function listDirectory() {
 
   const files = fs
     .readdirSync(path.join(modelDirectory), { recursive: true })
+    .filter((file) => !file.includes('/temp/'))
     .filter((file) => FILE_TYPES.some((x) => file.includes(x)));
 
   return files as string[];
