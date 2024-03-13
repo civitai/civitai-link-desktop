@@ -50,19 +50,15 @@ const schema: Schema<Record<string, unknown>> = {
       [Resources.VAE]: '',
     },
   },
-  resources: {
-    type: 'object',
-    default: {},
-  },
-  activitiesList: {
-    type: 'array',
-    default: [],
-  },
   settings: {
     type: 'object',
     default: {
       nsfw: false,
     },
+  },
+  apiKey: {
+    type: ['string', 'null'],
+    default: null,
   },
 };
 
@@ -88,20 +84,32 @@ export function getUpgradeKey() {
   return store.get('upgradekey');
 }
 
+export function setApiKey(key: string | null) {
+  return store.set('apiKey', key);
+}
+
+export function getApiKey() {
+  return store.get('apiKey');
+}
+
 export function getConnectionStatus() {
   return store.get('connectionStatus');
 }
 
+type Settings = {
+  nsfw: boolean;
+};
+
+export function getSettings() {
+  return store.get('settings') as Settings;
+}
+
+export function setSettings(settings: Settings) {
+  return store.set('settings', settings);
+}
+
 export function clearSettings() {
   store.clear();
-}
-
-export function getRootResourcePath(): string {
-  return store.get('rootResourcePath') as string;
-}
-
-export function setRootResourcePath(path: string) {
-  store.set('rootResourcePath', path);
 }
 
 export function getUIStore() {
@@ -110,6 +118,15 @@ export function getUIStore() {
     connectionStatus: store.get('connectionStatus'),
     settings: store.get('settings'),
   };
+}
+
+// TODO: Pathing move to other store
+export function getRootResourcePath(): string {
+  return store.get('rootResourcePath') as string;
+}
+
+export function setRootResourcePath(path: string) {
+  store.set('rootResourcePath', path);
 }
 
 export function getResourcePath(resourcePath: string) {
@@ -135,16 +152,4 @@ export function setResourcePath(resource: string, path: string) {
     ...resourcePaths,
     [resource]: path,
   });
-}
-
-type Settings = {
-  nsfw: boolean;
-};
-
-export function getSettings() {
-  return store.get('settings') as Settings;
-}
-
-export function setSettings(settings: Settings) {
-  return store.set('settings', settings);
 }
