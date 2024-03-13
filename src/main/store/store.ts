@@ -117,6 +117,7 @@ export function getUIStore() {
     rootResourcePath: store.get('rootResourcePath'),
     connectionStatus: store.get('connectionStatus'),
     settings: store.get('settings'),
+    apiKey: store.get('apiKey'),
   };
 }
 

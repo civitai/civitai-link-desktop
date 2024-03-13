@@ -6,18 +6,29 @@ import { ResourceType } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useApi } from '@/hooks/use-api';
+import { Input } from '@/components/ui/input';
+import { Save } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from '@/components/ui/use-toast';
 
 export function Settings() {
-  const { clearSettings, settings } = useElectron();
-  const { setNSFW } = useApi();
-  // Need to get if currently checked from provider
+  const { clearSettings, settings, apiKey } = useElectron();
+  const { setNSFW, setApiKey } = useApi();
+  const [key, setKey] = useState<string>(apiKey || '');
+
+  const onClickSaveApiKey = () => {
+    setApiKey(key);
+    toast({
+      title: 'API Key Saved',
+    });
+  };
 
   return (
     <SheetContent className="w-full p-0">
       <SheetHeader>
         <SheetTitle className="pb-4">Settings</SheetTitle>
       </SheetHeader>
-      <div className="h-full overflow-y-auto pb-20 w-full px-4">
+      <div className="overflow-y-scroll max-h-screen pb-20 w-full px-4">
         <div className="grid gap-6">
           <h1 className="text-xl">General Settings</h1>
           <div className="flex items-center space-x-2">
@@ -32,6 +43,35 @@ export function Settings() {
             >
               Add NSFW images to model preview
             </label>
+          </div>
+          <div className="flex flex-col items-center space-y-2">
+            <label
+              htmlFor="nsfw"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center w-full"
+            >
+              Civitai API Key (
+              <a
+                href="https://civitai.com/user/account"
+                target="_blank"
+                className="text-blue-500 underline"
+              >
+                Generate Key
+              </a>
+              )
+            </label>
+            <div className="flex items-center w-full space-x-2">
+              <Input
+                placeholder="API Key"
+                onChange={(e) => setKey(e.target.value)}
+                onPaste={(e) =>
+                  setApiKey(e.clipboardData.getData('text/plain'))
+                }
+                value={key}
+              />
+              <Button onClick={onClickSaveApiKey} className="p-3">
+                <Save size={18} />
+              </Button>
+            </div>
           </div>
           <h1 className="text-xl">Model Settings</h1>
           {(Object.keys(ResourceType) as Array<keyof typeof ResourceType>).map(
