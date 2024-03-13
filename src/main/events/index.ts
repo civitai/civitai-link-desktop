@@ -9,6 +9,7 @@ import { eventResourceRemove } from './resource-remove';
 import { eventInit } from './init';
 import { eventSetNSFW } from './set-nsfw';
 import { eventOpenModelFileFolder } from './open-model-file-folder';
+import { eventSetApiKey } from './set-api-key';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -29,4 +30,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('open-model-file-folder', (_, filePath) =>
     eventOpenModelFileFolder(filePath),
   );
+  ipcMain.on('set-api-key', eventSetApiKey);
 }

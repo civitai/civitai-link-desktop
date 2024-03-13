@@ -4,6 +4,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 type ElectronContextType = {
   key?: string | null;
+  apiKey?: string | null;
   appLoading: boolean;
   clearSettings: () => void;
   activityList: ActivityItem[];
@@ -14,6 +15,7 @@ type ElectronContextType = {
 
 const defaultValue: ElectronContextType = {
   key: null,
+  apiKey: null,
   appLoading: true,
   clearSettings: () => {},
   activityList: [],
@@ -35,6 +37,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   );
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const [settings, setSettings] = useState({ nsfw: false });
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -65,6 +68,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setRootResourcePath(message.rootResourcePath);
       setConnectionStatus(message.connectionStatus);
       setSettings(message.settings);
+      setApiKey(message.apiKey);
     });
 
     return () => {
@@ -123,6 +127,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     setActivityList([]);
     setConnectionStatus(ConnectionStatus.DISCONNECTED);
     setRootResourcePath(null);
+    setApiKey(null);
   };
 
   return (
@@ -135,6 +140,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         connectionStatus,
         rootResourcePath,
         settings,
+        apiKey,
       }}
     >
       {children}

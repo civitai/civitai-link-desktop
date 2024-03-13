@@ -100,7 +100,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         ...files,
       }));
 
-      if (searchTerm || filteredFileList[message.hash]) {
+      if (!searchTerm || message.modelName.toLowerCase().includes(searchTerm)) {
         setFilteredFileList((files) => ({
           [message.hash]: message,
           ...files,

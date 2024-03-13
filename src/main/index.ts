@@ -19,7 +19,7 @@ import {
   store,
   ConnectionStatus,
   getResourcePath,
-} from './store';
+} from './store/store';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
@@ -30,6 +30,8 @@ import logo from '../../resources/favicon@2x.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
+import { getActivities, watcherActivities } from './store/activities';
+import { getFiles, watcherFiles } from './store/files';
 
 // updateElectronApp();
 
@@ -91,7 +93,12 @@ function createWindow() {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
     }
 
-    mainWindow.webContents.send('store-ready', getUIStore());
+    mainWindow.webContents.send('store-ready', {
+      ...getUIStore(),
+      files: getFiles(),
+      activities: getActivities(),
+    });
+
     mainWindow.webContents.send('app-ready', true);
   });
 
@@ -216,8 +223,12 @@ app.whenReady().then(async () => {
   createWindow();
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
-  eventsListeners({ mainWindow });
   setWindowAutoHide();
+
+  // Watchers/Listeners
+  eventsListeners({ mainWindow });
+  watcherActivities({ mainWindow });
+  watcherFiles({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
@@ -236,16 +247,6 @@ app.whenReady().then(async () => {
     } else {
       return filePaths[0];
     }
-  });
-
-  // Updates activities in the UI when a change is detected
-  store.onDidChange('activitiesList', (newValue) => {
-    mainWindow.webContents.send('activity-update', newValue);
-  });
-
-  // Updates all files once changed (Happens when file finishes download)
-  store.onDidChange('resources', (newValue) => {
-    mainWindow.webContents.send('files-update', newValue);
   });
 
   // Updates the UI and Tray icon with the socket connection status

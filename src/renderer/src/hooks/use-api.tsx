@@ -37,5 +37,8 @@ export function useApi() {
     openModelFileFolder: async (filePath: string) => {
       return await window.api.openModelFileFolder(filePath);
     },
+    setApiKey: async (key: string) => {
+      return await window.api.setApiKey(key);
+    },
   };
 }

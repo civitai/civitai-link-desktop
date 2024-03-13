@@ -3,7 +3,8 @@ import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
-import { updateActivity, addResource } from './store';
+import { addFile } from './store/files';
+import { updateActivity } from './store/activities';
 import { resourcesList } from './commands';
 
 type DownloadFileParams = {
@@ -122,7 +123,7 @@ export async function downloadFile({
     };
 
     updateActivity(activity);
-    addResource(fileData);
+    addFile(fileData);
 
     console.log("Move file to: '" + filePath + "'!");
     fs.renameSync(tempFilePath, filePath);

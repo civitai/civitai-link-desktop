@@ -1,5 +1,5 @@
 import chokidar from 'chokidar';
-import { getRootResourcePath, store } from './store';
+import { getRootResourcePath, store } from './store/store';
 
 export function folderWatcher() {
   let watcher;

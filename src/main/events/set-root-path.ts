@@ -1,4 +1,4 @@
-import { setRootResourcePath } from '../store';
+import { setRootResourcePath } from '../store/store';
 
 export function eventSetRootPath(_, directory) {
   if (directory['path'] !== '') {

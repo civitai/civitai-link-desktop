@@ -17,6 +17,7 @@ declare global {
       init: () => void;
       setNSFW: (nsfw: boolean) => void;
       openModelFileFolder: (filePath: string) => void;
+      setApiKey(key: string): void;
     };
   }
 

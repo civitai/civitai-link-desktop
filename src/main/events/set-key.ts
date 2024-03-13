@@ -1,5 +1,5 @@
 import { socketEmit } from '../socket';
-import { setKey } from '../store';
+import { setKey } from '../store/store';
 
 export function eventSetKey(_, key: string) {
   console.log('Setting key', key);

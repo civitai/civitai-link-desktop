@@ -5,8 +5,8 @@ import {
   setConnectionStatus,
   setKey,
   setUpgradeKey,
-  lookupResource,
-} from './store';
+} from './store/store';
+import { searchFile } from './store/files';
 import {
   activitiesCancel,
   activitiesClear,
@@ -107,7 +107,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         });
         break;
       case 'resources:add':
-        if (lookupResource(payload.resource.hash)) {
+        if (searchFile(payload.resource.hash)) {
           mainWindow.webContents.send('error', 'Resource already exists');
         } else {
           resourcesAdd({

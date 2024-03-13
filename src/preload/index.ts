@@ -26,6 +26,7 @@ const api = {
   setNSFW: (nsfw: boolean) => ipcRenderer.send('set-nsfw', nsfw),
   openModelFileFolder: (filePath: string) =>
     ipcRenderer.send('open-model-file-folder', filePath),
+  setApiKey: (key: string) => ipcRenderer.send('set-api-key', key),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

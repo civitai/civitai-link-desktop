@@ -1,4 +1,4 @@
-import { setResourcePath } from '../store';
+import { setResourcePath } from '../store/store';
 
 export function eventSetPath(_, directory) {
   if (directory['path'] !== '') {
