@@ -1,8 +1,9 @@
 import axios, { AxiosError } from 'axios';
-import { getSettings } from './store/store';
+import { getSettings, getApiKey } from './store/store';
 
 type ResponsePayload = {
   data: {
+    id: number;
     modelId: number;
     downloadUrl: string;
     model: {
@@ -31,7 +32,6 @@ enum NsfwType {
   X = 'X',
 }
 
-// TODO: Create ignore list for not found models?
 export const getModelByHash = async (hash: string): Promise<Resource> => {
   try {
     const { data }: ResponsePayload = await axios.get(
@@ -61,6 +61,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       name: data.files[0].name, // Filename
       modelName: data.model.name,
       modelVersionName: data.name,
+      modelVesrionId: data.id,
       previewImageUrl,
       civitaiUrl: `https://civitai.com/models/${data.modelId}`,
     };
@@ -71,3 +72,64 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
     throw error.response.data;
   }
 };
+
+type VersionResource = {
+  modelVersionId: number;
+  vaultItem: null | object;
+};
+
+export const getVaultModels = async (
+  modelVersionIds: number[],
+): Promise<VersionResource[]> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return [];
+  }
+
+  try {
+    const { data }: { data: VersionResource[] } = await axios.get(
+      `https://civitai.com/api/v1/vault/check-vault?modelVersionIds=${modelVersionIds.join('&')}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching vault models: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+export const toggleVaultModel = async (
+  modelVersionId: number,
+): Promise<{ success: boolean }> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return { success: false };
+  }
+
+  try {
+    const { data } = await axios.post(
+      `https://civitai.com/api/v1/vault/toggle-version?modelVersionId=${modelVersionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error toggling vault model: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+// Vault = null ====> This person is not a member and has never used vault.
+// Vault = { storageKb: 0 } ===> This person used to be a member, had a vault at some point, but now is not a member

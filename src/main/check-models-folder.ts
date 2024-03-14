@@ -8,10 +8,11 @@ import path from 'path';
 export function checkModelsFolder() {
   // Init load is null
   const modelDirectory = getRootResourcePath();
+
   // Init load is empty []
   const files = listDirectory();
 
-  files.forEach(async (file) => {
+  const promises = files.map(async (file) => {
     const filePath = path.join(modelDirectory, file);
 
     // Hash files
@@ -29,11 +30,12 @@ export function checkModelsFolder() {
     if (!resource) {
       try {
         const model = await getModelByHash(modelHash);
-
         addFile({ ...model, localPath: filePath });
       } catch {
         console.error('Error hash', modelHash, file);
       }
     }
   });
+
+  return Promise.allSettled(promises);
 }
