@@ -39,6 +39,7 @@ jobs:
         run: npm run build:win
 
       - name: Sign Artifact with CodeSignTool
+        if: matrix.os == 'windows-latest'
         uses: sslcom/esigner-codesign@develop
         with:
           # Sign and timestamp code object.
@@ -53,9 +54,9 @@ jobs:
           # totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${GITHUB_WORKSPACE}/dist/civitai-link-1.10.2-setup.exe
+          file_path: dist/civitai-link-1.10.3-setup.exe
           # Directory where signed code object(s) will be written.
-          output_path: ${GITHUB_WORKSPACE}/dist/signed
+          output_path: dist/
           # Scan code before sign
           malware_block: false
           # Environment Name, For Production 'PROD' or For Staging 'TEST'
