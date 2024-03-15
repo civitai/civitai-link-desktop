@@ -54,7 +54,7 @@ jobs:
           # totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: dist/civitai-link-1.10.3-setup.exe
+          file_path: dist/civitai-link-1.10.4-setup.exe
           # Directory where signed code object(s) will be written.
           output_path: dist/
           # Scan code before sign
