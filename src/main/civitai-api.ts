@@ -78,6 +78,30 @@ type VersionResource = {
   vaultItem: null | object;
 };
 
+export const getAllVaultModels = async (): Promise<VersionResource[]> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return [];
+  }
+
+  try {
+    const { data }: { data: VersionResource[] } = await axios.get(
+      'https://civitai.com/api/v1/vault/get',
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching all vault models: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
 export const getVaultModels = async (
   modelVersionIds: number[],
 ): Promise<VersionResource[]> => {

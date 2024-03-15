@@ -23,7 +23,7 @@ export function FileItemDelete({ resource }: FileItemDeleteProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
         <Trash2
           color="#F15252"
           className="cursor-pointer absolute group-hover:flex hidden top-1/2 right-0 transform -translate-y-1/2"

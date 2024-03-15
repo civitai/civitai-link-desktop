@@ -63,6 +63,7 @@ export function FilesItem({ resource }: FilesItemProps) {
     });
   };
 
+  // TODO: Store in vault on click and toggle icon color if st
   return (
     <TooltipProvider>
       <Card className="mb-2 bg-transparent group">
@@ -130,7 +131,7 @@ export function FilesItem({ resource }: FilesItemProps) {
                   <TooltipTrigger>
                     <FileItemDelete resource={resource} />
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-[360px] bg-background/90 rounded p-1 border z-50">
+                  <TooltipContent className="max-w-[360px] bg-background/90 rounded mr-2 p-1 border z-50">
                     <p className="text-xs">Delete from file system</p>
                   </TooltipContent>
                 </Tooltip>
