@@ -75,20 +75,24 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
   }
 };
 
-type VersionResource = {
-  modelVersionId: number;
-  vaultItem: null | object;
+type VaultMeta = {
+  vault: {
+    userId: number;
+    usedStorageKb: number;
+    storageKb: number;
+    updatedAt: string;
+  };
 };
 
-export const getAllVaultModels = async (): Promise<VersionResource[]> => {
+export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
   const apiKey = getApiKey();
 
   if (!apiKey) {
-    return [];
+    return;
   }
 
   try {
-    const { data }: { data: VersionResource[] } = await axios.get(
+    const { data }: { data: VaultMeta } = await axios.get(
       `${CIVITAI_API_URL}/vault/get`,
       {
         headers: {
@@ -104,7 +108,12 @@ export const getAllVaultModels = async (): Promise<VersionResource[]> => {
   }
 };
 
-export const getVaultModels = async (
+type VersionResource = {
+  modelVersionId: number;
+  vaultItem: null | object;
+};
+
+export const fetchVaultModels = async (
   modelVersionIds: number[],
 ): Promise<VersionResource[]> => {
   const apiKey = getApiKey();
@@ -157,7 +166,7 @@ export const toggleVaultModel = async (
   }
 };
 
-export const getMember = async () => {
+export const fetchMember = async () => {
   const apiKey = getApiKey();
 
   if (!apiKey) {

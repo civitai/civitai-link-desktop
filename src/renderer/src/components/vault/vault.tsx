@@ -4,7 +4,24 @@ import { MemberButton } from '../member-button';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
-  const vault = null; // TODO: Fetch vault
+  const vault = null;
+  // const [vault, setVault] = useState(null); // TODO: Fetch vault
+
+  // useEffect(() => {
+  //   const fetchVault = async () => {
+  //     const { data } = await axios.get(`https://civitai.com/api/v1/vault/get`, {
+  //       headers: {
+  //         Authorization: `Bearer ${apiKey}`,
+  //       },
+  //     });
+
+  //     setVault(data.vault);
+  //   };
+
+  //   if (apiKey && user && Object.hasOwn(user, 'tier')) {
+  //     fetchVault();
+  //   }
+  // }, []);
 
   if (!apiKey) {
     return (

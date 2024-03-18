@@ -1,6 +1,6 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
-import { getMember } from '../civitai-api';
+import { fetchMember } from '../civitai-api';
 
 export enum ConnectionStatus {
   DISCONNECTED = 'disconnected',
@@ -118,7 +118,7 @@ export function clearSettings() {
 
 export async function setUser() {
   try {
-    const user = await getMember();
+    const user = await fetchMember();
 
     return store.set('user', user);
   } catch (e) {
