@@ -59,7 +59,7 @@ export function Activities() {
         return (
           <div key={key}>
             <div className="sticky top-[130px] py-2 bg-background">
-              <p className="test-md font-bold text-[#909296]">{date}</p>
+              <p className="text-md font-bold text-[#909296]">{date}</p>
             </div>
             <div className="flex flex-col gap-y-2 mt-2">
               {activities[date].map((activity, key) => (
