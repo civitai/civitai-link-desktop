@@ -1,6 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { getSettings, getApiKey } from './store/store';
 
+const CIVITAI_API_URL = 'https://civitai.com/api/v1';
+
 type ResponsePayload = {
   data: {
     id: number;
@@ -35,7 +37,7 @@ enum NsfwType {
 export const getModelByHash = async (hash: string): Promise<Resource> => {
   try {
     const { data }: ResponsePayload = await axios.get(
-      `https://civitai.com/api/v1/model-versions/by-hash/${hash}`,
+      `${CIVITAI_API_URL}/model-versions/by-hash/${hash}`,
     );
 
     // Filter NSFW based on settings
@@ -87,7 +89,7 @@ export const getAllVaultModels = async (): Promise<VersionResource[]> => {
 
   try {
     const { data }: { data: VersionResource[] } = await axios.get(
-      'https://civitai.com/api/v1/vault/get',
+      `${CIVITAI_API_URL}/vault/get`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -113,7 +115,7 @@ export const getVaultModels = async (
 
   try {
     const { data }: { data: VersionResource[] } = await axios.get(
-      `https://civitai.com/api/v1/vault/check-vault?modelVersionIds=${modelVersionIds.join('&')}`,
+      `${CIVITAI_API_URL}/vault/check-vault?modelVersionIds=${modelVersionIds.join('&')}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -139,7 +141,7 @@ export const toggleVaultModel = async (
 
   try {
     const { data } = await axios.post(
-      `https://civitai.com/api/v1/vault/toggle-version?modelVersionId=${modelVersionId}`,
+      `${CIVITAI_API_URL}/vault/toggle-version?modelVersionId=${modelVersionId}`,
       {},
       {
         headers: {
@@ -155,5 +157,23 @@ export const toggleVaultModel = async (
   }
 };
 
-// Vault = null ====> This person is not a member and has never used vault.
-// Vault = { storageKb: 0 } ===> This person used to be a member, had a vault at some point, but now is not a member
+export const getMember = async () => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const { data } = await axios.get(`${CIVITAI_API_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching member: ', error.response.data);
+    throw error.response.data;
+  }
+};
