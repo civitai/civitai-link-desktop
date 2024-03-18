@@ -11,6 +11,7 @@ type ElectronContextType = {
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
   settings: { nsfw: boolean };
+  user?: object | null;
 };
 
 const defaultValue: ElectronContextType = {
@@ -22,6 +23,7 @@ const defaultValue: ElectronContextType = {
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
   settings: { nsfw: false },
+  user: null,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -38,6 +40,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
   const [settings, setSettings] = useState({ nsfw: false });
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [user, setUser] = useState<object | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -61,6 +64,18 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // TODO: Combine this with apiKey check which should trigger these
+  useEffect(() => {
+    ipcRenderer.on('fetch-user', function (_, message) {
+      console.log('fetch-user', message);
+      setUser(message.user);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('fetch-user');
+    };
+  }, []);
+
   // Get initial store on load
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
@@ -69,6 +84,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setConnectionStatus(message.connectionStatus);
       setSettings(message.settings);
       setApiKey(message.apiKey);
+      setUser(message.user);
     });
 
     return () => {
@@ -128,6 +144,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     setConnectionStatus(ConnectionStatus.DISCONNECTED);
     setRootResourcePath(null);
     setApiKey(null);
+    setUser(null);
   };
 
   return (
@@ -141,6 +158,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         rootResourcePath,
         settings,
         apiKey,
+        user,
       }}
     >
       {children}

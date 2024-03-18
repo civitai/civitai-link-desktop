@@ -3,9 +3,8 @@ import { ApiKeyInput } from '../api-key-input';
 import { MemberButton } from '../member-button';
 
 export function Vault() {
-  const { apiKey } = useElectron();
+  const { apiKey, user } = useElectron();
   const vault = null; // TODO: Fetch vault
-  const me = {};
 
   if (!apiKey) {
     return (
@@ -21,9 +20,12 @@ export function Vault() {
     );
   }
 
-  if (!vault && !Object.hasOwn(me, 'tier')) {
+  if (!vault && user && !Object.hasOwn(user, 'tier')) {
     return (
-      <div className="flex justify-center items-center mt-4">
+      <div className="flex flex-col justify-center items-center mt-4">
+        <p className="text-sm leading-none dark:text-white font-bold mb-4 text-center mx-8">
+          In order to use Civitai Vault, you need to purchase membership.
+        </p>
         <MemberButton />
       </div>
     );

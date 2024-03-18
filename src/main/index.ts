@@ -19,6 +19,8 @@ import {
   store,
   ConnectionStatus,
   getResourcePath,
+  setUser,
+  watcherUser,
 } from './store/store';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
@@ -224,11 +226,13 @@ app.whenReady().then(async () => {
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
   setWindowAutoHide();
+  setUser();
 
   // Watchers/Listeners
   eventsListeners({ mainWindow });
   watcherActivities({ mainWindow });
   watcherFiles({ mainWindow });
+  watcherUser({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);
