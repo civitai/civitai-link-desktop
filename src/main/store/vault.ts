@@ -40,3 +40,19 @@ export function getVaultMeta() {
 export function getVault() {
   return store.get('vault');
 }
+
+type watcherVaultParams = {
+  mainWindow: Electron.BrowserWindow;
+};
+
+export function watchVaultMeta({ mainWindow }: watcherVaultParams) {
+  store.onDidChange('vaultMeta', (newValue) => {
+    mainWindow.webContents.send('vault-meta-update', newValue);
+  });
+}
+
+export function watchVault({ mainWindow }: watcherVaultParams) {
+  store.onDidChange('vault', (newValue) => {
+    mainWindow.webContents.send('vault-update', newValue);
+  });
+}

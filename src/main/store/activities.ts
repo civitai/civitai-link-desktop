@@ -1,4 +1,3 @@
-import { BrowserWindow } from 'electron';
 import Store, { Schema } from 'electron-store';
 
 const schema: Schema<Record<string, unknown>> = {
@@ -29,7 +28,7 @@ export function getActivities() {
 }
 
 type watcherActivitiesParams = {
-  mainWindow: BrowserWindow;
+  mainWindow: Electron.BrowserWindow;
 };
 
 export function watcherActivities({ mainWindow }: watcherActivitiesParams) {

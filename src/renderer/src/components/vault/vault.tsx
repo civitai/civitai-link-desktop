@@ -1,27 +1,13 @@
 import { useElectron } from '@/providers/electron';
 import { ApiKeyInput } from '../api-key-input';
 import { MemberButton } from '../member-button';
+import { useVault } from '@/providers/vault';
+import prettyBytes from 'pretty-bytes';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
+  const { vaultMeta } = useVault();
   const vault = null;
-  // const [vault, setVault] = useState(null); // TODO: Fetch vault
-
-  // useEffect(() => {
-  //   const fetchVault = async () => {
-  //     const { data } = await axios.get(`https://civitai.com/api/v1/vault/get`, {
-  //       headers: {
-  //         Authorization: `Bearer ${apiKey}`,
-  //       },
-  //     });
-
-  //     setVault(data.vault);
-  //   };
-
-  //   if (apiKey && user && Object.hasOwn(user, 'tier')) {
-  //     fetchVault();
-  //   }
-  // }, []);
 
   if (!apiKey) {
     return (
@@ -48,5 +34,10 @@ export function Vault() {
     );
   }
 
-  return <h1>Vault</h1>;
+  return (
+    <h1>
+      Vault - {prettyBytes(vaultMeta?.usedStorageKb || 0)} /{' '}
+      {prettyBytes(vaultMeta?.storageKb || 0)}
+    </h1>
+  );
 }

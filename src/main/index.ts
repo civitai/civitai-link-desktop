@@ -34,6 +34,7 @@ import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import { getActivities, watcherActivities } from './store/activities';
 import { getFiles, watcherFiles } from './store/files';
+import { getVaultMeta, setVaultMeta } from './store/vault';
 
 // updateElectronApp();
 
@@ -97,6 +98,7 @@ function createWindow() {
 
     mainWindow.webContents.send('store-ready', {
       ...getUIStore(),
+      vaultMeta: getVaultMeta(),
       files: getFiles(),
       activities: getActivities(),
     });
@@ -227,6 +229,7 @@ app.whenReady().then(async () => {
   // folderWatcher();
   setWindowAutoHide();
   setUser();
+  setVaultMeta();
 
   // Watchers/Listeners
   eventsListeners({ mainWindow });
