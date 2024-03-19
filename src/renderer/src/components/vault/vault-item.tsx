@@ -11,8 +11,6 @@ import {
 } from '@radix-ui/react-tooltip';
 import { VaultItemDelete } from './vault-item-delete';
 
-// import { CiVault } from "react-icons/ci";
-
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 

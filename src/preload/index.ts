@@ -28,6 +28,8 @@ const api = {
     ipcRenderer.send('open-model-file-folder', filePath),
   setApiKey: (key: string) => ipcRenderer.send('set-api-key', key),
   fetchVaultMeta: () => ipcRenderer.send('fetch-vault-meta'),
+  toggleVaultItem: (modelVersionId: number) =>
+    ipcRenderer.send('toggle-vault-item', modelVersionId),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

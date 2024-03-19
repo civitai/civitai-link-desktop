@@ -9,11 +9,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useApi } from '@/hooks/use-api';
 import { CloudOff } from 'lucide-react';
 
-type VaultItemDeleteProps = {};
+type VaultItemDeleteProps = {
+  modelVersionId: number;
+};
 
-export function VaultItemDelete({}: VaultItemDeleteProps) {
+export function VaultItemDelete({ modelVersionId }: VaultItemDeleteProps) {
+  const { toggleVaultItem } = useApi();
+
+  const removeFromVault = () => {
+    toggleVaultItem(modelVersionId);
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -33,7 +42,10 @@ export function VaultItemDelete({}: VaultItemDeleteProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="py-2">Cancel</AlertDialogCancel>
-          <AlertDialogAction className="py-2 destructive">
+          <AlertDialogAction
+            onClick={removeFromVault}
+            className="py-2 destructive"
+          >
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

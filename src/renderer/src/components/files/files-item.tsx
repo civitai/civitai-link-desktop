@@ -8,7 +8,7 @@ import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
-import { DownloadCloud, Image, UploadCloud } from 'lucide-react';
+import { CloudOff, DownloadCloud, Image, UploadCloud } from 'lucide-react';
 import { FileItemDelete } from './file-item-delete';
 import { useFile } from '@/providers/files';
 import {
@@ -87,10 +87,22 @@ export function FilesItem({ resource }: FilesItemProps) {
                   {apiKey ? (
                     <Tooltip>
                       <TooltipTrigger>
-                        <UploadCloud className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex" />
+                        {/* TODO: Add function for toggling */}
+                        {resource.vaultId ? (
+                          <CloudOff
+                            color="#F15252"
+                            className="cursor-pointer absolute group-hover:flex hidden top-3 left-3 w-6 h-6"
+                          />
+                        ) : (
+                          <UploadCloud className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex" />
+                        )}
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[360px] bg-background/90 rounded p-1 ml-8 border">
-                        <p className="text-xs">Store resource in your vault</p>
+                        <p className="text-xs">
+                          {resource.vaultId
+                            ? 'Remove from Vault'
+                            : 'Store resource in your Vault'}
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   ) : null}
