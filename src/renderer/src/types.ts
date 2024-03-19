@@ -22,4 +22,6 @@ export enum ActivityType {
   Deleted = 'deleted',
   Cancelled = 'cancelled',
   Downloading = 'downloading',
+  ADDED_VAULT = 'added vault',
+  REMOVED_VAULT = 'removed vault',
 }

@@ -1,4 +1,5 @@
 import { fetchVaultModelsByVersion, toggleVaultModel } from '../civitai-api';
+import { updateActivity } from '../store/activities';
 import {
   searchFile,
   searchFileByModelVersionId,
@@ -26,6 +27,16 @@ export async function eventToggleVaultItem(
     updateFile({
       ...file,
       vaultId: vaultStatus[0].vaultItem?.vaultId,
+    });
+
+    // NOTE: This only works from app
+    // TODO: Move this event as part of the socket connection
+    updateActivity({
+      name: file.modelName,
+      type: vaultStatus[0].vaultItem?.vaultId
+        ? ('added vault' as ActivityType)
+        : ('removed vault' as ActivityType),
+      date: new Date().toISOString(),
     });
   }
 }
