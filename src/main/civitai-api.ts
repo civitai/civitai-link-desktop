@@ -113,7 +113,7 @@ type VersionResource = {
   vaultItem: null | object;
 };
 
-export const fetchVaultModels = async (
+export const fetchVaultModelsByVersion = async (
   modelVersionIds: number[],
 ): Promise<VersionResource[]> => {
   const apiKey = getApiKey();

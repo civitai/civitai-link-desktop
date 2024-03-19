@@ -18,6 +18,7 @@ declare global {
       setNSFW: (nsfw: boolean) => void;
       openModelFileFolder: (filePath: string) => void;
       setApiKey(key: string): void;
+      fetchVaultMeta: () => void;
     };
   }
 

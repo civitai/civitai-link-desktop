@@ -40,5 +40,8 @@ export function useApi() {
     setApiKey: async (key: string) => {
       return await window.api.setApiKey(key);
     },
+    fetchVaultMeta: async () => {
+      return await window.api.fetchVaultMeta();
+    },
   };
 }

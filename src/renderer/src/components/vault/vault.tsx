@@ -5,13 +5,13 @@ import { useVault } from '@/providers/vault';
 import prettyBytes from 'pretty-bytes';
 import { Progress } from '@/components/ui/progress';
 import { VaultItem } from './vault-item';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect } from 'react';
+import { useApi } from '@/hooks/use-api';
 
-// Refresh on render
 export function Vault() {
   const { apiKey, user } = useElectron();
   const { vaultMeta } = useVault();
+  const { fetchVaultMeta } = useApi();
   const percentUsed = (
     ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
     100
@@ -52,25 +52,12 @@ export function Vault() {
     },
   ];
 
-  // TODO: call an internal event to refetch the vault
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const { data } = await axios.get(
-  //       `https://civitai.com/api/v1/vault/check-vault?modelVersionIds=337944`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${apiKey}`,
-  //         },
-  //       },
-  //     );
-  //     console.log(data);
-  //     setTest(data);
-  //   };
-
-  //   if (apiKey) {
-  //     fetchData();
-  //   }
-  // }, [apiKey]);
+  // This will check each time Vault is selected
+  useEffect(() => {
+    if (apiKey) {
+      fetchVaultMeta();
+    }
+  }, [apiKey]);
 
   if (!apiKey) {
     return (

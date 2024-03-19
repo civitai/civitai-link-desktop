@@ -17,6 +17,7 @@ const schema: Schema<Record<string, unknown>> = {
 
 export const store = new Store({ schema });
 
+// Maybe add a refresh check
 export async function setVaultMeta() {
   const meta = await fetchVaultMeta();
 

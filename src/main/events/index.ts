@@ -10,6 +10,7 @@ import { eventInit } from './init';
 import { eventSetNSFW } from './set-nsfw';
 import { eventOpenModelFileFolder } from './open-model-file-folder';
 import { eventSetApiKey } from './set-api-key';
+import { eventFetchVaultMeta } from './fetch-vault-meta';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -31,4 +32,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
     eventOpenModelFileFolder(filePath),
   );
   ipcMain.on('set-api-key', eventSetApiKey);
+  ipcMain.on('fetch-vault-meta', eventFetchVaultMeta);
 }

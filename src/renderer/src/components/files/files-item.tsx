@@ -17,6 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
+import classnames from 'classnames';
+import { useElectron } from '@/providers/electron';
 
 // import { CiVault } from "react-icons/ci";
 
@@ -31,6 +33,7 @@ export function FilesItem({ resource }: FilesItemProps) {
   const [speed, setSpeed] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
   const { cancelDownload, openModelFileFolder } = useApi();
+  const { apiKey } = useElectron();
   const { removeActivity } = useFile();
   const isNotDone = isDownloading && progress < 100;
 
@@ -63,7 +66,6 @@ export function FilesItem({ resource }: FilesItemProps) {
     });
   };
 
-  // TODO: Store in vault on click and toggle icon color if st
   return (
     <TooltipProvider>
       <Card className="mb-2 bg-transparent group">
@@ -75,16 +77,23 @@ export function FilesItem({ resource }: FilesItemProps) {
                   <img
                     src={resource.previewImageUrl}
                     alt={resource.modelName}
-                    className="h-full w-full object-cover object-center group-hover:opacity-5"
+                    className={classnames(
+                      'h-full w-full object-cover object-center',
+                      {
+                        'group-hover:opacity-5': apiKey,
+                      },
+                    )}
                   />
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <UploadCloud className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[360px] bg-background/90 rounded p-1 ml-8 border">
-                      <p className="text-xs">Store resource in your vault</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {apiKey ? (
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <UploadCloud className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[360px] bg-background/90 rounded p-1 ml-8 border">
+                        <p className="text-xs">Store resource in your vault</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : null}
                 </div>
               ) : (
                 <div className="bg-card w-12 h-12 mr-2 rounded flex items-center justify-center">
