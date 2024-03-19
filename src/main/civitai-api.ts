@@ -110,7 +110,7 @@ export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
 
 type VersionResource = {
   modelVersionId: number;
-  vaultItem: null | object;
+  vaultItem: null | { vaultId: number };
 };
 
 export const fetchVaultModelsByVersion = async (
@@ -124,7 +124,7 @@ export const fetchVaultModelsByVersion = async (
 
   try {
     const { data }: { data: VersionResource[] } = await axios.get(
-      `${CIVITAI_API_URL}/vault/check-vault?modelVersionIds=${modelVersionIds.join('&')}`,
+      `${CIVITAI_API_URL}/vault/check-vault?modelVersionIds=${modelVersionIds.join(',')}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,

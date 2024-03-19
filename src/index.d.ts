@@ -36,6 +36,7 @@ declare global {
     civitaiUrl?: string;
     downloading?: boolean;
     localPath?: string;
+    vaultId?: number;
   };
 
   enum ActivityType {
