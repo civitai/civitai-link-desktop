@@ -15,14 +15,16 @@ import { CloudOff } from 'lucide-react';
 
 type VaultItemDeleteProps = {
   modelVersionId: number;
-  hash: string;
+  hash?: string;
   align?: 'left' | 'right';
+  hidden?: boolean;
 };
 
 export function VaultItemDelete({
   modelVersionId,
   hash,
   align = 'left',
+  hidden,
 }: VaultItemDeleteProps) {
   const { toggleVaultItem } = useApi();
 
@@ -35,13 +37,11 @@ export function VaultItemDelete({
       <AlertDialogTrigger asChild>
         <CloudOff
           color="#F15252"
-          className={classNames(
-            'absolute w-6 h-6 cursor-pointer hidden group-hover:flex',
-            {
-              'top-3 left-3': align === 'left',
-              'top-1/2 right-3 transform -translate-y-1/2': align === 'right',
-            },
-          )}
+          className={classNames('absolute w-6 h-6 cursor-pointer', {
+            'top-3 left-3': align === 'left',
+            'top-1/2 right-3 transform -translate-y-1/2': align === 'right',
+            'hidden group-hover:flex': hidden,
+          })}
         />
       </AlertDialogTrigger>
       <AlertDialogContent>

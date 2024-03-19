@@ -16,7 +16,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@radix-ui/react-tooltip';
+} from '@/components/ui/tooltip';
 import classnames from 'classnames';
 import { useElectron } from '@/providers/electron';
 import { VaultItemDelete } from '../vault/vault-item-delete';
@@ -100,6 +100,7 @@ export function FilesItem({ resource }: FilesItemProps) {
                       <TooltipTrigger>
                         {resource.vaultId ? (
                           <VaultItemDelete
+                            hidden
                             hash={resource.hash}
                             modelVersionId={resource.modelVersionId}
                           />

@@ -8,8 +8,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@radix-ui/react-tooltip';
+} from '@/components/ui/tooltip';
 import { VaultItemDelete } from './vault-item-delete';
+import { Download } from 'lucide-react';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -50,6 +51,15 @@ export function VaultItem({
                 <Badge variant="outline">{versionName}</Badge>
               </div>
             </div>
+            {/* TODO: Check if downloaded */}
+            <Tooltip>
+              <TooltipTrigger>
+                <Download className="absolute w-6 h-6 cursor-pointer top-1/2 right-14 transform -translate-y-1/2" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[360px] bg-background/90 rounded mr-2 p-1 border z-50">
+                <p className="text-xs">Download to disk</p>
+              </TooltipContent>
+            </Tooltip>
             <Tooltip>
               <TooltipTrigger>
                 <VaultItemDelete
