@@ -42,6 +42,10 @@ export function getVault() {
   return store.get('vault');
 }
 
+export function clearVault() {
+  store.clear();
+}
+
 type watcherVaultParams = {
   mainWindow: Electron.BrowserWindow;
 };

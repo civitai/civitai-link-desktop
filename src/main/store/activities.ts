@@ -36,3 +36,7 @@ export function watcherActivities({ mainWindow }: watcherActivitiesParams) {
     mainWindow.webContents.send('activity-update', newValue);
   });
 }
+
+export function clearActivities() {
+  store.clear();
+}

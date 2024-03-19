@@ -31,7 +31,7 @@ declare global {
     type: string;
     url: string; // download url
     id?: string;
-    modelVesrionId?: number;
+    modelVersionId?: number;
     downloadDate?: string;
     previewImageUrl?: string;
     civitaiUrl?: string;

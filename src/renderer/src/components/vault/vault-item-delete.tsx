@@ -10,13 +10,18 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useApi } from '@/hooks/use-api';
+import classNames from 'classnames';
 import { CloudOff } from 'lucide-react';
 
 type VaultItemDeleteProps = {
   modelVersionId: number;
+  align?: 'left' | 'right';
 };
 
-export function VaultItemDelete({ modelVersionId }: VaultItemDeleteProps) {
+export function VaultItemDelete({
+  modelVersionId,
+  align = 'left',
+}: VaultItemDeleteProps) {
   const { toggleVaultItem } = useApi();
 
   const removeFromVault = () => {
@@ -28,8 +33,13 @@ export function VaultItemDelete({ modelVersionId }: VaultItemDeleteProps) {
       <AlertDialogTrigger asChild>
         <CloudOff
           color="#F15252"
-          className="cursor-pointer absolute group-hover:flex hidden top-1/2 right-0 transform -translate-y-1/2"
-          size={20}
+          className={classNames(
+            'absolute w-6 h-6 cursor-pointer hidden group-hover:flex',
+            {
+              'top-3 left-3': align === 'left',
+              'top-1/2 right-3 transform -translate-y-1/2': align === 'right',
+            },
+          )}
         />
       </AlertDialogTrigger>
       <AlertDialogContent>

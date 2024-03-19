@@ -32,10 +32,10 @@ export async function checkModelsFolder() {
       updateFile({ ...resource, localPath: filePath });
     }
 
-    if (resource?.modelVesrionId && apiKey) {
+    if (resource?.modelVersionId && apiKey) {
       modelVersionIds = {
         ...modelVersionIds,
-        [resource.modelVesrionId]: resource.hash,
+        [resource.modelVersionId]: resource.hash,
       };
     }
 
@@ -66,7 +66,11 @@ export async function checkModelsFolder() {
         if (model.vaultItem) {
           const hash = modelVersionIds[model.modelVersionId];
           const file = searchFile(hash);
-          updateFile({ ...file, vaultId: model.vaultItem.vaultId });
+          updateFile({
+            ...file,
+            modelVersionId: model.modelVersionId,
+            vaultId: model.vaultItem.vaultId,
+          });
         }
       });
     }

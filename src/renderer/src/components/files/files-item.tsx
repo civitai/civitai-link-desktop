@@ -8,7 +8,7 @@ import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useApi } from '@/hooks/use-api';
-import { CloudOff, DownloadCloud, Image, UploadCloud } from 'lucide-react';
+import { DownloadCloud, Image, UploadCloud } from 'lucide-react';
 import { FileItemDelete } from './file-item-delete';
 import { useFile } from '@/providers/files';
 import {
@@ -19,8 +19,7 @@ import {
 } from '@radix-ui/react-tooltip';
 import classnames from 'classnames';
 import { useElectron } from '@/providers/electron';
-
-// import { CiVault } from "react-icons/ci";
+import { VaultItemDelete } from '../vault/vault-item-delete';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -36,6 +35,14 @@ export function FilesItem({ resource }: FilesItemProps) {
   const { apiKey } = useElectron();
   const { removeActivity } = useFile();
   const isNotDone = isDownloading && progress < 100;
+
+  const { toggleVaultItem } = useApi();
+
+  const toggleInVault = () => {
+    if (resource.modelVersionId) {
+      toggleVaultItem(resource.modelVersionId);
+    }
+  };
 
   useEffect(() => {
     if (resource.id && isDownloading) {
@@ -80,21 +87,23 @@ export function FilesItem({ resource }: FilesItemProps) {
                     className={classnames(
                       'h-full w-full object-cover object-center',
                       {
-                        'group-hover:opacity-5': apiKey,
+                        'group-hover:opacity-5':
+                          apiKey && resource.modelVersionId,
                       },
                     )}
                   />
-                  {apiKey ? (
+                  {apiKey && resource.modelVersionId ? (
                     <Tooltip>
                       <TooltipTrigger>
-                        {/* TODO: Add function for toggling */}
                         {resource.vaultId ? (
-                          <CloudOff
-                            color="#F15252"
-                            className="cursor-pointer absolute group-hover:flex hidden top-3 left-3 w-6 h-6"
+                          <VaultItemDelete
+                            modelVersionId={resource.modelVersionId}
                           />
                         ) : (
-                          <UploadCloud className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex" />
+                          <UploadCloud
+                            className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex"
+                            onClick={toggleInVault}
+                          />
                         )}
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[360px] bg-background/90 rounded p-1 ml-8 border">

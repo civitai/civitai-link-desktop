@@ -47,6 +47,10 @@ export function getFiles() {
   return store.get('files') as ResourcesMap;
 }
 
+export function clearFiles() {
+  store.clear();
+}
+
 type watcherFilesParams = {
   mainWindow: BrowserWindow;
 };

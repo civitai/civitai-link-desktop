@@ -52,7 +52,10 @@ export function VaultItem({
             </div>
             <Tooltip>
               <TooltipTrigger>
-                <VaultItemDelete />
+                <VaultItemDelete
+                  modelVersionId={modelVersionId}
+                  align="right"
+                />
               </TooltipTrigger>
               <TooltipContent className="max-w-[360px] bg-background/90 rounded mr-2 p-1 border z-50">
                 <p className="text-xs">Remove from Vault</p>

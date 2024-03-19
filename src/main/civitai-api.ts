@@ -63,7 +63,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       name: data.files[0].name, // Filename
       modelName: data.model.name,
       modelVersionName: data.name,
-      modelVesrionId: data.id,
+      modelVersionId: data.id,
       previewImageUrl,
       civitaiUrl: `https://civitai.com/models/${data.modelId}`,
     };
