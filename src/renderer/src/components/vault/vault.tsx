@@ -5,7 +5,10 @@ import { useVault } from '@/providers/vault';
 import prettyBytes from 'pretty-bytes';
 import { Progress } from '@/components/ui/progress';
 import { VaultItem } from './vault-item';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
+// Refresh on render
 export function Vault() {
   const { apiKey, user } = useElectron();
   const { vaultMeta } = useVault();
@@ -49,6 +52,26 @@ export function Vault() {
     },
   ];
 
+  // TODO: call an internal event to refetch the vault
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const { data } = await axios.get(
+  //       `https://civitai.com/api/v1/vault/check-vault?modelVersionIds=337944`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${apiKey}`,
+  //         },
+  //       },
+  //     );
+  //     console.log(data);
+  //     setTest(data);
+  //   };
+
+  //   if (apiKey) {
+  //     fetchData();
+  //   }
+  // }, [apiKey]);
+
   if (!apiKey) {
     return (
       <div>
@@ -74,7 +97,6 @@ export function Vault() {
     );
   }
 
-  // TODO: Add ability to download from vault
   return (
     <div>
       <div className="flex justify-end w-full pt-2 pb-4">
@@ -86,7 +108,7 @@ export function Vault() {
         </div>
       </div>
       {vault.map((item) => (
-        <VaultItem {...item.vaultItem} />
+        <VaultItem {...item.vaultItem} key={item.modelVersionId} />
       ))}
     </div>
   );

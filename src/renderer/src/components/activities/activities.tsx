@@ -18,17 +18,18 @@ export function Activities() {
     const groupedObjects = activityList.reduce((grouped: Grouped, object) => {
       const { date } = object;
       const dayjsDate = dayjs(date);
+      const today = dayjs();
       const dateFormatted = dayjsDate.format('YYYY-MM-DD');
       let groupTitle;
 
-      if (dateFormatted === dayjs().format('YYYY-MM-DD')) {
+      if (dateFormatted === today.format('YYYY-MM-DD')) {
         groupTitle = 'Today';
       } else if (
-        dateFormatted === dayjs().subtract(1, 'day').format('YYYY-MM-DD')
+        dateFormatted === today.subtract(1, 'day').format('YYYY-MM-DD')
       ) {
         groupTitle = 'Yesterday';
       } else if (
-        dayjs().isSameOrBefore(
+        today.isSameOrBefore(
           dayjs(dateFormatted).add(7, 'day').format('YYYY-MM-DD'),
           'day',
         )

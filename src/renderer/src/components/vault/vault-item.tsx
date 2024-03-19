@@ -20,9 +20,17 @@ type VaultItemProps = {
   modelName: string;
   versionName: string;
   type: string;
+  modelId: number;
+  modelVersionId: number;
 };
 
-export function VaultItem({ modelName, versionName, type }: VaultItemProps) {
+export function VaultItem({
+  modelName,
+  versionName,
+  type,
+  modelId,
+  modelVersionId,
+}: VaultItemProps) {
   return (
     <TooltipProvider>
       <Card className="mb-2 bg-transparent group">
@@ -30,7 +38,10 @@ export function VaultItem({ modelName, versionName, type }: VaultItemProps) {
           <div className="flex relative">
             <div className="w-full whitespace-nowrap overflow-hidden pr-8 justify-between flex flex-col flex-1 gap-2">
               <div>
-                <a href="" target="_blank">
+                <a
+                  href={`https://civitai.com/models/${modelId}?modelVersionId=${modelVersionId}`}
+                  target="_blank"
+                >
                   <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
                     {modelName}
                   </p>

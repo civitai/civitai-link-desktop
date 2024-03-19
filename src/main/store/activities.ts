@@ -12,8 +12,8 @@ export const store = new Store({ schema });
 export function updateActivity(activity: ActivityItem) {
   const activities = store.get('activities') as ActivityItem[];
 
-  // Only keep last 30 activities
-  if (activities.length > 30) {
+  // Only keep last 60 activities
+  if (activities.length > 60) {
     const clonedActivities = [...activities];
     clonedActivities.pop();
 
