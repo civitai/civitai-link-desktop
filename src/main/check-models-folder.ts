@@ -1,11 +1,13 @@
 import { fetchVaultModelsByVersion, getModelByHash } from './civitai-api';
 import { hash } from './hash';
 import { listDirectory } from './list-directory';
-import { getRootResourcePath } from './store/store';
+import { getApiKey, getRootResourcePath } from './store/store';
 import { addFile, searchFile, updateFile } from './store/files';
 import path from 'path';
 
 export async function checkModelsFolder() {
+  const apiKey = getApiKey();
+
   // Init load is null
   const modelDirectory = getRootResourcePath();
 
@@ -30,7 +32,7 @@ export async function checkModelsFolder() {
       updateFile({ ...resource, localPath: filePath });
     }
 
-    if (resource?.modelVesrionId) {
+    if (resource?.modelVesrionId && apiKey) {
       modelVersionIds = {
         ...modelVersionIds,
         [resource.modelVesrionId]: resource.hash,
@@ -50,21 +52,24 @@ export async function checkModelsFolder() {
 
   const results = await Promise.allSettled(promises);
 
-  // Build array of modelVersionIds
-  const modelVersionIdsArray = Object.keys(modelVersionIds).map((key) =>
-    Number(key),
-  );
+  // Only check vault if API Key exists
+  if (apiKey) {
+    // Build array of modelVersionIds
+    const modelVersionIdsArray = Object.keys(modelVersionIds).map((key) =>
+      Number(key),
+    );
 
-  if (modelVersionIdsArray.length !== 0) {
-    const vault = await fetchVaultModelsByVersion(modelVersionIdsArray);
+    if (modelVersionIdsArray.length !== 0) {
+      const vault = await fetchVaultModelsByVersion(modelVersionIdsArray);
 
-    vault.forEach((model) => {
-      if (model.vaultItem) {
-        const hash = modelVersionIds[model.modelVersionId];
-        const file = searchFile(hash);
-        updateFile({ ...file, vaultId: model });
-      }
-    });
+      vault.forEach((model) => {
+        if (model.vaultItem) {
+          const hash = modelVersionIds[model.modelVersionId];
+          const file = searchFile(hash);
+          updateFile({ ...file, vaultId: model.vaultItem.vaultId });
+        }
+      });
+    }
   }
 
   return results;
