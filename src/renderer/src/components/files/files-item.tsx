@@ -40,7 +40,10 @@ export function FilesItem({ resource }: FilesItemProps) {
 
   const toggleInVault = () => {
     if (resource.modelVersionId) {
-      toggleVaultItem(resource.modelVersionId);
+      toggleVaultItem({
+        hash: resource.hash,
+        modelVersionId: resource.modelVersionId,
+      });
     }
   };
 
@@ -97,6 +100,7 @@ export function FilesItem({ resource }: FilesItemProps) {
                       <TooltipTrigger>
                         {resource.vaultId ? (
                           <VaultItemDelete
+                            hash={resource.hash}
                             modelVersionId={resource.modelVersionId}
                           />
                         ) : (

@@ -15,17 +15,19 @@ import { CloudOff } from 'lucide-react';
 
 type VaultItemDeleteProps = {
   modelVersionId: number;
+  hash: string;
   align?: 'left' | 'right';
 };
 
 export function VaultItemDelete({
   modelVersionId,
+  hash,
   align = 'left',
 }: VaultItemDeleteProps) {
   const { toggleVaultItem } = useApi();
 
   const removeFromVault = () => {
-    toggleVaultItem(modelVersionId);
+    toggleVaultItem({ modelVersionId, hash });
   };
 
   return (
