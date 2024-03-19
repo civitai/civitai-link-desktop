@@ -63,15 +63,13 @@ export async function checkModelsFolder() {
       const vault = await fetchVaultModelsByVersion(modelVersionIdsArray);
 
       vault.forEach((model) => {
-        if (model.vaultItem) {
-          const hash = modelVersionIds[model.modelVersionId];
-          const file = searchFile(hash);
-          updateFile({
-            ...file,
-            modelVersionId: model.modelVersionId,
-            vaultId: model.vaultItem.vaultId,
-          });
-        }
+        const hash = modelVersionIds[model.modelVersionId];
+        const file = searchFile(hash);
+        updateFile({
+          ...file,
+          modelVersionId: model.modelVersionId,
+          vaultId: model.vaultItem?.vaultId,
+        });
       });
     }
   }
