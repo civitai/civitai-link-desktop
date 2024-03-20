@@ -2,8 +2,8 @@ name: Build/release Electron app
 
 on:
   push:
-    tags:
-      - v*.*.*
+    branches:
+      - fix/code-signing
 
 jobs:
   release:
@@ -42,24 +42,13 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: sslcom/esigner-codesign@develop
         with:
-          # Sign and timestamp code object.
           command: sign
-          # SSL.com account username
           username: ${{ secrets.ES_USERNAME }}
-          # SSL.com account password.
           password: ${{ secrets.ES_PASSWORD }}
-          # Credential ID for signing certificate.
-          # credential_id: ${{ secrets.CREDENTIAL_ID }}
-          # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
-          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
-          # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
-          # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.24-setup.exe
-          # Directory where signed code object(s) will be written.
-          output_path: ${{ github.workspace }}/dist
-          # Scan code before sign
+          totp_secret: '""'
+          file_path: ${{ github.workspace }}\\dist\\civitai-link-1.10.24-setup.exe
+          output_path: ${{ github.workspace }}\\dist
           malware_block: false
-          # Environment Name, For Production 'PROD' or For Staging 'TEST'
           environment_name: PROD
 
       - name: release
