@@ -51,7 +51,7 @@ jobs:
           # NOTE: must explicitly pass in even the parameters that esigner-codesign says are optional since we're not using the action directly, but rather passing the params in as env vars:
           CODE_SIGN_SCRIPT_PATH: '${{ github.workspace }}/esigner-codesign/dist/index.js'
           INPUT_COMMAND: 'sign'
-          INPUT_FILE_PATH: '${{ github.workspace }}/dist/civitai-link-1.10.13-setup.exe'
+          INPUT_FILE_PATH: '${{ github.workspace }}/dist/civitai-link-1.10.14-setup.exe'
           INPUT_OVERRIDE: 'true'
           INPUT_MALWARE_BLOCK: 'false'
           INPUT_CLEAN_LOGS: 'false'

@@ -21,7 +21,7 @@ const config = {
     shortcutName: 'Civitai Link',
     uninstallDisplayName: 'Civitai Link',
     createDesktopShortcut: 'always',
-    artifactName: 'civitai-link-1.10.13-setup.exe',
+    artifactName: 'civitai-link-1.10.14-setup.exe',
   },
   win: {
     executableName: 'Civitai Link',
@@ -30,18 +30,16 @@ const config = {
 
 if (process.env.CODE_SIGN_SCRIPT_PATH) {
   // Dynamically get the version number from package.json
-  const version = execSync('node -p "require(\'./package.json\').version"')
-    .toString()
-    .trim();
-  const versionedExe = `civitai-link-${version}-setup.exe`;
-
-  // config.nsis.artifactName = versionedExe;
+  // const version = execSync('node -p "require(\'./package.json\').version"')
+  //   .toString()
+  //   .trim();
+  // const versionedExe = `civitai-link-${version}-setup.exe`;
 
   config.win.sign = (configuration) => {
     console.log('Requested signing for ', configuration.path);
 
     // Only proceed if the versioned exe file is in the configuration path - skip signing everything else
-    if (!configuration.path.includes(versionedExe)) {
+    if (!configuration.path.includes('civitai-link-1.10.14-setup.exe')) {
       console.log(
         'Configuration path does not include the versioned exe, signing skipped.',
       );
