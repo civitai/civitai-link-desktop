@@ -38,18 +38,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: npm run build:win
 
-      - name: print workspace
-        if: matrix.os == 'windows-latest'
-        run: dir ${{ github.workspace }}
-
-      - name: print files in codesign
-        if: matrix.os == 'windows-latest'
-        run: dir ${{ github.workspace }}/codesign
-
-      - name: print files in dist
-        if: matrix.os == 'windows-latest'
-        run: dir ${{ github.workspace }}/dist
-
       - name: Sign Artifact with CodeSignTool
         if: matrix.os == 'windows-latest'
         uses: sslcom/esigner-codesign@develop
@@ -66,7 +54,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.20-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.21-setup.exe
           # Directory where signed code object(s) will be written.
           output_path: ${{ github.workspace }}/dist
           # Scan code before sign
@@ -74,6 +62,12 @@ jobs:
           # Environment Name, For Production 'PROD' or For Staging 'TEST'
           environment_name: PROD
 
+      - name: print files
+        if: matrix.os == 'windows-latest' && always()
+        run: dir ${{ github.workspace }}
+        run: dir ${{ github.workspace }}/codesign
+        run: dir ${{ github.workspace }}/dist
+        
       - name: release
         uses: softprops/action-gh-release@v1
         if: always()
