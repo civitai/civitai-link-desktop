@@ -1,9 +1,29 @@
 const { execSync } = require('child_process');
 
 const config = {
-  // your config goes here
+  appId: 'com.civitai.link',
+  productName: 'Civitai Link',
+  copright: 'Copyright © year 2024',
+  directories: {
+    buildResources: 'build',
+  },
+  files: [
+    '!**/.vscode/*',
+    '!src/*',
+    '!electron.vite.config.{js,ts,mjs,cjs}',
+    '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}',
+    '!{.env,.env.*,.npmrc,pnpm-lock.yaml}',
+    '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}',
+  ],
+  asarUnpack: ['resources/**'],
+  npmRebuild: false,
+  nsis: {
+    shortcutName: 'Civitai Link',
+    uninstallDisplayName: 'Civitai Link',
+    createDesktopShortcut: 'always',
+  },
   win: {
-    target: ['nsis'],
+    executableName: 'Civitai Link',
   },
 };
 
@@ -12,7 +32,9 @@ if (process.env.CODE_SIGN_SCRIPT_PATH) {
   const version = execSync('node -p "require(\'./package.json\').version"')
     .toString()
     .trim();
-  const versionedExe = `civitai-link-${version}.exe`;
+  const versionedExe = `civitai-link-${version}-setup.exe`;
+
+  config.nsis.artifaceName = versionedExe;
 
   config.win.sign = (configuration) => {
     console.log('Requested signing for ', configuration.path);
