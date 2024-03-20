@@ -18,12 +18,6 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
 
-      - name: Install Maven and Java
-        uses: s4u/setup-maven-action@v1.3.1
-        with:
-          maven-version: 3.8.5
-          java-version: 17
-
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -60,7 +54,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.26-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.27-setup.exe
           # Directory where signed code object(s) will be written.
           output_path: ${{ github.workspace }}/dist
           # Scan code before sign
