@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const config = {
   appId: 'com.civitai.link',
   productName: 'Civitai Link',
-  copright: 'Copyright © year 2024',
+  copyright: 'Copyright © year 2024',
   directories: {
     buildResources: 'build',
   },
