@@ -49,13 +49,13 @@ jobs:
       # builds, signs, and publishes - actual signing happens within electron-builder.js
       - name: Publish (Windows)
         if: contains(matrix.os, 'windows')
-        run: npx electron-builder build --win --config electron-builder.js
+        run: npm exec -- electron-builder build --win --config electron-builder.js
         env:
           GH_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
           # NOTE: must explicitly pass in even the parameters that esigner-codesign says are optional since we're not using the action directly, but rather passing the params in as env vars:
           CODE_SIGN_SCRIPT_PATH: '${{ github.workspace }}/esigner-codesign/dist/index.js'
           INPUT_COMMAND: 'sign'
-          INPUT_FILE_PATH: '${{ github.workspace }}/dist/civitai-link-1.10.15-setup.exe'
+          INPUT_FILE_PATH: '${{ github.workspace }}/dist/civitai-link-1.10.16-setup.exe'
           INPUT_OVERRIDE: 'true'
           INPUT_MALWARE_BLOCK: 'false'
           INPUT_CLEAN_LOGS: 'false'
