@@ -54,7 +54,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.23-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.24-setup.exe
           # Directory where signed code object(s) will be written.
           output_path: ${{ github.workspace }}/dist
           # Scan code before sign
@@ -63,7 +63,7 @@ jobs:
           environment_name: PROD
 
       - name: print files
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest' && always()
         run: dir ${{ github.workspace }}
 
       - name: release
