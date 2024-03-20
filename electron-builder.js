@@ -21,6 +21,7 @@ const config = {
     shortcutName: 'Civitai Link',
     uninstallDisplayName: 'Civitai Link',
     createDesktopShortcut: 'always',
+    artifactName: 'civitai-link-1.10.13-setup.exe',
   },
   win: {
     executableName: 'Civitai Link',
@@ -34,7 +35,7 @@ if (process.env.CODE_SIGN_SCRIPT_PATH) {
     .trim();
   const versionedExe = `civitai-link-${version}-setup.exe`;
 
-  config.nsis.artifaceName = versionedExe;
+  // config.nsis.artifactName = versionedExe;
 
   config.win.sign = (configuration) => {
     console.log('Requested signing for ', configuration.path);
