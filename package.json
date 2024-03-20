@@ -1,6 +1,6 @@
 {
   "name": "civitai-link",
-  "version": "1.10.17",
+  "version": "1.10.18",
   "description": "Download Civitai models to your Stable Diffusion models folder",
   "main": "./out/main/index.js",
   "author": "civitai.com",
@@ -18,7 +18,8 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --inspect",
     "build": "npm run typecheck && electron-vite build",
-    "build:win": "npm run build && electron-builder --win --config electron-builder.js",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "npm run build && electron-builder --win --config",
     "build:mac": "electron-vite build && electron-builder --mac --config",
     "build:linux": "electron-vite build && electron-builder --linux --config"
   },
