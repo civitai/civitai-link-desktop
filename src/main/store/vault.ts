@@ -1,5 +1,5 @@
 import Store, { Schema } from 'electron-store';
-import { fetchVaultMeta } from '../civitai-api';
+import { fetchVaultMeta, fetchVaultModels } from '../civitai-api';
 
 const schema: Schema<Record<string, unknown>> = {
   vaultMeta: {
@@ -10,14 +10,13 @@ const schema: Schema<Record<string, unknown>> = {
     },
   },
   vault: {
-    type: 'object',
-    default: {},
+    type: 'array',
+    default: [],
   },
 };
 
 export const store = new Store({ schema });
 
-// Maybe add a refresh check
 export async function setVaultMeta() {
   const meta = await fetchVaultMeta();
 
@@ -30,8 +29,10 @@ export async function setVaultMeta() {
   );
 }
 
-export function setVault() {
-  store.set('vault', {});
+export async function setVault() {
+  const models = await fetchVaultModels();
+
+  store.set('vault', models);
 }
 
 export function getVaultMeta() {

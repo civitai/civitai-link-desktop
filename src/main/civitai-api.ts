@@ -139,6 +139,36 @@ export const fetchVaultModelsByVersion = async (
   }
 };
 
+// TODO: Add pagination
+export const fetchVaultModels = async (): Promise<VersionResource[]> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return [];
+  }
+
+  try {
+    const { data }: { data: { items: VersionResource[] } } = await axios.get(
+      `${CIVITAI_API_URL}/vault/all`,
+      {
+        params: {
+          limit: 100,
+          sort: 'Recently Added',
+          page: 1,
+        },
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data.items;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching vault models: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
 export const toggleVaultModel = async (
   modelVersionId: number,
 ): Promise<{ success: boolean }> => {

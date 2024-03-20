@@ -19,6 +19,7 @@ declare global {
       openModelFileFolder: (filePath: string) => void;
       setApiKey(key: string): void;
       fetchVaultMeta: () => void;
+      fetchVaultModels: () => void;
       toggleVaultItem: ({
         hash,
         modelVersionId,

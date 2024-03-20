@@ -35,6 +35,7 @@ const api = {
     hash?: string;
     modelVersionId: number;
   }) => ipcRenderer.send('toggle-vault-item', { hash, modelVersionId }),
+  fetchVaultModels: () => ipcRenderer.send('fetch-vault-models'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

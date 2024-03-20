@@ -7,10 +7,12 @@ type VaultMeta = {
 
 type VaultContextType = {
   vaultMeta: VaultMeta | null;
+  vault: any[]; // TODO: Add type
 };
 
 const defaultValue: VaultContextType = {
   vaultMeta: null,
+  vault: [],
 };
 
 const VaultContext = createContext<VaultContextType>(defaultValue);
@@ -23,6 +25,7 @@ export const useVault = () => useContext(VaultContext);
 export function VaultProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [vaultMeta, setVaultMeta] = useState<VaultMeta | null>(null);
+  const [vault, setVault] = useState([]);
 
   useEffect(() => {
     ipcRenderer.on('vault-meta-update', function (_, message) {
@@ -31,6 +34,16 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       ipcRenderer.removeAllListeners('vault-meta-update');
+    };
+  }, []);
+
+  useEffect(() => {
+    ipcRenderer.on('vault-update', function (_, message) {
+      setVault(message);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('vault-update');
     };
   }, []);
 
@@ -49,6 +62,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     <VaultContext.Provider
       value={{
         vaultMeta,
+        vault,
       }}
     >
       {children}
