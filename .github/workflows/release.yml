@@ -23,6 +23,12 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install Maven and Java
+        uses: s4u/setup-maven-action@v1.3.1
+        with:
+          java-version: "11.0.2"
+          maven-version: "3.9.6"
+          
       - name: Install Dependencies
         run: npm install
 
@@ -41,6 +47,8 @@ jobs:
       - name: Sign Artifact with CodeSignTool
         if: matrix.os == 'windows-latest'
         uses: sslcom/esigner-codesign@develop
+        env:
+          JAVA_VERSION: "11.0.2"
         with:
           command: sign
           username: ${{ secrets.ES_USERNAME }}
