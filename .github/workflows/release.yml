@@ -62,10 +62,6 @@ jobs:
           # Environment Name, For Production 'PROD' or For Staging 'TEST'
           environment_name: PROD
 
-      - name: print files
-        if: matrix.os == 'windows-latest' && always()
-        run: dir ${{ github.workspace }}
-
       - name: release
         uses: softprops/action-gh-release@v1
         if: always()
