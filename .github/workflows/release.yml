@@ -45,6 +45,8 @@ jobs:
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign1.ps1
 
       - uses: Test Signing
+        if: matrix.os == 'windows-latest'
+        uses: sslcom/esigner-codesign@develop
         with:
           command: sign
           username: ${{ secrets.ES_USERNAME }}
