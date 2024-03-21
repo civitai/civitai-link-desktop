@@ -38,6 +38,6 @@ jobs:
           file_path: ${GITHUB_WORKSPACE}/example/codesign1.ps1
           malware_block: false
           override: true
-          environment_name: TEST
+          environment_name: PROD
           clean_logs: true
           signing_method: v2
