@@ -42,6 +42,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: sslcom/esigner-codesign@develop
         with:
+          signing_method: v2
           # Sign and timestamp code object.
           command: sign
           # SSL.com account username
@@ -54,7 +55,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.27-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.28-setup.exe
           # Directory where signed code object(s) will be written.
           output_path: ${{ github.workspace }}/dist
           # Scan code before sign
