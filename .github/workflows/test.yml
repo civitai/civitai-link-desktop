@@ -1,0 +1,42 @@
+name: Build/release Electron app
+
+on: [push]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign1.ps1
+
+      - name: Test Signing
+        if: matrix.os == 'windows-latest'
+        uses: sslcom/esigner-codesign@develop
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/codesign1.ps1
+          malware_block: false
+          override: true
+          environment_name: PROD
+          clean_logs: true
