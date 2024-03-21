@@ -38,31 +38,50 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: npm run build:win
 
-      - name: Sign Artifact with CodeSignTool
-        if: matrix.os == 'windows-latest'
-        uses: sslcom/esigner-codesign@develop
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign1.ps1
+
+      - uses: Test Signing
         with:
-          # Sign and timestamp code object.
           command: sign
-          # SSL.com account username
           username: ${{ secrets.ES_USERNAME }}
-          # SSL.com account password.
           password: ${{ secrets.ES_PASSWORD }}
-          # Credential ID for signing certificate.
           credential_id: ${{ secrets.CREDENTIAL_ID }}
-          # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
-          # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
-          # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.34-setup.exe
-          # Directory where signed code object(s) will be written.
-          # output_path: ${{ github.workspace }}/artifacts
-          # Scan code before sign
+          file_path: ${GITHUB_WORKSPACE}/example/codesign1.ps1
           malware_block: false
           override: true
-          # Environment Name, For Production 'PROD' or For Staging 'TEST'
-          environment_name: PROD
-          jvm_max_memory: 2048M
+          environment_name: TEST
+          clean_logs: true
+
+      # - name: Sign Artifact with CodeSignTool
+      #   if: matrix.os == 'windows-latest'
+      #   uses: sslcom/esigner-codesign@develop
+      #   with:
+      #     # Sign and timestamp code object.
+      #     command: sign
+      #     # SSL.com account username
+      #     username: ${{ secrets.ES_USERNAME }}
+      #     # SSL.com account password.
+      #     password: ${{ secrets.ES_PASSWORD }}
+      #     # Credential ID for signing certificate.
+      #     credential_id: ${{ secrets.CREDENTIAL_ID }}
+      #     # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
+      #     totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+      #     # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
+      #     # ${name}-${version}-setup.${ext}
+      #     file_path: ${{ github.workspace }}/dist/civitai-link-1.10.34-setup.exe
+      #     # Directory where signed code object(s) will be written.
+      #     # output_path: ${{ github.workspace }}/artifacts
+      #     # Scan code before sign
+      #     malware_block: false
+      #     override: true
+      #     # Environment Name, For Production 'PROD' or For Staging 'TEST'
+      #     environment_name: PROD
+      #     jvm_max_memory: 2048M
 
       - name: release
         uses: softprops/action-gh-release@v1
