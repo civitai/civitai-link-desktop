@@ -44,7 +44,7 @@ jobs:
           mkdir -p ${GITHUB_WORKSPACE}/example
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign1.ps1
 
-      - uses: Test Signing
+      - name: Test Signing
         if: matrix.os == 'windows-latest'
         uses: sslcom/esigner-codesign@develop
         with:
@@ -56,7 +56,7 @@ jobs:
           file_path: ${GITHUB_WORKSPACE}/example/codesign1.ps1
           malware_block: false
           override: true
-          environment_name: TEST
+          environment_name: PROD
           clean_logs: true
 
       # - name: Sign Artifact with CodeSignTool
