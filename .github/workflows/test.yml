@@ -40,3 +40,4 @@ jobs:
           override: true
           environment_name: TEST
           clean_logs: true
+          signing_method: v2
