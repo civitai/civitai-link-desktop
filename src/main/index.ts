@@ -21,6 +21,7 @@ import {
   getResourcePath,
   setUser,
   watcherUser,
+  watchApiKey,
 } from './store/store';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
@@ -245,6 +246,7 @@ app.whenReady().then(async () => {
   watcherFiles({ mainWindow });
   watcherUser({ mainWindow });
   watchVault({ mainWindow });
+  watchApiKey({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);

@@ -89,7 +89,18 @@ export function getUpgradeKey() {
 }
 
 export function setApiKey(key: string | null) {
+  console.log('setApiKey', key);
   return store.set('apiKey', key);
+}
+
+export function watchApiKey({
+  mainWindow,
+}: {
+  mainWindow: Electron.BrowserWindow;
+}) {
+  store.onDidChange('apiKey', (newValue) => {
+    mainWindow.webContents.send('update-api-key', newValue);
+  });
 }
 
 export function getApiKey() {

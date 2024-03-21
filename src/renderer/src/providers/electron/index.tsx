@@ -64,15 +64,23 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // TODO: Combine this with apiKey check which should trigger these
   useEffect(() => {
-    ipcRenderer.on('fetch-user', function (_, message) {
-      console.log('fetch-user', message);
-      setUser(message.user);
+    ipcRenderer.on('fetch-user', function (_, updatedUser) {
+      setUser(updatedUser);
     });
 
     return () => {
       ipcRenderer.removeAllListeners('fetch-user');
+    };
+  }, []);
+
+  useEffect(() => {
+    ipcRenderer.on('update-api-key', function (_, updatedApiKey) {
+      setApiKey(updatedApiKey);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('update-api-key');
     };
   }, []);
 
