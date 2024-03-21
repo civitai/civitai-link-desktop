@@ -16,19 +16,21 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 type VaultItemProps = {
+  id: number;
   modelName: string;
   versionName: string;
   type: string;
   modelId: number;
   modelVersionId: number;
   coverImageUrl: string;
+  files: { url: string }[];
 };
 
 export function VaultItem({
+  id,
   modelName,
   versionName,
   type,
-  modelId,
   modelVersionId,
   coverImageUrl,
 }: VaultItemProps) {
@@ -52,10 +54,7 @@ export function VaultItem({
             )}
             <div className="w-full whitespace-nowrap overflow-hidden pr-24 justify-between flex flex-col flex-1 gap-2">
               <div>
-                <a
-                  href={`https://civitai.com/models/${modelId}?modelVersionId=${modelVersionId}`}
-                  target="_blank"
-                >
+                <a href="https://civitai.com/user/vault" target="_blank">
                   <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
                     {modelName}
                   </p>
@@ -66,10 +65,14 @@ export function VaultItem({
                 <Badge variant="outline">{versionName}</Badge>
               </div>
             </div>
-            {/* TODO: Check if downloaded */}
             <Tooltip>
               <TooltipTrigger>
-                <Download className="absolute w-6 h-6 cursor-pointer top-1/2 right-14 transform -translate-y-1/2" />
+                <a
+                  href={`https://civitai.com/api/download/vault/${id}?type=model`}
+                  target="_blank"
+                >
+                  <Download className="absolute w-6 h-6 cursor-pointer top-1/2 right-14 transform -translate-y-1/2" />
+                </a>
               </TooltipTrigger>
               <TooltipContent className="max-w-[360px] bg-background/90 rounded mr-2 p-1 border z-50">
                 <p className="text-xs">Download to disk</p>
