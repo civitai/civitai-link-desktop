@@ -133,6 +133,7 @@ export async function setUser() {
 
     return store.set('user', user);
   } catch (e) {
+    console.log('Error fetching user', e);
     return;
   }
 }
