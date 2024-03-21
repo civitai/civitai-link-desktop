@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Dependencies
-        - run: |
+        run: |
           npm --version && node --version
           npm install
 
@@ -51,7 +51,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.38-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.39-setup.exe
           # Directory where signed code object(s) will be written.
           # output_path: ${{ github.workspace }}/artifacts
           # Scan code before sign
