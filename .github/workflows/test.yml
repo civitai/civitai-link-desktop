@@ -38,5 +38,5 @@ jobs:
           file_path: ${GITHUB_WORKSPACE}/example/codesign1.ps1
           malware_block: false
           override: true
-          environment_name: PROD
+          environment_name: TEST
           clean_logs: true
