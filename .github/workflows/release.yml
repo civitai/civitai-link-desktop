@@ -55,11 +55,12 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.30-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.31-setup.exe
           # Directory where signed code object(s) will be written.
-          output_path: ${{ github.workspace }}/artifacts
+          # output_path: ${{ github.workspace }}/artifacts
           # Scan code before sign
           malware_block: false
+          override: true
           # Environment Name, For Production 'PROD' or For Staging 'TEST'
           environment_name: PROD
           jvm_max_memory: 2048M
