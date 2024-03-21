@@ -7,50 +7,16 @@ import { Progress } from '@/components/ui/progress';
 import { VaultItem } from './vault-item';
 import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
+import { Vault as VaultIcon } from 'lucide-react';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
-  const { vaultMeta } = useVault();
+  const { vaultMeta, vault } = useVault();
   const { fetchVaultMeta } = useApi();
   const percentUsed = (
     ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
     100
   ).toFixed(2);
-  const vault = [
-    {
-      modelVersionId: 337944,
-      vaultItem: {
-        id: 44,
-        vaultId: 3019815,
-        status: 'Stored',
-        files: [
-          {
-            id: 268313,
-            url: 'https://civitai-delivery-worker-prod.5ac0637cfd0766c97916cefa3764fbdf.r2.cloudflarestorage.com/model/99813/neonNoirSDXL.WLGH.safetensors',
-            sizeKB: 223099.09765625,
-            displayName: 'LoRA',
-          },
-        ],
-        modelVersionId: 337944,
-        modelId: 300898,
-        modelName: 'Neon Noir SDXL',
-        versionName: 'SDXL',
-        creatorId: 99813,
-        creatorName: 'maDcaDDie',
-        type: 'LORA',
-        baseModel: 'SDXL 1.0',
-        category: 'style',
-        createdAt: '2024-02-10T22:18:30.884Z',
-        addedAt: '2024-03-18T20:12:37.707Z',
-        refreshedAt: null,
-        modelSizeKb: 223099,
-        detailsSizeKb: 10,
-        imagesSizeKb: 1970,
-        notes: null,
-        meta: {},
-      },
-    },
-  ];
 
   // This will check each time Vault is selected
   useEffect(() => {
@@ -94,6 +60,12 @@ export function Vault() {
           </p>
         </div>
       </div>
+      {vault.length === 0 ? (
+        <div className="flex flex-col items-center justify-center">
+          <VaultIcon />
+          <p className="text-center text-sm">No Vault Items</p>
+        </div>
+      ) : null}
       {vault.map((item) => (
         <VaultItem {...item.vaultItem} key={item.modelVersionId} />
       ))}

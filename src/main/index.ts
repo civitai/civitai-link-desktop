@@ -34,7 +34,7 @@ import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import { getActivities, watcherActivities } from './store/activities';
 import { getFiles, watcherFiles } from './store/files';
-import { getVaultMeta, setVaultMeta } from './store/vault';
+import { store as vaultStore, getVaultMeta, setVaultMeta } from './store/vault';
 
 // updateElectronApp();
 
