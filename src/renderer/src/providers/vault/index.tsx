@@ -18,10 +18,6 @@ const defaultValue: VaultContextType = {
 const VaultContext = createContext<VaultContextType>(defaultValue);
 export const useVault = () => useContext(VaultContext);
 
-// TODO: Add/Remove toggle
-// TODO: Download from vault (edge it wont exist in our API)
-// TODO: Add actions to activity feed
-// Probably need to set up link sockets around all of this
 export function VaultProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   const [vaultMeta, setVaultMeta] = useState<VaultMeta | null>(null);
@@ -39,6 +35,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     ipcRenderer.on('vault-update', function (_, message) {
+      console.log('update', message);
       setVault(message);
     });
 
@@ -51,6 +48,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
       setVaultMeta(message.vaultMeta);
+      setVault(message.vault);
     });
 
     return () => {

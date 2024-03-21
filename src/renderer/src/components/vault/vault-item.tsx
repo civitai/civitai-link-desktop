@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { VaultItemDelete } from './vault-item-delete';
-import { Download } from 'lucide-react';
+import { Download, Image } from 'lucide-react';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -21,6 +21,7 @@ type VaultItemProps = {
   type: string;
   modelId: number;
   modelVersionId: number;
+  coverImageUrl: string;
 };
 
 export function VaultItem({
@@ -29,13 +30,27 @@ export function VaultItem({
   type,
   modelId,
   modelVersionId,
+  coverImageUrl,
 }: VaultItemProps) {
   return (
     <TooltipProvider>
       <Card className="mb-2 bg-transparent group">
         <CardContent>
           <div className="flex relative">
-            <div className="w-full whitespace-nowrap overflow-hidden pr-8 justify-between flex flex-col flex-1 gap-2">
+            {coverImageUrl ? (
+              <div className="w-12 h-12 mr-2 items-center overflow-hidden rounded relative">
+                <img
+                  src={coverImageUrl}
+                  alt={modelName}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
+            ) : (
+              <div className="bg-card w-12 h-12 mr-2 rounded flex items-center justify-center">
+                <Image size={24} />
+              </div>
+            )}
+            <div className="w-full whitespace-nowrap overflow-hidden pr-24 justify-between flex flex-col flex-1 gap-2">
               <div>
                 <a
                   href={`https://civitai.com/models/${modelId}?modelVersionId=${modelVersionId}`}

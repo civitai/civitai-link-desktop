@@ -67,7 +67,7 @@ export function Vault() {
         </div>
       ) : null}
       {vault.map((item) => (
-        <VaultItem {...item.vaultItem} key={item.modelVersionId} />
+        <VaultItem {...item} key={item.modelVersionId} />
       ))}
     </div>
   );

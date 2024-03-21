@@ -34,7 +34,13 @@ import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import { getActivities, watcherActivities } from './store/activities';
 import { getFiles, watcherFiles } from './store/files';
-import { store as vaultStore, getVaultMeta, setVaultMeta } from './store/vault';
+import {
+  getVaultMeta,
+  setVaultMeta,
+  setVault,
+  getVault,
+  watchVault,
+} from './store/vault';
 
 // updateElectronApp();
 
@@ -99,6 +105,7 @@ function createWindow() {
     mainWindow.webContents.send('store-ready', {
       ...getUIStore(),
       vaultMeta: getVaultMeta(),
+      vault: getVault(),
       files: getFiles(),
       activities: getActivities(),
     });
@@ -230,12 +237,14 @@ app.whenReady().then(async () => {
   setWindowAutoHide();
   setUser();
   setVaultMeta();
+  setVault();
 
   // Watchers/Listeners
   eventsListeners({ mainWindow });
   watcherActivities({ mainWindow });
   watcherFiles({ mainWindow });
   watcherUser({ mainWindow });
+  watchVault({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);

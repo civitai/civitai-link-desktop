@@ -5,6 +5,7 @@ import {
   searchFileByModelVersionId,
   updateFile,
 } from '../store/files';
+import { setVault } from '../store/vault';
 
 export async function eventToggleVaultItem(
   _,
@@ -13,6 +14,9 @@ export async function eventToggleVaultItem(
   const { success } = await toggleVaultModel(modelVersionId);
 
   if (success) {
+    // Fetch update
+    setVault();
+
     if (!hash) {
       const file = searchFileByModelVersionId(modelVersionId);
       hash = file?.hash;

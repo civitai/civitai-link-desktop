@@ -9,7 +9,7 @@ const schema: Schema<Record<string, unknown>> = {
       storageKb: 0,
     },
   },
-  vaulItems: {
+  vaultItems: {
     type: 'array',
     default: [],
   },
@@ -32,7 +32,7 @@ export async function setVaultMeta() {
 export async function setVault() {
   const models = await fetchVaultModels();
 
-  store.set('vaulItems', models);
+  store.set('vaultItems', models);
 }
 
 export function getVaultMeta() {
@@ -40,7 +40,7 @@ export function getVaultMeta() {
 }
 
 export function getVault() {
-  return store.get('vaulItems');
+  return store.get('vaultItems');
 }
 
 export function clearVault() {
@@ -58,7 +58,7 @@ export function watchVaultMeta({ mainWindow }: watcherVaultParams) {
 }
 
 export function watchVault({ mainWindow }: watcherVaultParams) {
-  store.onDidChange('vaulItems', (newValue) => {
+  store.onDidChange('vaultItems', (newValue) => {
     mainWindow.webContents.send('vault-update', newValue);
   });
 }
