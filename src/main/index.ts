@@ -111,6 +111,7 @@ function createWindow() {
       vault: getVault(),
       files: getFiles(),
       activities: getActivities(),
+      appVersion: app.getVersion(),
     });
 
     mainWindow.webContents.send('app-ready', true);

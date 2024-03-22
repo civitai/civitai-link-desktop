@@ -9,7 +9,7 @@ import { useApi } from '@/hooks/use-api';
 import { ApiKeyInput } from '../api-key-input';
 
 export function Settings() {
-  const { clearSettings, settings } = useElectron();
+  const { clearSettings, settings, appVersion } = useElectron();
   const { setNSFW } = useApi();
 
   return (
@@ -19,7 +19,10 @@ export function Settings() {
       </SheetHeader>
       <div className="overflow-y-scroll max-h-screen pb-20 w-full px-4">
         <div className="grid gap-6">
-          <h1 className="text-xl">General Settings</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-xl">General Settings</h1>
+            <p className="text-sm text-primary">v{appVersion}</p>
+          </div>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="nsfw"

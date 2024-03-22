@@ -12,6 +12,7 @@ type ElectronContextType = {
   rootResourcePath: string | null;
   settings: { nsfw: boolean };
   user?: object | null;
+  appVersion: string;
 };
 
 const defaultValue: ElectronContextType = {
@@ -24,6 +25,7 @@ const defaultValue: ElectronContextType = {
   rootResourcePath: null,
   settings: { nsfw: false },
   user: null,
+  appVersion: '',
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -41,6 +43,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState({ nsfw: false });
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [user, setUser] = useState<object | null>(null);
+  const [appVersion, setAppVersion] = useState<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -93,6 +96,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setSettings(message.settings);
       setApiKey(message.apiKey);
       setUser(message.user);
+      setAppVersion(message.appVersion);
     });
 
     return () => {
@@ -167,6 +171,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         settings,
         apiKey,
         user,
+        appVersion,
       }}
     >
       {children}
