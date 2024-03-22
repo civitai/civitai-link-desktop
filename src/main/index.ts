@@ -80,6 +80,7 @@ function createWindow() {
     show: false,
     useContentSize: true,
     resizable: false,
+    hasShadow: true,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
