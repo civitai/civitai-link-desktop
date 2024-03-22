@@ -1,4 +1,4 @@
-// import { updateElectronApp } from 'update-electron-app';
+import { updateElectronApp } from 'update-electron-app';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import {
   BrowserWindow,
@@ -44,7 +44,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
-// updateElectronApp();
+updateElectronApp();
 
 let mainWindow;
 let tray;

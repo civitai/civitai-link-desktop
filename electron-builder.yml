@@ -38,4 +38,4 @@ appImage:
 npmRebuild: false
 publish:
   provider: generic
-  url: https://example.com/auto-updates
+  url: https://update.electronjs.org
