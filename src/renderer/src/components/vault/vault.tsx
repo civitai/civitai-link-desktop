@@ -13,12 +13,13 @@ export function Vault() {
   const { apiKey, user } = useElectron();
   const { vaultMeta, vault } = useVault();
   const { fetchVaultMeta } = useApi();
-  const percentUsed = (
-    ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
-    100
-  ).toFixed(2);
+  const percentUsed = vaultMeta
+    ? (
+        ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
+        100
+      ).toFixed(2)
+    : '0';
 
-  // This will check each time Vault is selected
   useEffect(() => {
     if (apiKey) {
       fetchVaultMeta();

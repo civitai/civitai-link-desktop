@@ -41,6 +41,7 @@ import {
   setVault,
   getVault,
   watchVault,
+  watchVaultMeta,
 } from './store/vault';
 
 // updateElectronApp();
@@ -247,6 +248,7 @@ app.whenReady().then(async () => {
   watcherUser({ mainWindow });
   watchVault({ mainWindow });
   watchApiKey({ mainWindow });
+  watchVaultMeta({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);

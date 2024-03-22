@@ -35,6 +35,6 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   );
   ipcMain.on('set-api-key', eventSetApiKey);
   ipcMain.on('fetch-vault-meta', eventFetchVaultMeta);
-  ipcMain.on('fetch-vault-modles', eventFetchVaultModels);
+  ipcMain.on('fetch-vault-models', eventFetchVaultModels);
   ipcMain.on('toggle-vault-item', eventToggleVaultItem);
 }
