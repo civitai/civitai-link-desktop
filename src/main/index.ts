@@ -67,7 +67,6 @@ const browserWindowOptions = DEBUG
       transparent: true,
       alwaysOnTop: true,
       skipTaskbar: true,
-      thickFrame: false,
     };
 
 function createWindow() {
@@ -81,6 +80,7 @@ function createWindow() {
     useContentSize: true,
     resizable: false,
     hasShadow: true,
+    darkTheme: true,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
