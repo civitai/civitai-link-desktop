@@ -67,7 +67,6 @@ const browserWindowOptions = DEBUG
       transparent: true,
       alwaysOnTop: true,
       skipTaskbar: true,
-      thickFrame: false,
     };
 
 function createWindow() {
@@ -80,6 +79,8 @@ function createWindow() {
     show: false,
     useContentSize: true,
     resizable: false,
+    hasShadow: true,
+    darkTheme: true,
     ...browserWindowOptions,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
@@ -131,7 +132,14 @@ function createWindow() {
 }
 
 function setWindowAutoHide() {
-  mainWindow.hide();
+  const upgradeKey = getUpgradeKey();
+
+  if (upgradeKey) {
+    mainWindow.hide();
+  } else {
+    mainWindow.show();
+  }
+
   mainWindow.on('blur', () => {
     if (!DEBUG) {
       mainWindow.hide();
@@ -194,7 +202,7 @@ function calculateWindowPosition() {
 
     case 4: // for BOTTOM - RIGHT
       x = Math.floor(
-        trayBounds.x - width / 2 - DEFAULT_MARGIN.x + trayBounds.width / 2,
+        trayBounds.x - width / 2 - DEFAULT_MARGIN.x - 50 + trayBounds.width / 2,
       );
       y = Math.floor(
         trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,

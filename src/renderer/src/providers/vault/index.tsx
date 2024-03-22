@@ -35,7 +35,6 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     ipcRenderer.on('vault-update', function (_, message) {
-      console.log('update', message);
       setVault(message);
     });
 
