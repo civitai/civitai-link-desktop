@@ -1,8 +1,11 @@
 import axios, { AxiosError } from 'axios';
-import { getSettings } from './store/store';
+import { getSettings, getApiKey } from './store/store';
+
+const CIVITAI_API_URL = 'https://civitai.com/api/v1';
 
 type ResponsePayload = {
   data: {
+    id: number;
     modelId: number;
     downloadUrl: string;
     model: {
@@ -31,11 +34,10 @@ enum NsfwType {
   X = 'X',
 }
 
-// TODO: Create ignore list for not found models?
 export const getModelByHash = async (hash: string): Promise<Resource> => {
   try {
     const { data }: ResponsePayload = await axios.get(
-      `https://civitai.com/api/v1/model-versions/by-hash/${hash}`,
+      `${CIVITAI_API_URL}/model-versions/by-hash/${hash}`,
     );
 
     // Filter NSFW based on settings
@@ -61,6 +63,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       name: data.files[0].name, // Filename
       modelName: data.model.name,
       modelVersionName: data.name,
+      modelVersionId: data.id,
       previewImageUrl,
       civitaiUrl: `https://civitai.com/models/${data.modelId}`,
     };
@@ -68,6 +71,148 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
     return resource;
   } catch (error: any | AxiosError) {
     console.error('Error fetching model by hash: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+type VaultMeta = {
+  vault: {
+    userId: number;
+    usedStorageKb: number;
+    storageKb: number;
+    updatedAt: string;
+  };
+};
+
+export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return;
+  }
+
+  try {
+    const { data }: { data: VaultMeta } = await axios.get(
+      `${CIVITAI_API_URL}/vault/get`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching all vault models: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+type VersionResource = {
+  modelVersionId: number;
+  vaultItem: null | { vaultId: number };
+};
+
+export const fetchVaultModelsByVersion = async (
+  modelVersionIds: number[],
+): Promise<VersionResource[]> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return [];
+  }
+
+  try {
+    const { data }: { data: VersionResource[] } = await axios.get(
+      `${CIVITAI_API_URL}/vault/check-vault?modelVersionIds=${modelVersionIds.join(',')}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching vault models: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+// TODO: Add pagination
+export const fetchVaultModels = async (): Promise<VersionResource[]> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return [];
+  }
+
+  try {
+    const { data }: { data: { items: VersionResource[] } } = await axios.get(
+      `${CIVITAI_API_URL}/vault/all`,
+      {
+        params: {
+          limit: 100,
+          sort: 'Recently Added',
+          page: 1,
+        },
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data.items;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching vault models: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+export const toggleVaultModel = async (
+  modelVersionId: number,
+): Promise<{ success: boolean }> => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return { success: false };
+  }
+
+  try {
+    const { data } = await axios.post(
+      `${CIVITAI_API_URL}/vault/toggle-version?modelVersionId=${modelVersionId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error toggling vault model: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+export const fetchMember = async () => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const { data } = await axios.get(`${CIVITAI_API_URL}/me`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    return data;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching member: ', error.response.data);
     throw error.response.data;
   }
 };

@@ -1,4 +1,3 @@
-import { BrowserWindow } from 'electron';
 import Store, { Schema } from 'electron-store';
 
 const schema: Schema<Record<string, unknown>> = {
@@ -13,8 +12,8 @@ export const store = new Store({ schema });
 export function updateActivity(activity: ActivityItem) {
   const activities = store.get('activities') as ActivityItem[];
 
-  // Only keep last 30 activities
-  if (activities.length > 30) {
+  // Only keep last 60 activities
+  if (activities.length > 60) {
     const clonedActivities = [...activities];
     clonedActivities.pop();
 
@@ -29,11 +28,15 @@ export function getActivities() {
 }
 
 type watcherActivitiesParams = {
-  mainWindow: BrowserWindow;
+  mainWindow: Electron.BrowserWindow;
 };
 
 export function watcherActivities({ mainWindow }: watcherActivitiesParams) {
   store.onDidChange('activities', (newValue) => {
     mainWindow.webContents.send('activity-update', newValue);
   });
+}
+
+export function clearActivities() {
+  store.clear();
 }

@@ -1,6 +1,6 @@
 {
   "name": "civitai-link",
-  "version": "1.10.39",
+  "version": "1.11.0",
   "description": "Download Civitai models to your Stable Diffusion models folder",
   "main": "./out/main/index.js",
   "author": "civitai.com",
@@ -39,6 +39,7 @@
     "axios": "^1.6.5",
     "chokidar": "^3.5.3",
     "class-variance-authority": "^0.7.0",
+    "classnames": "^2.5.1",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
     "electron-store": "^8.1.0",

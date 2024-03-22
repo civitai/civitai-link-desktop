@@ -18,6 +18,15 @@ declare global {
       setNSFW: (nsfw: boolean) => void;
       openModelFileFolder: (filePath: string) => void;
       setApiKey(key: string): void;
+      fetchVaultMeta: () => void;
+      fetchVaultModels: () => void;
+      toggleVaultItem: ({
+        hash,
+        modelVersionId,
+      }: {
+        hash?: string;
+        modelVersionId: number;
+      }) => void;
     };
   }
 
@@ -29,11 +38,13 @@ declare global {
     type: string;
     url: string; // download url
     id?: string;
+    modelVersionId?: number;
     downloadDate?: string;
     previewImageUrl?: string;
     civitaiUrl?: string;
     downloading?: boolean;
     localPath?: string;
+    vaultId?: number;
   };
 
   enum ActivityType {
@@ -41,6 +52,8 @@ declare global {
     Deleted = 'deleted',
     Cancelled = 'cancelled',
     Downloading = 'downloading',
+    ADDED_VAULT = 'added vault',
+    REMOVED_VAULT = 'removed vault',
   }
 
   type ActivityItem = {

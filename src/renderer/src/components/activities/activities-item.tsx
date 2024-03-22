@@ -4,6 +4,8 @@ import {
   CircleSlash,
   HardDriveDownload,
   FileQuestion,
+  UploadCloud,
+  CloudOff,
 } from 'lucide-react';
 import { ActivityType } from '@/types';
 import dayjs from 'dayjs';
@@ -28,6 +30,10 @@ function ActivityItemIcon({ type }: { type: ActivityType }) {
       return <CircleSlash size={20} />;
     case ActivityType.Downloading:
       return <DownloadCloud size={20} />;
+    case ActivityType.ADDED_VAULT:
+      return <UploadCloud size={20} />;
+    case ActivityType.REMOVED_VAULT:
+      return <CloudOff size={20} />;
     default:
       return <FileQuestion size={20} />;
   }

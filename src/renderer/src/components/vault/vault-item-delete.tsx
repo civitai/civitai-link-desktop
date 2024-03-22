@@ -9,39 +9,53 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Trash2 } from 'lucide-react';
 import { useApi } from '@/hooks/use-api';
+import classNames from 'classnames';
+import { CloudOff } from 'lucide-react';
 
-type FileItemDeleteProps = { resource: Resource };
+type VaultItemDeleteProps = {
+  modelVersionId: number;
+  hash?: string;
+  align?: 'left' | 'right';
+  hidden?: boolean;
+};
 
-export function FileItemDelete({ resource }: FileItemDeleteProps) {
-  const { resourceRemove } = useApi();
+export function VaultItemDelete({
+  modelVersionId,
+  hash,
+  align = 'left',
+  hidden,
+}: VaultItemDeleteProps) {
+  const { toggleVaultItem } = useApi();
 
-  const removeResource = () => {
-    resourceRemove(resource);
+  const removeFromVault = () => {
+    toggleVaultItem({ modelVersionId, hash });
   };
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Trash2
+        <CloudOff
           color="#F15252"
-          className="cursor-pointer absolute group-hover:flex hidden top-1/2 right-0 transform -translate-y-1/2"
-          size={20}
+          className={classNames('absolute w-6 h-6 cursor-pointer', {
+            'top-3 left-3': align === 'left',
+            'top-1/2 right-3 transform -translate-y-1/2': align === 'right',
+            'hidden group-hover:flex': hidden,
+          })}
         />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action will delete the model from your file system and will
-            require re-download.
+            This action will delete the model from your vault and may not be
+            available later from Civitai.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="py-2">Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={removeResource}
+            onClick={removeFromVault}
             className="py-2 destructive"
           >
             Delete

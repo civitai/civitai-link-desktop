@@ -1,5 +1,6 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
+import { fetchMember } from '../civitai-api';
 
 export enum ConnectionStatus {
   DISCONNECTED = 'disconnected',
@@ -19,7 +20,6 @@ export enum Resources {
   VAE = 'VAE',
 }
 
-// TODO: Make this more app status
 const schema: Schema<Record<string, unknown>> = {
   key: {
     type: ['string', 'null'],
@@ -60,6 +60,10 @@ const schema: Schema<Record<string, unknown>> = {
     type: ['string', 'null'],
     default: null,
   },
+  user: {
+    type: ['object', 'null'],
+    default: null,
+  },
 };
 
 export const store = new Store({ schema });
@@ -85,7 +89,18 @@ export function getUpgradeKey() {
 }
 
 export function setApiKey(key: string | null) {
+  console.log('setApiKey', key);
   return store.set('apiKey', key);
+}
+
+export function watchApiKey({
+  mainWindow,
+}: {
+  mainWindow: Electron.BrowserWindow;
+}) {
+  store.onDidChange('apiKey', (newValue) => {
+    mainWindow.webContents.send('update-api-key', newValue);
+  });
 }
 
 export function getApiKey() {
@@ -112,12 +127,38 @@ export function clearSettings() {
   store.clear();
 }
 
+export async function setUser() {
+  try {
+    const user = await fetchMember();
+
+    return store.set('user', user);
+  } catch (e) {
+    console.log('Error fetching user', e);
+    return;
+  }
+}
+
+export function getUser() {
+  return store.get('user');
+}
+
+export function watcherUser({
+  mainWindow,
+}: {
+  mainWindow: Electron.BrowserWindow;
+}) {
+  store.onDidChange('user', (newValue) => {
+    mainWindow.webContents.send('fetch-user', newValue);
+  });
+}
+
 export function getUIStore() {
   return {
     rootResourcePath: store.get('rootResourcePath'),
     connectionStatus: store.get('connectionStatus'),
     settings: store.get('settings'),
     apiKey: store.get('apiKey'),
+    user: store.get('user'),
   };
 }
 

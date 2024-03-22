@@ -40,5 +40,17 @@ export function useApi() {
     setApiKey: async (key: string) => {
       return await window.api.setApiKey(key);
     },
+    fetchVaultMeta: async () => {
+      return await window.api.fetchVaultMeta();
+    },
+    toggleVaultItem: async ({
+      hash,
+      modelVersionId,
+    }: {
+      hash?: string;
+      modelVersionId: number;
+    }) => {
+      return await window.api.toggleVaultItem({ hash, modelVersionId });
+    },
   };
 }

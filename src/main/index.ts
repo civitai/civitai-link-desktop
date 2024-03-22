@@ -19,6 +19,9 @@ import {
   store,
   ConnectionStatus,
   getResourcePath,
+  setUser,
+  watcherUser,
+  watchApiKey,
 } from './store/store';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
@@ -32,6 +35,14 @@ import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import { getActivities, watcherActivities } from './store/activities';
 import { getFiles, watcherFiles } from './store/files';
+import {
+  getVaultMeta,
+  setVaultMeta,
+  setVault,
+  getVault,
+  watchVault,
+  watchVaultMeta,
+} from './store/vault';
 
 // updateElectronApp();
 
@@ -95,6 +106,8 @@ function createWindow() {
 
     mainWindow.webContents.send('store-ready', {
       ...getUIStore(),
+      vaultMeta: getVaultMeta(),
+      vault: getVault(),
       files: getFiles(),
       activities: getActivities(),
     });
@@ -224,11 +237,18 @@ app.whenReady().then(async () => {
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
   setWindowAutoHide();
+  setUser();
+  setVaultMeta();
+  setVault();
 
   // Watchers/Listeners
   eventsListeners({ mainWindow });
   watcherActivities({ mainWindow });
   watcherFiles({ mainWindow });
+  watcherUser({ mainWindow });
+  watchVault({ mainWindow });
+  watchApiKey({ mainWindow });
+  watchVaultMeta({ mainWindow });
 
   ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
     return getResourcePath(type);

@@ -34,6 +34,18 @@ export function searchFile(hash: string) {
   return files[hash.toLowerCase()];
 }
 
+export function searchFileByModelVersionId(modelVersionId: number) {
+  const files = store.get('files') as ResourcesMap;
+
+  const hash = Object.keys(files).find(
+    (hash) => files[hash].modelVersionId === modelVersionId,
+  );
+
+  if (!hash) return;
+
+  return files[hash];
+}
+
 export function updateFile(file: Resource) {
   const files = store.get('files') as ResourcesMap;
 
@@ -45,6 +57,10 @@ export function updateFile(file: Resource) {
 
 export function getFiles() {
   return store.get('files') as ResourcesMap;
+}
+
+export function clearFiles() {
+  store.clear();
 }
 
 type watcherFilesParams = {
