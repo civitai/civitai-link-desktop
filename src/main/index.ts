@@ -132,7 +132,14 @@ function createWindow() {
 }
 
 function setWindowAutoHide() {
-  mainWindow.hide();
+  const upgradeKey = getUpgradeKey();
+
+  if (upgradeKey) {
+    mainWindow.hide();
+  } else {
+    mainWindow.show();
+  }
+
   mainWindow.on('blur', () => {
     if (!DEBUG) {
       mainWindow.hide();
