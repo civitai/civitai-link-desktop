@@ -195,7 +195,7 @@ function calculateWindowPosition() {
 
     case 4: // for BOTTOM - RIGHT
       x = Math.floor(
-        trayBounds.x - width / 2 - DEFAULT_MARGIN.x + trayBounds.width / 2,
+        trayBounds.x - width / 2 - DEFAULT_MARGIN.x - 50 + trayBounds.width / 2,
       );
       y = Math.floor(
         trayBounds.y - height - DEFAULT_MARGIN.y + trayBounds.height / 2,
