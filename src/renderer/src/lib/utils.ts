@@ -25,3 +25,23 @@ export function ellipsis({
   }
   return str;
 }
+
+export const KB = 1024 as const;
+
+export function bytesToKB(bytes: number): number {
+  return bytes / KB;
+}
+
+export const formatKBytes = (kb: number, decimals = 2) =>
+  formatBytes(kb * KB, decimals);
+
+export function formatBytes(bytes: number, decimals = 2) {
+  if (bytes <= 0) return '0 Bytes';
+
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(KB));
+
+  return (
+    parseFloat((bytes / Math.pow(KB, i)).toFixed(decimals)) + ' ' + sizes[i]
+  );
+}

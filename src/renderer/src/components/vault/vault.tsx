@@ -2,12 +2,12 @@ import { useElectron } from '@/providers/electron';
 import { ApiKeyInput } from '../api-key-input';
 import { MemberButton } from '../member-button';
 import { useVault } from '@/providers/vault';
-import prettyBytes from 'pretty-bytes';
 import { Progress } from '@/components/ui/progress';
 import { VaultItem } from './vault-item';
 import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
 import { Vault as VaultIcon } from 'lucide-react';
+import { formatKBytes } from '@/lib/utils';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
@@ -57,7 +57,7 @@ export function Vault() {
         <div className="flex flex-col text-right gap-2">
           <Progress value={parseFloat(percentUsed)} />
           <p className="text-sm text-[#909296]">
-            {percentUsed}% of {prettyBytes(vaultMeta?.storageKb || 0)} Used
+            {percentUsed}% of {formatKBytes(vaultMeta?.storageKb || 0)} Used
           </p>
         </div>
       </div>
