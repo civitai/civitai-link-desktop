@@ -15,16 +15,12 @@ asarUnpack:
 win:
   executableName: Civitai Link
   target: squirrel
+  artifactName: ${name}-${version}-setup.${ext}
 # nsis:
 #   artifactName: ${name}-${version}-setup.${ext}
 #   shortcutName: ${productName}
 #   uninstallDisplayName: ${productName}
-#   createDesktopShortcut: always
-squirrelWindows:
-  artifactName: ${name}-${version}-setup.${ext}
-  shortcutName: ${productName}
-  uninstallDisplayName: ${productName}
-  createDesktopShortcut: always
+#   createDesktopShortcut: always=
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
