@@ -1,6 +1,6 @@
 {
   "name": "civitai-link",
-  "version": "1.11.3",
+  "version": "1.11.4",
   "description": "Download Civitai models to your Stable Diffusion models folder",
   "main": "./out/main/index.js",
   "author": "civitai.com",
@@ -42,6 +42,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
+    "electron-builder-squirrel-windows": "^25.0.0-alpha.5",
     "electron-log": "^5.1.2",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.1.7",
