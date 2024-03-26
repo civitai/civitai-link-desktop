@@ -45,6 +45,8 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
+log.info('Starting App...');
+
 updateElectronApp({
   logger: log,
 });
