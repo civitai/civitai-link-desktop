@@ -15,13 +15,14 @@ asarUnpack:
 win:
   executableName: Civitai Link
   target: nsis
+  publish:
+    - provider: github
+      protocol: https
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
-squirrelWindows:
-  msi: true
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:

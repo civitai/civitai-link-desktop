@@ -1,4 +1,4 @@
-import { updateElectronApp } from 'update-electron-app';
+import { autoUpdater } from 'electron-updater';
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import log from 'electron-log';
 import {
@@ -45,9 +45,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
-updateElectronApp({
-  logger: log,
-});
+autoUpdater.logger = log;
 
 let mainWindow;
 let tray;
@@ -223,6 +221,8 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  autoUpdater.checkForUpdatesAndNotify();
+
   log.info('App ready');
   // Set logo to disconnected (red)
   const icon = nativeImage.createFromPath(logoDisconnected);
