@@ -77,5 +77,6 @@ jobs:
             dist/*.tar.gz
             dist/*.yml
             dist/*.blockmap
+            dist/*.nupkg
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}

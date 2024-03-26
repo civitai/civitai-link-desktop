@@ -42,6 +42,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
+    "electron-builder-squirrel-windows": "^25.0.0-alpha.5",
     "electron-log": "^5.1.2",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.1.7",
@@ -51,7 +52,8 @@
     "react-icons": "^5.0.1",
     "socket.io-client": "^4.7.4",
     "tailwind-merge": "^2.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "update-electron-app": "^3.0.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
