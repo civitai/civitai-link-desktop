@@ -135,6 +135,8 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
+
+  autoUpdater.checkForUpdatesAndNotify();
 }
 
 function setWindowAutoHide() {
@@ -225,8 +227,6 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  autoUpdater.checkForUpdatesAndNotify();
-
   log.info('App ready');
   // Set logo to disconnected (red)
   const icon = nativeImage.createFromPath(logoDisconnected);
