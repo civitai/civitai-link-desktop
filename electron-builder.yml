@@ -14,8 +14,15 @@ asarUnpack:
   - resources/**
 win:
   executableName: Civitai Link
-  target: squirrel
+  target: nsis
+  publish:
+    provider: github
+    token: ${{ secrets.ACCESS_TOKEN }}
+nsis:
   artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
@@ -33,6 +40,3 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://update.electronjs.org
