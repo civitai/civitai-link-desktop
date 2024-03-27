@@ -1,9 +1,6 @@
 name: Build/release Electron app
 
-on:
-  push:
-    tags:
-      - v*.*.*
+on: [push]
 
 jobs:
   release:
@@ -51,31 +48,34 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.10.39-setup.exe
+          file_path: ${{ github.workspace }}/dist/squirrel-windows/civitai-link-1.10.39-setup.exe
           # Directory where signed code object(s) will be written.
           # output_path: ${{ github.workspace }}/artifacts
           # Scan code before sign
           malware_block: false
+          # Overwrite the existing file
           override: true
           # Environment Name, For Production 'PROD' or For Staging 'TEST'
           environment_name: PROD
+          # JVM Max Memory
           jvm_max_memory: 2048M
 
-      - name: release
-        uses: softprops/action-gh-release@v1
-        if: always()
-        with:
-          draft: true
-          files: |
-            dist/*.exe
-            dist/*.zip
-            dist/*.dmg
-            dist/*.AppImage
-            dist/*.snap
-            dist/*.deb
-            dist/*.rpm
-            dist/*.tar.gz
-            dist/*.yml
-            dist/*.blockmap
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      # - name: release
+      #   uses: softprops/action-gh-release@v1
+      #   if: always()
+      #   with:
+      #     draft: true
+      #     files: |
+      #       dist/*.exe
+      #       dist/*.zip
+      #       dist/*.dmg
+      #       dist/*.AppImage
+      #       dist/*.snap
+      #       dist/*.deb
+      #       dist/*.rpm
+      #       dist/*.tar.gz
+      #       dist/*.yml
+      #       dist/*.blockmap
+      #       disy/squirrel-windows/*.exe
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
