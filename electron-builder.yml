@@ -39,7 +39,7 @@ appImage:
 npmRebuild: false
 publish:
   provider: github
-  repo: civitai-link-desktop,
-  owner: civitai,
+  repo: civitai-link-desktop
+  owner: civitai
   releaseType: draft
   token: ${{ secrets.GH_TOKEN }}
