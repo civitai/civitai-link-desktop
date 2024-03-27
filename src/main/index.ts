@@ -45,7 +45,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
-log.info('Starting App...');
+log.info('Starting App... Civitai Link');
 
 updateElectronApp({
   logger: log,
