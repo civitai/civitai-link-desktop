@@ -15,6 +15,9 @@ asarUnpack:
 win:
   executableName: Civitai Link
   target: nsis
+  publish:
+    provider: github
+    token: ${{ secrets.GH_TOKEN }}
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -37,6 +40,3 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: github
-  token: ${{ secrets.GH_TOKEN }}
