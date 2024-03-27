@@ -79,6 +79,6 @@ jobs:
             dist/*.tar.gz
             dist/*.yml
             dist/*.blockmap
-            disy/squirrel-windows/*
+            dist/squirrel-windows/*
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
