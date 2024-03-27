@@ -59,7 +59,7 @@ jobs:
           # Overwrite the existing file
           override: true
           # Environment Name, For Production 'PROD' or For Staging 'TEST'
-          environment_name: PROD
+          environment_name: TEST
           # JVM Max Memory
           jvm_max_memory: 2048M
 
