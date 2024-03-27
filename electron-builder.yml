@@ -42,4 +42,3 @@ publish:
   repo: civitai-link-desktop
   owner: civitai
   releaseType: draft
-  token: ${{ secrets.GH_TOKEN }}
