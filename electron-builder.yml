@@ -16,7 +16,7 @@ win:
   executableName: Civitai Link
   target: nsis
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  artifactName: test-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
