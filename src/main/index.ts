@@ -45,7 +45,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
-log.info('Starting App... Civitai Link');
+log.info('Starting App...');
 
 autoUpdater.logger = log;
 // @ts-ignore
