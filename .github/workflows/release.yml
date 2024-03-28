@@ -1,9 +1,6 @@
 name: Build/release Electron app
 
-on:
-  push:
-    tags:
-      - v*.*.*
+on: [push]
 
 jobs:
   release:
@@ -41,49 +38,30 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run build:win
 
-      # - name: Sign Artifact with CodeSignTool
-      #   if: matrix.os == 'windows-latest'
-      #   uses: sslcom/esigner-codesign@develop
-      #   with:
-      #     # Sign and timestamp code object.
-      #     command: sign
-      #     # SSL.com account username
-      #     username: ${{ secrets.ES_USERNAME }}
-      #     # SSL.com account password.
-      #     password: ${{ secrets.ES_PASSWORD }}
-      #     # Credential ID for signing certificate.
-      #     credential_id: ${{ secrets.CREDENTIAL_ID }}
-      #     # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
-      #     totp_secret: ${{ secrets.ES_TOTP_SECRET }}
-      #     # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
-      #     # ${name}-${version}-setup.${ext}
-      #     file_path: ${{ github.workspace }}/dist/squirrel-windows/civitai-link-1.11.14-setup.exe
-      #     # Directory where signed code object(s) will be written.
-      #     # output_path: ${{ github.workspace }}/artifacts
-      #     # Scan code before sign
-      #     malware_block: false
-      #     # Overwrite the existing file
-      #     override: true
-      #     # Environment Name, For Production 'PROD' or For Staging 'TEST'
-      #     environment_name: PROD
-      #     # JVM Max Memory
-      #     jvm_max_memory: 2048M
-
-      # - name: release
-      #   uses: softprops/action-gh-release@v1
-      #   if: always()
-      #   with:
-      #     draft: true
-      #     files: |
-      #       dist/*.exe
-      #       dist/*.zip
-      #       dist/*.dmg
-      #       dist/*.AppImage
-      #       dist/*.snap
-      #       dist/*.deb
-      #       dist/*.rpm
-      #       dist/*.tar.gz
-      #       dist/*.yml
-      #       dist/*.blockmap
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      - name: Sign Artifact with CodeSignTool
+        if: matrix.os == 'windows-latest'
+        uses: sslcom/esigner-codesign@develop
+        with:
+          # Sign and timestamp code object.
+          command: sign
+          # SSL.com account username
+          username: 'esigner_demo'
+          # SSL.com account password.
+          password: 'esignerDemo#1'
+          # Credential ID for signing certificate.
+          credential_id: '8b072e22-7685-4771-b5c6-48e46614915f'
+          # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
+          totp_secret: 'RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg='
+          # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
+          # ${name}-${version}-setup.${ext}
+          file_path: ${{ github.workspace }}/dist/test-setup.exe
+          # Directory where signed code object(s) will be written.
+          # output_path: ${{ github.workspace }}/artifacts
+          # Scan code before sign
+          malware_block: false
+          # Overwrite the existing file
+          override: true
+          # Environment Name, For Production 'PROD' or For Staging 'TEST'
+          environment_name: TEST
+          # JVM Max Memory
+          jvm_max_memory: 2048M
