@@ -15,7 +15,7 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "recompute-hash": "ts-node scripts/recompute-hash.ts",
+    "recompute-hash": "ts-node -P tsconfig.scripts.json scripts/recompute-hash.ts",
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --inspect",
     "build": "npm run typecheck && electron-vite build",

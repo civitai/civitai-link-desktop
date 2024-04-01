@@ -1,9 +1,9 @@
 // https://stackoverflow.com/questions/37140799/passing-environment-variables-in-npm-scripts
-import YAML from 'yaml';
-import crypto from 'crypto';
-import fs from 'fs';
-import fsPromises from 'fs/promises';
-import path from 'path';
+import { parse, stringify } from 'yaml';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as fsPromises from 'fs/promises';
+import * as path from 'path';
 
 interface ILatestDto {
   version: string;
@@ -48,7 +48,7 @@ const updateLatestYaml = async (
   const latestYaml = await fsPromises.readFile(latestYamlPath, {
     encoding: 'utf-8',
   });
-  const latestDto = YAML.parse(latestYaml) as ILatestDto;
+  const latestDto = parse(latestYaml) as ILatestDto;
   const parsedPath = path.parse(targetPath);
   const targetFileName = parsedPath.name + parsedPath.ext;
   const targetFileSize = fs.statSync(targetPath).size;
@@ -64,7 +64,7 @@ const updateLatestYaml = async (
     }
   }
 
-  await fsPromises.writeFile(latestYamlPath, YAML.stringify(latestDto));
+  await fsPromises.writeFile(latestYamlPath, stringify(latestDto));
 };
 
 void (async () => {

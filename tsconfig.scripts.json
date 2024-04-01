@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "baseUrl": "./src",
+      "declaration": true,
+      "outDir": "./dist",
+      "removeComments": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+    },
+    "exclude": ["node_modules", "dist"],
+    "ts-node": {
+      "files": true
+    }
+  }
+    
