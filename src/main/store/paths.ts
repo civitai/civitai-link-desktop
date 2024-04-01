@@ -31,6 +31,7 @@ const schema: Schema<Record<string, unknown>> = {
   },
 };
 
+// Check if paths set in store and migrate over at startup
 export const store = new Store({ schema });
 
 export function getRootResourcePath(): string {

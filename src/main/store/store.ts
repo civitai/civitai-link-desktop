@@ -33,10 +33,12 @@ const schema: Schema<Record<string, unknown>> = {
     type: 'string',
     default: ConnectionStatus.DISCONNECTED,
   },
+  // DEPRECATED: Must stick around during migration
   rootResourcePath: {
     type: ['string', 'null'],
     default: null,
   },
+  // DEPRECATED: Must stick around during migration
   resourcePaths: {
     type: 'object',
     default: {
