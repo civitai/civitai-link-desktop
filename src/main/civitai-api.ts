@@ -22,17 +22,10 @@ type ResponsePayload = {
     images: {
       id: number;
       url: string;
-      nsfw: boolean | NsfwType;
+      nsfwLevel: number;
     }[];
   };
 };
-
-enum NsfwType {
-  NONE = 'None',
-  SOFT = 'Soft',
-  MATURE = 'Mature',
-  X = 'X',
-}
 
 export const getModelByHash = async (hash: string): Promise<Resource> => {
   try {
@@ -49,7 +42,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       }
 
       // If NSFW is disabled, return the first non-NSFW image
-      if (image.nsfw === NsfwType.NONE) {
+      if (image.nsfwLevel === 1) {
         return true;
       }
 
