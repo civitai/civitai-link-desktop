@@ -1,5 +1,5 @@
 import path from 'path';
-import { getResourcePath } from '../store/store';
+import { getResourcePath } from '../store/paths';
 import { deleteFile, searchFile } from '../store/files';
 import { updateActivity } from '../store/activities';
 import fs from 'fs';

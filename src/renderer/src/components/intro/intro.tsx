@@ -11,11 +11,12 @@ export function Intro() {
   const [segments, setSegments] = useState<string[]>(new Array(6).fill(''));
   const [folderValue, setFolderValue] = useState<string | null>(null);
   const [sdType, setSdType] = useState<string>('symlink');
-  const { setKey, init } = useApi();
+  const { setKey, init, setStableDiffusion } = useApi();
 
   const submit = async () => {
     const segmentsString = segments.join('');
     if (segmentsString && segmentsString.length === 6) {
+      setStableDiffusion(sdType);
       setKey(segmentsString);
       init();
     } else {

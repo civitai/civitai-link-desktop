@@ -19,11 +19,11 @@ import {
   getUpgradeKey,
   store,
   ConnectionStatus,
-  getResourcePath,
   setUser,
   watcherUser,
   watchApiKey,
 } from './store/store';
+import { getResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';

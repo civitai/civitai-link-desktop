@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io-client';
 import { downloadFile } from '../download-file';
 import { BrowserWindow } from 'electron';
-import { getResourcePath } from '../store/store';
+import { getResourcePath } from '../store/paths';
 import { updateActivity } from '../store/activities';
 import { getModelByHash } from '../civitai-api';
 

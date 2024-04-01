@@ -27,6 +27,7 @@ declare global {
         hash?: string;
         modelVersionId: number;
       }) => void;
+      setStableDiffusion: (type: string) => void;
     };
   }
 

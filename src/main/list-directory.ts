@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getRootResourcePath } from './store/store';
+import { getRootResourcePath } from './store/paths';
 
 const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
 

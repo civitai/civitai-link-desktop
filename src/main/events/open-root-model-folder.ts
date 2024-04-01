@@ -1,5 +1,5 @@
 import { shell } from 'electron';
-import { getRootResourcePath } from '../store/store';
+import { getRootResourcePath } from '../store/paths';
 
 export function eventOpenRootModelFolder() {
   const rootResourcePath = getRootResourcePath();
