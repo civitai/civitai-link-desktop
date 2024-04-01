@@ -1,5 +1,4 @@
 import Store, { Schema } from 'electron-store';
-import path from 'path';
 import { fetchMember } from '../civitai-api';
 
 export enum ConnectionStatus {
