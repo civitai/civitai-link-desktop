@@ -1,3 +1,4 @@
+// https://stackoverflow.com/questions/37140799/passing-environment-variables-in-npm-scripts
 import YAML from 'yaml';
 import crypto from 'crypto';
 import fs from 'fs';
