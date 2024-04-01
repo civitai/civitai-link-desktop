@@ -35,6 +35,7 @@ const schema: Schema<Record<string, unknown>> = {
 export const store = new Store({ schema });
 
 export function getRootResourcePath(): string {
+  // When setting root path also check what sdType is set
   return store.get('rootResourcePath') as string;
 }
 

@@ -44,10 +44,7 @@ export function Settings() {
                 <Label className="text-primary">
                   {key === 'DEFAULT' ? 'Root Model' : key} Folder
                 </Label>
-                <PathInput
-                  defaultPath="Root Models Directory"
-                  type={ResourceType[key]}
-                />
+                <PathInput type={ResourceType[key]} />
               </div>
             ),
           )}

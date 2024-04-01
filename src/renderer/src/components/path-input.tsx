@@ -14,12 +14,16 @@ import {
 } from '@/components/ui/tooltip';
 
 type PathInputProps = {
-  defaultPath?: string;
   type: ResourceType;
   onChange?: (value: string) => void;
+  showToast?: boolean;
 };
 
-export function PathInput(props: PathInputProps) {
+export function PathInput({
+  type,
+  onChange,
+  showToast = true,
+}: PathInputProps) {
   const {
     selectDirectory,
     setRootResourcePath,
@@ -31,9 +35,9 @@ export function PathInput(props: PathInputProps) {
 
   useEffect(() => {
     const fetchResourcePath = async () => {
-      const resourecePath = await getResourcePath(props.type);
+      const resourecePath = await getResourcePath(type);
 
-      if (props.type === ResourceType.DEFAULT) {
+      if (type === ResourceType.DEFAULT) {
         setDirPath(rootResourcePath);
       } else {
         setDirPath(resourecePath);
@@ -52,33 +56,37 @@ export function PathInput(props: PathInputProps) {
 
     setDirPath(directory);
 
-    if (props.type !== ResourceType.DEFAULT) {
-      setResourcePath(props.type, directory);
+    if (type !== ResourceType.DEFAULT) {
+      setResourcePath(type, directory);
 
-      toast({
-        title: `${props.type} Model directory set`,
-        description: 'Root Model directory has been set successfully',
-      });
+      if (showToast) {
+        toast({
+          title: `${type} Model directory set`,
+          description: 'Root Model directory has been set successfully',
+        });
+      }
     } else {
       setRootResourcePath(directory);
 
-      toast({
-        title: 'Root Model directory set',
-        description: 'Root Model directory has been set successfully',
-      });
+      if (showToast) {
+        toast({
+          title: 'Root Model directory set',
+          description: 'Root Model directory has been set successfully',
+        });
+      }
     }
 
-    if (props.onChange) {
-      props.onChange(directory);
+    if (onChange) {
+      onChange(directory);
     }
   }
 
   return (
     <div className="flex justify-between items-center">
-      <div>
+      <div className="w-full">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger className="text-left max-w-72">
+            <TooltipTrigger className="text-left max-w-72 w-full">
               <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden cursor-default min-h-14">
                 <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40">
                   {ellipsis({ str: dirPath || 'Select a directory' })}
