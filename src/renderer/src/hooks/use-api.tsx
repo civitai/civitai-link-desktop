@@ -52,5 +52,8 @@ export function useApi() {
     }) => {
       return await window.api.toggleVaultItem({ hash, modelVersionId });
     },
+    setStableDiffusion: async (type: string) => {
+      return await window.api.setStableDiffusion(type);
+    },
   };
 }

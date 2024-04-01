@@ -33,10 +33,12 @@ const schema: Schema<Record<string, unknown>> = {
     type: 'string',
     default: ConnectionStatus.DISCONNECTED,
   },
+  // DEPRECATED: Must stick around during migration
   rootResourcePath: {
     type: ['string', 'null'],
     default: null,
   },
+  // DEPRECATED: Must stick around during migration
   resourcePaths: {
     type: 'object',
     default: {
@@ -160,38 +162,4 @@ export function getUIStore() {
     apiKey: store.get('apiKey'),
     user: store.get('user'),
   };
-}
-
-// TODO: Pathing move to other store
-export function getRootResourcePath(): string {
-  return store.get('rootResourcePath') as string;
-}
-
-export function setRootResourcePath(path: string) {
-  store.set('rootResourcePath', path);
-}
-
-export function getResourcePath(resourcePath: string) {
-  const resource = Resources[resourcePath.toUpperCase()];
-  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
-
-  if (resourcePaths[resource] === '') {
-    const rootResourcePath = getRootResourcePath();
-
-    return path.resolve(
-      rootResourcePath,
-      Resources[resourcePath.toUpperCase()],
-    );
-  }
-
-  return resourcePaths[resource];
-}
-
-export function setResourcePath(resource: string, path: string) {
-  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
-
-  return store.set('resourcePaths', {
-    ...resourcePaths,
-    [resource]: path,
-  });
 }

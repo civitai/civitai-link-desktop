@@ -1,4 +1,5 @@
 import Store, { Schema } from 'electron-store';
+import path from 'path';
 
 export enum Resources {
   CHECKPOINT = 'Checkpoint',
@@ -12,6 +13,10 @@ export enum Resources {
 }
 
 const schema: Schema<Record<string, unknown>> = {
+  sdType: {
+    type: 'string',
+    default: '',
+  },
   resourcePaths: {
     type: 'object',
     default: {
@@ -31,6 +36,7 @@ const schema: Schema<Record<string, unknown>> = {
   },
 };
 
+// Check if paths set in store and migrate over at startup
 export const store = new Store({ schema });
 
 export function getRootResourcePath(): string {
@@ -50,14 +56,45 @@ export function setResourcePath(resource: string, path: string) {
   });
 }
 
-// A1111
-// /models
-//  /Stable-diffusion - checkpoint
-//  /VAE-approx
-//  /VAE
-//  /deepbooru
-//  /karlo
-// All others are created by us or the user
+const A1111_PATHS = {
+  [Resources.CHECKPOINT]: 'Stable-diffusion',
+  [Resources.VAE]: 'VAE',
+};
 
-// ComfyUI
-// ComfyUI\models\checkpoints
+const COMFY_UI_PATHS = {
+  [Resources.CHECKPOINT]: 'checkpoints',
+  [Resources.CONTROLNET]: 'controlnet',
+  [Resources.UPSCALER]: 'upscale_models',
+  [Resources.HYPERNETWORK]: 'hypernetworks',
+  [Resources.TEXTUALINVERSION]: '',
+  [Resources.LORA]: 'loras',
+  [Resources.VAE]: 'vae',
+};
+
+export function setSDType(sdType: string) {
+  store.set('sdType', sdType);
+}
+
+export function getResourcePath(resourcePath: string) {
+  const resource = Resources[resourcePath.toUpperCase()];
+  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+
+  if (resourcePaths[resource] === '') {
+    const rootResourcePath = getRootResourcePath();
+    const uppercaseResourcePath = resourcePath.toUpperCase();
+    const sdType = store.get('sdType') as string;
+    const PATHS =
+      sdType === 'a1111'
+        ? A1111_PATHS[uppercaseResourcePath]
+        : COMFY_UI_PATHS[uppercaseResourcePath];
+    const DEFAULT_PATH = Resources[uppercaseResourcePath];
+
+    if (!PATHS || sdType === 'symlink') {
+      return path.resolve(rootResourcePath, DEFAULT_PATH);
+    }
+
+    return path.resolve(rootResourcePath, PATHS);
+  }
+
+  return resourcePaths[resource];
+}

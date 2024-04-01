@@ -1,7 +1,8 @@
 import { fetchVaultModelsByVersion, getModelByHash } from './civitai-api';
 import { hash } from './hash';
 import { listDirectory } from './list-directory';
-import { getApiKey, getRootResourcePath } from './store/store';
+import { getApiKey } from './store/store';
+import { getRootResourcePath } from './store/paths';
 import { addFile, searchFile, updateFile } from './store/files';
 import path from 'path';
 

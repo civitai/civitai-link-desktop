@@ -13,6 +13,7 @@ import { eventSetApiKey } from './set-api-key';
 import { eventFetchVaultMeta } from './fetch-vault-meta';
 import { eventToggleVaultItem } from './toggle-vault-item';
 import { eventFetchVaultModels } from './fetch-vault-models';
+import { eventSetStableDiffusion } from './set-stable-diffusion';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -37,4 +38,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('fetch-vault-meta', eventFetchVaultMeta);
   ipcMain.on('fetch-vault-models', eventFetchVaultModels);
   ipcMain.on('toggle-vault-item', eventToggleVaultItem);
+  ipcMain.on('set-stable-diffusion', eventSetStableDiffusion);
 }
