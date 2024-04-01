@@ -15,6 +15,7 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "recompute-hash": "ts-node scripts/recompute-hash.ts",
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --inspect",
     "build": "npm run typecheck && electron-vite build",
@@ -55,7 +56,9 @@
     "react-use-wizard": "^2.3.0",
     "socket.io-client": "^4.7.4",
     "tailwind-merge": "^2.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
+    "yaml": "^2.4.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
