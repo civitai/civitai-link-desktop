@@ -45,9 +45,11 @@ const updateLatestYaml = async (
   targetPath: string,
   newHash: string,
 ): Promise<void> => {
-  const latestYaml = await fsPromises.readFile(latestYamlPath, {
-    encoding: 'utf-8',
-  });
+  const latestYaml = await fsPromises
+    .readFile(latestYamlPath, {
+      encoding: 'utf-8',
+    })
+    .toString();
   const latestDto = parse(latestYaml) as ILatestDto;
   const parsedPath = path.parse(targetPath);
   const targetFileName = parsedPath.name + parsedPath.ext;
