@@ -68,3 +68,5 @@ jobs:
       #     environment_name: PROD
       #     # JVM Max Memory
       #     jvm_max_memory: 2048M
+
+      # Rehash script here
