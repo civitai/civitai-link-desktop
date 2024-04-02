@@ -61,18 +61,13 @@ let margin_x = 0;
 let margin_y = 0;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
-const browserWindowOptions = DEBUG
-  ? {
-      frame: true,
-      titleBarOverlay: true,
-    }
-  : {
-      frame: false, // Dont frame the tray window
-      fullscreenable: false,
-      transparent: true,
-      alwaysOnTop: true,
-      skipTaskbar: true,
-    };
+const browserWindowOptions = {
+  frame: true,
+  fullscreenable: false,
+  alwaysOnTop: true,
+  skipTaskbar: true,
+  titleBarOverlay: true,
+};
 
 function createWindow() {
   const upgradeKey = getUpgradeKey();
@@ -95,6 +90,7 @@ function createWindow() {
     },
     icon: logo,
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
+    titleBarStyle: 'hidden',
   });
 
   // Prevents dock icon from appearing on macOS
@@ -165,7 +161,7 @@ function alignWindow() {
 }
 
 function showWindow() {
-  alignWindow();
+  // alignWindow();
 
   if (DEBUG) {
     mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();

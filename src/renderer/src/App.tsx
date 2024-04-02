@@ -16,6 +16,7 @@ function App() {
 
   return (
     <>
+      <div className="titlebar" />
       {key ? (
         <>
           <Header />
