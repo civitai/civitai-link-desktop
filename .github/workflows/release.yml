@@ -23,6 +23,10 @@ jobs:
           npm --version && node --version
           npm install
 
+      # - name: get-npm-version
+      #   id: package-version
+      #   uses: martinbeentjes/npm-get-version-action@v1.3.1
+
       - name: build-linux
         if: matrix.os == 'ubuntu-latest'
         env:
@@ -41,30 +45,37 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npm run build:win
 
-      # - name: Sign Artifact with CodeSignTool
-      #   if: matrix.os == 'windows-latest'
-      #   uses: sslcom/esigner-codesign@develop
-      #   with:
-      #     # Sign and timestamp code object.
-      #     command: sign
-      #     # SSL.com account username
-      #     username: ${{ secrets.ES_USERNAME }}
-      #     # SSL.com account password.
-      #     password: ${{ secrets.ES_PASSWORD }}
-      #     # Credential ID for signing certificate.
-      #     credential_id: ${{ secrets.CREDENTIAL_ID }}
-      #     # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
-      #     totp_secret: ${{ secrets.ES_TOTP_SECRET }}
-      #     # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
-      #     # ${name}-${version}-setup.${ext}
-      #     file_path: ${{ github.workspace }}/dist/squirrel-windows/civitai-link-1.11.14-setup.exe
-      #     # Directory where signed code object(s) will be written.
-      #     # output_path: ${{ github.workspace }}/artifacts
-      #     # Scan code before sign
-      #     malware_block: false
-      #     # Overwrite the existing file
-      #     override: true
-      #     # Environment Name, For Production 'PROD' or For Staging 'TEST'
-      #     environment_name: PROD
-      #     # JVM Max Memory
-      #     jvm_max_memory: 2048M
+      - name: Sign Artifact with CodeSignTool
+        if: matrix.os == 'windows-latest'
+        uses: sslcom/esigner-codesign@develop
+        with:
+          # Sign and timestamp code object.
+          command: sign
+          # SSL.com account username
+          username: ${{ secrets.ES_USERNAME }}
+          # SSL.com account password.
+          password: ${{ secrets.ES_PASSWORD }}
+          # Credential ID for signing certificate.
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          # OAuth TOTP Secret (https://www.ssl.com/how-to/automate-esigner-ev-code-signing)
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
+          # ${name}-${version}-setup.${ext}
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.13.0-setup.exe
+          # Directory where signed code object(s) will be written.
+          # output_path: ${{ github.workspace }}/artifacts
+          # Scan code before sign
+          malware_block: false
+          # Overwrite the existing file
+          override: true
+          # Environment Name, For Production 'PROD' or For Staging 'TEST'
+          environment_name: PROD
+          # JVM Max Memory
+          jvm_max_memory: 2048M
+
+      - name: Rehash
+        if: matrix.os == 'windows-latest'
+        env:
+          TARGET_PATH: ${{ github.workspace }}/dist/civitai-link-1.13.0-setup.exe
+          LATEST_YAML_PATH: ${{ github.workspace }}/dist/latest.yml
+        run: npm run recompute-hash
