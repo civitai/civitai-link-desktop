@@ -32,7 +32,7 @@ export function Header() {
 
   return (
     <Sheet>
-      <div className="sticky top-0 flex items-center px-4 py-[0.82rem] select-none bg-background z-10">
+      <div className="sticky top-6 flex items-center px-4 py-[0.82rem] select-none bg-background z-10">
         <div className="flex space-x-4 items-center">
           <a href="https://civitai.com/" target="_blank">
             <img src={logo} alt="logo" className="w-10 h-10" />

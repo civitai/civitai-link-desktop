@@ -16,7 +16,7 @@ function App() {
 
   return (
     <>
-      <div className="titlebar" />
+      <div className="titlebar sticky top-0 z-50 bg-background" />
       {key ? (
         <>
           <Header />
