@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron';
 import Store, { Schema } from 'electron-store';
+import { createModelJson } from '../utils/create-model-json';
 
 const schema: Schema<Record<string, unknown>> = {
   files: {
@@ -13,6 +14,7 @@ export const store = new Store({ schema });
 export function addFile(file: Resource) {
   const files = store.get('files') as ResourcesMap;
   const fileToAdd = { ...file, hash: file.hash.toLowerCase() };
+  createModelJson(file);
 
   return store.set('files', {
     [fileToAdd.hash]: fileToAdd,
