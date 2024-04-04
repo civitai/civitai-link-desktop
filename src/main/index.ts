@@ -54,16 +54,10 @@ let mainWindow;
 let tray;
 
 //defaults
-let width = 400;
+let width = 800;
+let height = 600;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
-const browserWindowOptions = {
-  frame: true,
-  fullscreenable: false,
-  alwaysOnTop: true,
-  skipTaskbar: true,
-  titleBarOverlay: true,
-};
 
 function createWindow() {
   const upgradeKey = getUpgradeKey();
@@ -71,13 +65,18 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: width,
-    maxWidth: width,
+    height: height,
+    minHeight: 600,
+    minWidth: 800,
     show: false,
     useContentSize: true,
-    resizable: false,
+    resizable: true,
     hasShadow: true,
     darkTheme: true,
-    ...browserWindowOptions,
+    frame: true,
+    fullscreenable: false,
+    skipTaskbar: true,
+    titleBarOverlay: true,
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
