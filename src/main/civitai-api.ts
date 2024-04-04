@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { getSettings, getApiKey } from './store/store';
+import { createModelJson } from './utils/create-model-json';
 
 const CIVITAI_API_URL = 'https://civitai.com/api/v1';
 
@@ -8,6 +9,8 @@ type ResponsePayload = {
     id: number;
     modelId: number;
     downloadUrl: string;
+    description: string;
+    baseModel: string;
     model: {
       name: string;
       type: string;
@@ -15,6 +18,7 @@ type ResponsePayload = {
       poi: boolean;
     };
     name: string;
+    trainedWords: string[];
     files: {
       id: number;
       name: string;
@@ -58,6 +62,9 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       modelVersionName: data.name,
       modelVersionId: data.id,
       previewImageUrl,
+      trainedWords: data.trainedWords,
+      description: data.description,
+      baseModel: data.baseModel,
       civitaiUrl: `https://civitai.com/models/${data.modelId}`,
     };
 

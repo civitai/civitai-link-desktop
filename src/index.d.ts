@@ -46,6 +46,9 @@ declare global {
     downloading?: boolean;
     localPath?: string;
     vaultId?: number;
+    trainedWords?: string[];
+    description?: string;
+    baseModel?: string;
   };
 
   enum ActivityType {
