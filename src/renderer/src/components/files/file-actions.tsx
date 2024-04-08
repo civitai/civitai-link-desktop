@@ -97,7 +97,8 @@ export function FileActions({ file }: FileActionsProps) {
             <TooltipContent>Open Model on Civitai</TooltipContent>
           </Tooltip>
         ) : null}
-        <Separator orientation="vertical" className="mx-1 h-6" />
+        {/* TODO: add in copy */}
+        {/* <Separator orientation="vertical" className="mx-1 h-6" />
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -106,7 +107,7 @@ export function FileActions({ file }: FileActionsProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>Copy Keywords</TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </div>
       <div className="ml-auto flex items-center gap-2">
         <Tooltip>

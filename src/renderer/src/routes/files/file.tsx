@@ -3,6 +3,8 @@ import { Separator } from '@/components/ui/separator';
 import { useFile } from '@/providers/files';
 import { useParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import { DownloadCloud } from 'lucide-react';
+import dayjs from 'dayjs';
 
 export function File() {
   const { hash } = useParams();
@@ -28,21 +30,13 @@ export function File() {
           alt={file.modelName}
           className="h-20 w-20 object-cover object-center"
         />
-        <p>Keywords</p>
+        {file.downloadDate ? (
+          <p className="text-[10px] font-normal text-[#909296] flex items-center">
+            <DownloadCloud className="mr-1" size={12} color="#909296" />
+            {dayjs(file.downloadDate).fromNow()}
+          </p>
+        ) : null}
       </div>
     </div>
   );
 }
-
-// DONT FORGET DAYJS EXTENSIONS
-// Download date
-// {resource.downloadDate ? (
-//   <p className="text-[10px] font-normal text-[#909296] flex items-center">
-//     <DownloadCloud
-//       className="mr-1"
-//       size={12}
-//       color="#909296"
-//     />
-//     {dayjs(resource.downloadDate).fromNow()}
-//   </p>
-// ) : null}
