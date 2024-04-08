@@ -38,6 +38,7 @@ const api = {
   fetchVaultModels: () => ipcRenderer.send('fetch-vault-models'),
   setStableDiffusion: (type: string) =>
     ipcRenderer.send('set-stable-diffusion', type),
+  searchFile: (hash: string) => ipcRenderer.send('search-file', hash),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

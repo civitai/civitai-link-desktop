@@ -55,5 +55,8 @@ export function useApi() {
     setStableDiffusion: async (type: string) => {
       return await window.api.setStableDiffusion(type);
     },
+    searchFile: async (hash: string) => {
+      return await window.api.searchFile(hash);
+    },
   };
 }
