@@ -12,6 +12,7 @@ import { File } from './routes/files/file';
 import { Vault } from './routes/vault';
 import { Activities } from './routes/activities';
 import { Settings } from './routes/settings';
+import { FileNotSelected } from './routes/files/file-not-selected';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <ThemeProvider defaultTheme="system" storageKey="civitai-theme">
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
               <Route path="/" element={<App />}>
                 <Route index element={<Navigate to="/files" replace />} />
                 <Route path="/files" element={<Files />}>
+                  <Route index element={<FileNotSelected />} />
                   <Route path="/files/:hash" element={<File />} />
                 </Route>
                 <Route path="/vault" element={<Vault />} />
