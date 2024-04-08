@@ -3,12 +3,12 @@ import { useMemo } from 'react';
 import { Files as FilesIcon, XCircle } from 'lucide-react';
 import { useFile } from '@/providers/files';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ResizableHandle, ResizablePanel } from '@/components/ui/resizable';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
+import { PanelWrapper } from '@/layout/panel-wrapper';
 
 export function Files() {
   const { filterFiles, filteredFileList, searchTerm, setSearchTerm } =
@@ -30,9 +30,8 @@ export function Files() {
   const debouncedOnChange = useDebounce(search);
 
   return (
-    <>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={40} minSize={40}>
+    <PanelWrapper>
+      <>
         <div className="flex items-center px-4 py-2 min-h-14">
           <h1 className="text-xl font-bold">Files</h1>
           {/* TODO: Dropdown Filter */}
@@ -80,12 +79,8 @@ export function Files() {
             ) : null}
           </div>
         </ScrollArea>
-      </ResizablePanel>
-
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={40}>
-        <Outlet />
-      </ResizablePanel>
-    </>
+      </>
+      <Outlet />
+    </PanelWrapper>
   );
 }
