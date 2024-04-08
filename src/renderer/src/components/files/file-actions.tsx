@@ -110,12 +110,7 @@ export function FileActions({ file }: FileActionsProps) {
         </Tooltip> */}
       </div>
       <div className="ml-auto flex items-center gap-2">
-        <Tooltip>
-          <TooltipTrigger>
-            <FileItemDelete resource={file} />
-          </TooltipTrigger>
-          <TooltipContent>Delete</TooltipContent>
-        </Tooltip>
+        <FileItemDelete resource={file} />
       </div>
     </div>
   );
