@@ -59,6 +59,7 @@ export function File() {
         <div className="ml-auto flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
+              {/* <FileItemDelete resource={resource} /> */}
               <Button variant="ghost" size="icon">
                 <Trash2 className="h-4 w-4" color="#F15252" />
                 <span className="sr-only">Delete</span>
@@ -79,3 +80,65 @@ export function File() {
     </div>
   );
 }
+
+// Open File in Folder
+// <p
+// className="text-[10px] dark:text-[#909296] text-ellipsis overflow-hidden cursor-pointer"
+// onClick={() =>
+//   resource?.localPath
+//     ? openModelFileFolder(resource.localPath)
+//     : alert('Path to file cant be found.')
+// }
+// >
+// {resource.name}
+// </p>
+
+// DONT FORGET DAYJS EXTENSIONS
+// Download date
+// {resource.downloadDate ? (
+//   <p className="text-[10px] font-normal text-[#909296] flex items-center">
+//     <DownloadCloud
+//       className="mr-1"
+//       size={12}
+//       color="#909296"
+//     />
+//     {dayjs(resource.downloadDate).fromNow()}
+//   </p>
+// ) : null}
+
+// Vault toggle
+// {apiKey && resource.modelVersionId ? (
+//   <Tooltip>
+//     <TooltipTrigger>
+//       {resource.vaultId ? (
+//         <VaultItemDelete
+//           hidden
+//           hash={resource.hash}
+//           modelVersionId={resource.modelVersionId}
+//         />
+//       ) : (
+//         <UploadCloud
+//           className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex"
+//           onClick={toggleInVault}
+//         />
+//       )}
+//     </TooltipTrigger>
+//     <TooltipContent className="max-w-[360px] bg-background/90 rounded p-1 ml-8 border">
+//       <p className="text-xs">
+//         {resource.vaultId
+//           ? 'Remove from Vault'
+//           : 'Store resource in your Vault'}
+//       </p>
+//     </TooltipContent>
+//   </Tooltip>
+// ) : null}
+
+//   const { toggleVaultItem } = useApi();
+// const toggleInVault = () => {
+//   if (resource.modelVersionId) {
+//     toggleVaultItem({
+//       hash: resource.hash,
+//       modelVersionId: resource.modelVersionId,
+//     });
+//   }
+// };
