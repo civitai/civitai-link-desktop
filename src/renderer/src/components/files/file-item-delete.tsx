@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
 import { useApi } from '@/hooks/use-api';
+import { Button } from '@/components/ui/button';
 
 type FileItemDeleteProps = { resource: Resource };
 
@@ -24,11 +25,9 @@ export function FileItemDelete({ resource }: FileItemDeleteProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Trash2
-          color="#F15252"
-          className="cursor-pointer absolute group-hover:flex hidden top-1/2 right-0 transform -translate-y-1/2"
-          size={20}
-        />
+        <Button variant="ghost" size="icon">
+          <Trash2 className="h-4 w-4" color="#F15252" />
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -39,10 +38,10 @@ export function FileItemDelete({ resource }: FileItemDeleteProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="py-2">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="p-2">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={removeResource}
-            className="py-2 destructive"
+            className="p-2 destructive"
           >
             Delete
           </AlertDialogAction>

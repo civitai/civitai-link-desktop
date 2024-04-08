@@ -15,7 +15,7 @@ export function File() {
 
   return (
     <div className="flex h-full flex-col">
-      <FileActions />
+      <FileActions file={file} />
       <Separator />
       <div className="p-4">
         <h1>{file?.modelName}</h1>
@@ -33,3 +33,16 @@ export function File() {
     </div>
   );
 }
+
+// DONT FORGET DAYJS EXTENSIONS
+// Download date
+// {resource.downloadDate ? (
+//   <p className="text-[10px] font-normal text-[#909296] flex items-center">
+//     <DownloadCloud
+//       className="mr-1"
+//       size={12}
+//       color="#909296"
+//     />
+//     {dayjs(resource.downloadDate).fromNow()}
+//   </p>
+// ) : null}
