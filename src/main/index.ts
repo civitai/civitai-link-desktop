@@ -54,7 +54,7 @@ let mainWindow;
 let tray;
 
 //defaults
-let width = 1024;
+let width = 1060;
 let height = 600;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -69,7 +69,7 @@ function createWindow() {
     width: width,
     height: height,
     minHeight: 600,
-    minWidth: 1024,
+    minWidth: 1060,
     show: true,
     useContentSize: false,
     resizable: true,
