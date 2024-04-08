@@ -16,10 +16,33 @@ interface NavProps {
     icon: LucideIcon;
     variant: 'default' | 'ghost';
     href?: string;
+    onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   }[];
 }
 
 export function Nav({ links, isCollapsed }: NavProps) {
+  const collapsedNavClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      buttonVariants({
+        variant: isActive ? 'default' : 'ghost',
+        size: 'icon',
+      }),
+      'h-9 w-9',
+      isActive &&
+        'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white',
+    );
+
+  const nonCollapsedNavClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      buttonVariants({
+        variant: isActive ? 'default' : 'ghost',
+        size: 'sm',
+      }),
+      isActive &&
+        'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white',
+      'justify-start',
+    );
+
   return (
     <div
       data-collapsed={isCollapsed}
@@ -32,17 +55,8 @@ export function Nav({ links, isCollapsed }: NavProps) {
               <TooltipTrigger asChild>
                 <NavLink
                   to={link.href || '#'}
-                  className={({ isActive }) =>
-                    cn(
-                      buttonVariants({
-                        variant: isActive ? 'default' : 'ghost',
-                        size: 'icon',
-                      }),
-                      'h-9 w-9',
-                      isActive &&
-                        'dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white',
-                    )
-                  }
+                  onClick={link.onClick}
+                  className={collapsedNavClass}
                 >
                   <link.icon className="h-4 w-4" />
                   <span className="sr-only">{link.title}</span>
@@ -61,17 +75,8 @@ export function Nav({ links, isCollapsed }: NavProps) {
             <NavLink
               key={index}
               to={link.href || '#'}
-              className={({ isActive }) =>
-                cn(
-                  buttonVariants({
-                    variant: isActive ? 'default' : 'ghost',
-                    size: 'sm',
-                  }),
-                  isActive &&
-                    'dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white',
-                  'justify-start',
-                )
-              }
+              className={nonCollapsedNavClass}
+              onClick={link.onClick}
             >
               <link.icon className="mr-2 h-4 w-4" />
               {link.title}

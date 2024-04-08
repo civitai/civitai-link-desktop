@@ -21,6 +21,7 @@ type FileContextType = {
   filterFiles: (search: string) => void;
   searchTerm: string;
   setSearchTerm: (search: string) => void;
+  fileListCount: number;
 };
 
 const defaultValue: FileContextType = {
@@ -30,6 +31,7 @@ const defaultValue: FileContextType = {
   filterFiles: () => {},
   searchTerm: '',
   setSearchTerm: () => {},
+  fileListCount: 0,
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
@@ -186,6 +188,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         filterFiles,
         searchTerm,
         setSearchTerm,
+        fileListCount: Object.keys(fileList).length,
       }}
     >
       {children}

@@ -54,7 +54,7 @@ let mainWindow;
 let tray;
 
 //defaults
-let width = 800;
+let width = 1024;
 let height = 600;
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -62,14 +62,16 @@ const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 function createWindow() {
   const upgradeKey = getUpgradeKey();
 
+  // https://github.com/electron/electron/issues/21410
+  // TODO: Fix defaults show at start, bigger window size, remove toggle and position calculations
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: width,
     height: height,
     minHeight: 600,
-    minWidth: 800,
-    show: false,
-    useContentSize: true,
+    minWidth: 1024,
+    show: true,
+    useContentSize: false,
     resizable: true,
     hasShadow: true,
     darkTheme: true,

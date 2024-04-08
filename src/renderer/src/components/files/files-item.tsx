@@ -78,7 +78,7 @@ export function FilesItem({ resource }: FilesItemProps) {
 
   return (
     <TooltipProvider>
-      <Card className="mb-2 bg-transparent group">
+      <Card className="bg-transparent group">
         {!isNotDone ? (
           <CardContent>
             <div className="flex relative">

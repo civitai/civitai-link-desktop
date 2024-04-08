@@ -18,8 +18,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <BrowserRouter basename="/">
             <Routes>
               <Route path="/" element={<App />}>
-                <Route index path="/files" element={<Files />} />
-                <Route path="/files/:fileId" element={<File />} />
+                <Route index element={<Files />} />
+                <Route path="/files" element={<Files />}>
+                  <Route path="/files/:fileId" element={<File />} />
+                </Route>
                 <Route path="/vault" element={<Files />} />
                 <Route path="/activities" element={<Files />} />
                 <Route path="/settings" element={<Files />} />

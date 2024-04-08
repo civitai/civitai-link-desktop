@@ -18,9 +18,11 @@ import { useCallback } from 'react';
 import logo from '@/assets/logo.png';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { ResetKeyModal } from '@/components/header/reset-key-modal';
+import { useFile } from '@/providers/files';
+import { useApi } from '@/hooks/use-api';
 
 interface MailProps {
-  defaultLayout: number[] | undefined;
+  defaultLayout?: number[];
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
 }
@@ -28,12 +30,14 @@ interface MailProps {
 // TODO: Split this out into layout components
 // TODO: layout size should be based on the default width
 export function PrimaryLayout({
-  defaultLayout = [265, 440, 655],
+  defaultLayout = [20, 40, 40],
   defaultCollapsed = false,
   navCollapsedSize,
 }: MailProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const { connectionStatus } = useElectron();
+  const { fileListCount } = useFile();
+  const { openRootModelFolder } = useApi();
 
   const connectionRender = useCallback(
     (connectionStatus: ConnectionStatus) => {
@@ -100,7 +104,7 @@ export function PrimaryLayout({
             links={[
               {
                 title: 'Files',
-                label: '128',
+                label: fileListCount.toString(),
                 icon: Files,
                 variant: 'default',
                 href: '/files',
@@ -124,7 +128,11 @@ export function PrimaryLayout({
                 label: '',
                 icon: Folder,
                 variant: 'ghost',
-                href: '/open',
+                href: '/open-model-folder',
+                onClick: (e: React.MouseEvent<HTMLElement>) => {
+                  e.preventDefault();
+                  openRootModelFolder();
+                },
               },
               {
                 title: 'Settings',
@@ -140,22 +148,22 @@ export function PrimaryLayout({
         {/* TODO: These two are the different <Outlets/> */}
         {/* TODO: Need to figure out what it looks like when no 3rd window */}
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
+        <ResizablePanel defaultSize={defaultLayout[1]} minSize={40}>
           <Tabs defaultValue="all">
             <div className="flex items-center px-4 py-2">
-              <h1 className="text-xl font-bold">Inbox</h1>
+              <h1 className="text-xl font-bold">Files</h1>
               <TabsList className="ml-auto">
                 <TabsTrigger
                   value="all"
                   className="text-zinc-600 dark:text-zinc-200"
                 >
-                  All mail
+                  Checkpoint
                 </TabsTrigger>
                 <TabsTrigger
                   value="unread"
                   className="text-zinc-600 dark:text-zinc-200"
                 >
-                  Unread
+                  LoRA
                 </TabsTrigger>
               </TabsList>
             </div>
