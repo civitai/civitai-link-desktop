@@ -19,8 +19,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { ResetKeyModal } from '@/components/header/reset-key-modal';
 import { useFile } from '@/providers/files';
 import { useApi } from '@/hooks/use-api';
-
-import { File } from '@/routes/files/file';
+import { useVault } from '@/providers/vault';
 
 interface MailProps {
   defaultLayout?: number[];
@@ -28,8 +27,6 @@ interface MailProps {
   navCollapsedSize: number;
 }
 
-// TODO: Split this out into layout components
-// TODO: layout size should be based on the default width
 export function PrimaryLayout({
   defaultLayout = [20, 40, 40],
   defaultCollapsed = false,
@@ -39,6 +36,7 @@ export function PrimaryLayout({
   const { connectionStatus } = useElectron();
   const { fileListCount } = useFile();
   const { openRootModelFolder } = useApi();
+  const { vault } = useVault();
 
   const connectionRender = useCallback(
     (connectionStatus: ConnectionStatus) => {
@@ -56,6 +54,7 @@ export function PrimaryLayout({
     [connectionStatus],
   );
 
+  // TODO: fix nav collapsed size
   return (
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup
@@ -112,7 +111,7 @@ export function PrimaryLayout({
               },
               {
                 title: 'Vault',
-                label: '9',
+                label: vault.length.toString(),
                 icon: Vault,
                 variant: 'ghost',
                 href: '/vault',

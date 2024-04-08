@@ -31,7 +31,7 @@ export function Vault() {
   if (!apiKey) {
     return (
       <PanelWrapper>
-        <div>
+        <div className="p-4 flex flex-1 h-full flex-col justify-center items-center">
           <p className="text-sm leading-none dark:text-white font-bold mb-4 text-center mx-20">
             API Key and Membership are required to use Vault.
           </p>
@@ -47,7 +47,7 @@ export function Vault() {
   if (!vault || (user && !Object.hasOwn(user, 'tier'))) {
     return (
       <PanelWrapper>
-        <div className="flex flex-col justify-center items-center mt-4">
+        <div className="p-4 flex flex-1 h-full flex-col justify-center items-center">
           <p className="text-sm leading-none dark:text-white font-bold mb-4 text-center mx-8">
             In order to use Civitai Vault, you need to purchase membership.
           </p>

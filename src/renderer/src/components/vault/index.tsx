@@ -1,1 +1,0 @@
-export { Vault } from './vault';
