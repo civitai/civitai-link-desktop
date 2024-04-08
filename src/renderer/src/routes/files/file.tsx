@@ -70,6 +70,7 @@ export function File() {
       </div>
       <Separator />
       <div className="p-4">
+        {/* TODO: Lookup by route hash */}
         <h1>Title</h1>
         <p>Tags</p>
         <p>Image</p>

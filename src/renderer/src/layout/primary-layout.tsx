@@ -145,46 +145,7 @@ export function PrimaryLayout({
             ]}
           />
         </ResizablePanel>
-
-        {/* TODO: These two are the different <Outlets/> */}
-        {/* TODO: Need to figure out what it looks like when no 3rd window */}
-        {/* TODO: Remove collapsable except on nav */}
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={40}>
-          <div className="flex items-center px-4 py-2 min-h-14">
-            <h1 className="text-xl font-bold">Files</h1>
-            {/* TODO: Maybe make dropdown filter */}
-            {/* <TabsList className="ml-auto">
-              <TabsTrigger
-                value="all"
-                className="text-zinc-600 dark:text-zinc-200"
-              >
-                Checkpoint
-              </TabsTrigger>
-              <TabsTrigger
-                value="unread"
-                className="text-zinc-600 dark:text-zinc-200"
-              >
-                LoRA
-              </TabsTrigger>
-            </TabsList> */}
-          </div>
-          <Separator />
-          <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <form>
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search" className="pl-8" />
-              </div>
-            </form>
-          </div>
-          <Outlet />
-        </ResizablePanel>
-
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[2]}>
-          <File />
-        </ResizablePanel>
+        <Outlet />
       </ResizablePanelGroup>
     </TooltipProvider>
   );

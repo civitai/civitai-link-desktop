@@ -43,6 +43,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
       'justify-start',
     );
 
+  // TODO: Fix collapsable
   return (
     <div
       data-collapsed={isCollapsed}
