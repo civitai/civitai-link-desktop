@@ -4,6 +4,7 @@ import {
   Trash2,
   FolderOpenDot,
   ExternalLink,
+  Check,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -16,6 +17,7 @@ import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
 import { VaultItemDelete } from '../vault/vault-item-delete';
 import { FileItemDelete } from './file-item-delete';
+import { useEffect, useState } from 'react';
 
 type FileActionsProps = {
   file: Resource;
@@ -24,6 +26,14 @@ type FileActionsProps = {
 export function FileActions({ file }: FileActionsProps) {
   const { apiKey } = useElectron();
   const { toggleVaultItem, openModelFileFolder } = useApi();
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 4000);
+  }, [isCopied]);
 
   const toggleInVault = () => {
     if (file.modelVersionId) {
@@ -95,17 +105,29 @@ export function FileActions({ file }: FileActionsProps) {
             <TooltipContent>Open Model on Civitai</TooltipContent>
           </Tooltip>
         ) : null}
-        {/* TODO: add in copy */}
-        {/* <Separator orientation="vertical" className="mx-1 h-6" />
+        <Separator orientation="vertical" className="mx-1 h-6" />
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <ClipboardCopy className="h-4 w-4" />
-              <span className="sr-only">Copy Keywords</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  file.trainedWords?.join(', ') || '',
+                );
+                setIsCopied(true);
+              }}
+            >
+              {isCopied ? (
+                <Check className="w-4 h-4" color="green" />
+              ) : (
+                <ClipboardCopy className="h-4 w-4" />
+              )}
+              <span className="sr-only">Copy Trigger Words</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Copy Keywords</TooltipContent>
-        </Tooltip> */}
+          <TooltipContent>Copy Trigger Words</TooltipContent>
+        </Tooltip>
       </div>
       <div className="ml-auto flex items-center gap-2">
         <FileItemDelete resource={file} />

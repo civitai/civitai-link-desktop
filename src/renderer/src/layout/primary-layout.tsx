@@ -1,13 +1,8 @@
 import * as React from 'react';
-import { Files, Vault, Activity, Folder, Cog, Search } from 'lucide-react';
+import { Files, Vault, Activity, Folder, Cog } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable';
+import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Separator } from '@/components/ui/separator';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Nav } from './components/nav';
