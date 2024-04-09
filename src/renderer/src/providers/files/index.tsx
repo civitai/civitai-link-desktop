@@ -24,7 +24,6 @@ type FileContextType = {
   fileListCount: number;
 };
 
-// TODO: Add api for fetching single file data
 const defaultValue: FileContextType = {
   fileList: {},
   removeActivity: () => {},

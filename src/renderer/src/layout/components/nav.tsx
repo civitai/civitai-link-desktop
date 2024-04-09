@@ -43,7 +43,6 @@ export function Nav({ links, isCollapsed }: NavProps) {
       'justify-start',
     );
 
-  // TODO: Fix collapsable
   return (
     <div
       data-collapsed={isCollapsed}
@@ -59,7 +58,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                   onClick={link.onClick}
                   className={collapsedNavClass}
                 >
-                  <link.icon className="h-4 w-4" />
+                  <link.icon className="h-5 w-5 mb-2" color="white" />
                   <span className="sr-only">{link.title}</span>
                 </NavLink>
               </TooltipTrigger>

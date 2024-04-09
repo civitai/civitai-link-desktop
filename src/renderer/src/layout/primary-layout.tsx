@@ -49,7 +49,7 @@ export function PrimaryLayout({
     [connectionStatus],
   );
 
-  // TODO: fix nav collapsed size
+  // TODO: Add back collapsable navigation
   return (
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup
@@ -59,9 +59,10 @@ export function PrimaryLayout({
         <ResizablePanel
           defaultSize={defaultLayout[0]}
           collapsedSize={navCollapsedSize}
-          collapsible={true}
-          minSize={15}
+          // collapsible={true}
+          minSize={20}
           maxSize={20}
+          // onCollapse={() => setIsCollapsed(!isCollapsed)}
           className={cn(
             isCollapsed &&
               'min-w-[50px] transition-all duration-300 ease-in-out',
