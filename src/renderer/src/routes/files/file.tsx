@@ -56,8 +56,8 @@ export function File() {
         />
         {file.trainedWords ? (
           <div className="relative">
-            <pre className="mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border bg-muted py-4">
-              <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
+            <pre className="p-2 mb-4 mt-6 max-h-[650px] overflow-x-auto rounded-lg border bg-muted py-4 over">
+              <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm text-wrap">
                 <span>{file.trainedWords.join(', ')}</span>
               </code>
             </pre>

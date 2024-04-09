@@ -10,6 +10,7 @@ import { Vault as VaultIcon } from 'lucide-react';
 import { formatKBytes } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PanelWrapper } from '@/layout/panel-wrapper';
+import { Separator } from '@/components/ui/separator';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
@@ -59,27 +60,30 @@ export function Vault() {
 
   return (
     <PanelWrapper>
-      <ScrollArea className="h-full">
-        <div className="flex flex-col gap-y-4 mb-4 bg-background px-4">
-          <div className="flex justify-end w-full pt-2 pb-4">
-            <div className="flex flex-col text-right gap-2">
-              <Progress value={parseFloat(percentUsed)} />
-              <p className="text-sm text-[#909296]">
-                {percentUsed}% of {formatKBytes(vaultMeta?.storageKb || 0)} Used
-              </p>
-            </div>
+      <>
+        <div className="flex justify-end w-full items-center px-4 min-h-14">
+          <div className="flex flex-col text-right gap-2">
+            <Progress value={parseFloat(percentUsed)} />
+            <p className="text-sm text-[#909296]">
+              {percentUsed}% of {formatKBytes(vaultMeta?.storageKb || 0)} Used
+            </p>
           </div>
-          {vault.length === 0 ? (
-            <div className="flex flex-col items-center justify-center">
-              <VaultIcon />
-              <p className="text-center text-sm">No Vault Items</p>
-            </div>
-          ) : null}
-          {vault.map((item) => (
-            <VaultItem {...item} key={item.modelVersionId} />
-          ))}
         </div>
-      </ScrollArea>
+        <Separator />
+        <ScrollArea className="h-full">
+          <div className="flex flex-col gap-2 bg-background px-4 pt-4 pb-[145px]">
+            {vault.length === 0 ? (
+              <div className="flex flex-col items-center justify-center">
+                <VaultIcon />
+                <p className="text-center text-sm">No Vault Items</p>
+              </div>
+            ) : null}
+            {vault.map((item) => (
+              <VaultItem {...item} key={item.modelVersionId} />
+            ))}
+          </div>
+        </ScrollArea>
+      </>
     </PanelWrapper>
   );
 }

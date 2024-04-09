@@ -65,14 +65,15 @@ export function Activities() {
   return (
     <PanelWrapper>
       <ScrollArea className="h-full">
-        <div className="flex flex-col gap-y-4 mb-4 bg-background px-4">
+        <div className="flex flex-col gap-y-4 mb-4 bg-background">
+          <div className="absolute top-0 border-b w-full min-h-14 z-10" />
           {Object.keys(activities).map((date, key) => {
             return (
               <div key={key}>
-                <div className="sticky top-0 bg-background min-h-14 items-center flex">
+                <div className="sticky top-0 bg-background min-h-14 items-center flex px-4">
                   <p className="text-md font-bold text-[#909296]">{date}</p>
                 </div>
-                <div className="flex flex-col gap-y-2">
+                <div className="flex flex-col gap-y-2 px-4">
                   {activities[date].map((activity, key) => (
                     <ActivitiesItem {...activity} key={`${date}-${key}`} />
                   ))}

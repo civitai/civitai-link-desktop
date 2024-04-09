@@ -46,12 +46,10 @@ export function FileActions({ file }: FileActionsProps) {
                     hidden
                     hash={file.hash}
                     modelVersionId={file.modelVersionId}
+                    className="h-4 w-4"
                   />
                 ) : (
-                  <UploadCloud
-                    className="absolute top-3 left-3 w-6 h-6 cursor-pointer hidden group-hover:flex"
-                    onClick={toggleInVault}
-                  />
+                  <UploadCloud className="h-4 w-4" onClick={toggleInVault} />
                 )}
                 <span className="sr-only">
                   {file.vaultId
