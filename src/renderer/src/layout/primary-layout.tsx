@@ -83,13 +83,20 @@ export function PrimaryLayout({
                   {connectionRender(connectionStatus)}
                   <p className="text-sm capitalize">connected</p>
                 </div>
-              ) : (
+              ) : connectionStatus === ConnectionStatus.DISCONNECTED ? (
                 <DialogTrigger asChild>
                   <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2 cursor-pointer">
                     {connectionRender(connectionStatus)}
-                    <p className="text-sm capitalize">disconnected</p>
+                    <p className="text-sm capitalize">no key</p>
                   </div>
                 </DialogTrigger>
+              ) : (
+                <a href="https://civitai.com/" target="_blank">
+                  <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2">
+                    {connectionRender(connectionStatus)}
+                    <p className="text-sm capitalize">disconnected</p>
+                  </div>
+                </a>
               )}
               <ResetKeyModal />
             </Dialog>
