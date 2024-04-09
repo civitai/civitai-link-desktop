@@ -1,6 +1,5 @@
 import axios, { AxiosError } from 'axios';
 import { getSettings, getApiKey } from './store/store';
-import { createModelJson } from './utils/create-model-json';
 
 const CIVITAI_API_URL = 'https://civitai.com/api/v1';
 

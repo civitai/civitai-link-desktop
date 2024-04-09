@@ -11,7 +11,7 @@ import { ConnectionStatus } from '@/types';
 import { useCallback } from 'react';
 import logo from '@/assets/logo.png';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { ResetKeyModal } from '@/components/header/reset-key-modal';
+import { ResetKeyModal } from '@/components/reset-key-modal';
 import { useFile } from '@/providers/files';
 import { useApi } from '@/hooks/use-api';
 import { useVault } from '@/providers/vault';
@@ -27,7 +27,7 @@ export function PrimaryLayout({
   defaultCollapsed = false,
   navCollapsedSize,
 }: MailProps) {
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
+  const [isCollapsed] = React.useState(defaultCollapsed);
   const { connectionStatus } = useElectron();
   const { fileListCount } = useFile();
   const { openRootModelFolder } = useApi();

@@ -1,7 +1,6 @@
 import {
   UploadCloud,
   ClipboardCopy,
-  Trash2,
   FolderOpenDot,
   ExternalLink,
   Check,
