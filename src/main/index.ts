@@ -44,6 +44,8 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
+const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
+
 log.info('Starting App...');
 
 autoUpdater.logger = log;
@@ -52,18 +54,15 @@ autoUpdater.logger.transports.file.level = 'info';
 
 let mainWindow;
 let tray;
+let isQuiting = DEBUG;
 
 //defaults
 let width = 1060;
 let height = 600;
 
-const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
-
 function createWindow() {
   const upgradeKey = getUpgradeKey();
 
-  // https://github.com/electron/electron/issues/21410
-  // TODO: Fix defaults show at start, bigger window size, remove toggle and position calculations
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: width,
@@ -115,6 +114,20 @@ function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
+  mainWindow.on('minimize', function (event) {
+    event.preventDefault();
+    mainWindow.hide();
+  });
+
+  mainWindow.on('close', function (event) {
+    if (!isQuiting) {
+      event.preventDefault();
+      mainWindow.hide();
+    }
+
+    return false;
+  });
+
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);
     return { action: 'deny' };
@@ -132,34 +145,12 @@ function createWindow() {
   autoUpdater.checkForUpdatesAndNotify();
 }
 
-function setWindowAutoHide() {
-  const upgradeKey = getUpgradeKey();
-
-  if (upgradeKey) {
-    mainWindow.hide();
-  } else {
-    mainWindow.show();
-  }
-
-  mainWindow.on('blur', () => {
-    if (!DEBUG) {
-      mainWindow.hide();
-    }
-  });
-}
-
 function toggleWindow() {
   mainWindow.isDestroyed() ? createWindow() : showWindow();
 }
 
 function showWindow() {
-  // alignWindow();
-
-  if (DEBUG) {
-    mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
-  } else {
-    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-  }
+  mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
 }
 
 Menu.setApplicationMenu(null);
@@ -176,7 +167,10 @@ app.whenReady().then(async () => {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Quit',
-      click: () => app.quit(),
+      click: () => {
+        isQuiting = true;
+        app.quit();
+      },
     },
     {
       label: 'Dev Tools',
@@ -190,6 +184,9 @@ app.whenReady().then(async () => {
       toggleWindow();
     }
   });
+  tray.on('right-click', () => {
+    tray.popUpContextMenu(contextMenu);
+  });
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
@@ -198,7 +195,6 @@ app.whenReady().then(async () => {
   createWindow();
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
-  setWindowAutoHide();
   setUser();
   setVaultMeta();
   setVault();
