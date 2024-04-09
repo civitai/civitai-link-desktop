@@ -105,29 +105,33 @@ export function FileActions({ file }: FileActionsProps) {
             <TooltipContent>Open Model on Civitai</TooltipContent>
           </Tooltip>
         ) : null}
-        <Separator orientation="vertical" className="mx-1 h-6" />
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  file.trainedWords?.join(', ') || '',
-                );
-                setIsCopied(true);
-              }}
-            >
-              {isCopied ? (
-                <Check className="w-4 h-4" color="green" />
-              ) : (
-                <ClipboardCopy className="h-4 w-4" />
-              )}
-              <span className="sr-only">Copy Trigger Words</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Copy Trigger Words</TooltipContent>
-        </Tooltip>
+        {file.trainedWords ? (
+          <>
+            <Separator orientation="vertical" className="mx-1 h-6" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      file.trainedWords?.join(', ') || '',
+                    );
+                    setIsCopied(true);
+                  }}
+                >
+                  {isCopied ? (
+                    <Check className="w-4 h-4" color="green" />
+                  ) : (
+                    <ClipboardCopy className="h-4 w-4" />
+                  )}
+                  <span className="sr-only">Copy Trigger Words</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Copy Trigger Words</TooltipContent>
+            </Tooltip>
+          </>
+        ) : null}
       </div>
       <div className="ml-auto flex items-center gap-2">
         <FileItemDelete resource={file} />
