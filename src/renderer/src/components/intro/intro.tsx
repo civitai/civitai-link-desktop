@@ -1,4 +1,3 @@
-import logo from '@/assets/logo.png';
 import { Wizard } from 'react-use-wizard';
 import { IntroWelcome } from './intro-welcome';
 import { IntroCode } from './intro-code';
@@ -25,21 +24,21 @@ export function Intro() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8 flex flex-col h-screen">
-      <div>
-        <img src={logo} alt="logo" className="w-10 h-10" />
+    <div className="flex flex-col h-screen">
+      <div className="titlebar border-b border-border" />
+      <div className="container mx-auto p-6 space-y-8 flex flex-col h-screen pt-16">
+        <Wizard>
+          <IntroWelcome />
+          <IntroCode segments={segments} setSegments={setSegments} />
+          <IntroSd
+            folderValue={folderValue}
+            setFolderValue={setFolderValue}
+            sdType={sdType}
+            setSdType={setSdType}
+          />
+          <IntroCongrats submit={submit} />
+        </Wizard>
       </div>
-      <Wizard>
-        <IntroWelcome />
-        <IntroCode segments={segments} setSegments={setSegments} />
-        <IntroSd
-          folderValue={folderValue}
-          setFolderValue={setFolderValue}
-          sdType={sdType}
-          setSdType={setSdType}
-        />
-        <IntroCongrats submit={submit} />
-      </Wizard>
     </div>
   );
 }

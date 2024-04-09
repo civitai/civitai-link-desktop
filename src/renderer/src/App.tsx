@@ -1,6 +1,7 @@
 import { useElectron } from '@/providers/electron';
 import logo from '@/assets/logo.png';
 import Root from './routes/root';
+import { Intro } from './components/intro';
 
 function App() {
   const { appLoading, key } = useElectron();
@@ -12,8 +13,7 @@ function App() {
       </div>
     );
 
-  // TODO: Add in flow if no key
-  return <Root />;
+  return key ? <Root /> : <Intro />;
 }
 
 export default App;

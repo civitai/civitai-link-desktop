@@ -57,7 +57,7 @@ let tray;
 let isQuiting = DEBUG;
 
 //defaults
-let width = 1060;
+let width = getUpgradeKey() ? 1060 : 400;
 let height = 600;
 
 function createWindow() {
