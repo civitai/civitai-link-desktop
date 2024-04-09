@@ -82,11 +82,11 @@ export function PathInput({
   }
 
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center gap-4">
       <div className="w-full">
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger className="text-left max-w-72 w-full">
+            <TooltipTrigger className="text-left w-full">
               <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden cursor-default min-h-14">
                 <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40">
                   {ellipsis({ str: dirPath || 'Select a directory' })}
