@@ -36,6 +36,16 @@ export function searchFile(hash: string) {
   return files[hash.toLowerCase()];
 }
 
+export function findFileByFilename(filename: string) {
+  const files = store.get('files') as ResourcesMap;
+
+  const hash = Object.keys(files).find((hash) => files[hash].name === filename);
+
+  if (!hash) return;
+
+  return files[hash];
+}
+
 export function searchFileByModelVersionId(modelVersionId: number) {
   const files = store.get('files') as ResourcesMap;
 
