@@ -104,7 +104,7 @@ export function FileActions({ file }: FileActionsProps) {
             <TooltipContent>Open Model on Civitai</TooltipContent>
           </Tooltip>
         ) : null}
-        {file.trainedWords ? (
+        {file.trainedWords && file.trainedWords.length > 0 ? (
           <>
             <Separator orientation="vertical" className="mx-1 h-6" />
             <Tooltip>

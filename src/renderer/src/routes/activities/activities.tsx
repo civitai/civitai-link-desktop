@@ -55,10 +55,12 @@ export function Activities() {
 
   if (activityList.length === 0) {
     return (
-      <div className="flex items-center justify-center">
-        <Activity />
-        <p className="ml-2 text-center text-sm">No Activity</p>
-      </div>
+      <PanelWrapper>
+        <div className="p-4 flex flex-1 h-full justify-center items-center">
+          <Activity />
+          <p className="ml-2 text-center text-sm">No Activity</p>
+        </div>
+      </PanelWrapper>
     );
   }
 

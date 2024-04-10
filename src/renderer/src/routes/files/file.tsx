@@ -55,7 +55,7 @@ export function File() {
             <Badge variant="modelTag">{file.type}</Badge>
             <Badge variant="outline">{file.modelVersionName}</Badge>
           </div>
-          {file.trainedWords ? (
+          {file.trainedWords && file.trainedWords.length > 0 ? (
             <div className="mt-4">
               <h2 className="text-xs font-semibold text-[#909296]">
                 Trained Words
