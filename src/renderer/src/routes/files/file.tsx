@@ -58,7 +58,7 @@ export function File() {
           {file.trainedWords && file.trainedWords.length > 0 ? (
             <div className="mt-4">
               <h2 className="text-xs font-semibold text-[#909296]">
-                Trained Words
+                Trigger Words
               </h2>
               <div className="relative">
                 <pre className="p-2 mb-4 max-h-[650px] overflow-x-auto rounded-lg border bg-muted py-4 over">
