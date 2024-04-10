@@ -77,7 +77,10 @@ function createWindow() {
     frame: true,
     fullscreenable: false,
     skipTaskbar: true,
-    titleBarOverlay: true,
+    titleBarOverlay: {
+      color: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
+      symbolColor: nativeTheme.shouldUseDarkColors ? '#fff' : '#000',
+    },
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
