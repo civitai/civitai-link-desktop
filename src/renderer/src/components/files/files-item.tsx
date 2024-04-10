@@ -57,6 +57,7 @@ export function FilesItem({ resource }: FilesItemProps) {
     });
   };
 
+  // TODO: Fix modelName wrapping and ellipsis
   return (
     <Card className="bg-transparent group">
       {!isNotDone ? (
@@ -82,7 +83,7 @@ export function FilesItem({ resource }: FilesItemProps) {
                     <Image size={24} />
                   </div>
                 )}
-                <div className="text-ellipsis overflow-hidden justify-between flex flex-col flex-1">
+                <div className="text-ellipsis overflow-hidden justify-between flex flex-col flex-1 gap-2">
                   <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
                     {resource.modelName}
                   </p>

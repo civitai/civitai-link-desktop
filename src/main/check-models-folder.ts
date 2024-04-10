@@ -10,6 +10,8 @@ import {
   updateFile,
 } from './store/files';
 import path from 'path';
+import { resourcesList } from './commands';
+import { socket } from './socket';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
@@ -93,6 +95,13 @@ export async function processPromisesBatch(
     const end = start + limit > items.length ? items.length : start + limit;
 
     await Promise.allSettled(items.slice(start, end));
+
+    // Update Civitai website with added files
+    const newPayload = resourcesList();
+    socket.emit('commandStatus', {
+      type: 'resources:list',
+      resources: newPayload,
+    });
   }
 
   return;
