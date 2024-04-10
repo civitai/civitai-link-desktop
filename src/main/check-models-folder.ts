@@ -51,7 +51,8 @@ export async function checkModelsFolder() {
     }
   });
 
-  const results = await processPromisesBatch(promises, 100);
+  // TODO: Try smaller batches
+  const results = await processPromisesBatch(promises, 10);
 
   // Only check vault if API Key exists
   if (apiKey) {
