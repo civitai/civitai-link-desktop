@@ -59,10 +59,7 @@ export function PrimaryLayout({
         <ResizablePanel
           defaultSize={defaultLayout[0]}
           collapsedSize={navCollapsedSize}
-          // collapsible={true}
-          minSize={20}
-          maxSize={20}
-          // onCollapse={() => setIsCollapsed(!isCollapsed)}
+          minSize={defaultLayout[0]}
           className={cn(
             isCollapsed &&
               'min-w-[50px] transition-all duration-300 ease-in-out',

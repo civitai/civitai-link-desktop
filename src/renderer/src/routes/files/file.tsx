@@ -37,6 +37,7 @@ export function File() {
       <Separator />
       <ScrollArea className="h-full">
         <div className="p-4 gap-2 flex flex-col pb-16">
+          {/* TODO: Add image failure fallback */}
           <img
             src={file.previewImageUrl}
             alt={file.modelName}

@@ -26,6 +26,7 @@ export function FilesItem({ resource }: FilesItemProps) {
   const { cancelDownload } = useApi();
   const { removeActivity } = useFile();
   const isNotDone = isDownloading && progress < 100;
+  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     if (resource.id && isDownloading) {
@@ -66,26 +67,25 @@ export function FilesItem({ resource }: FilesItemProps) {
                 'bg-muted': isActive,
               })}
             >
-              <div className="flex relative">
-                {resource.previewImageUrl ? (
-                  <div className="w-12 h-12 mr-2 items-center overflow-hidden rounded relative">
+              <div className="flex gap-2">
+                {resource.previewImageUrl && !imageFailed ? (
+                  <div className="w-12 h-12 items-center overflow-hidden rounded">
                     <img
                       src={resource.previewImageUrl}
                       alt={resource.modelName}
+                      onError={() => setImageFailed(true)}
                       className="h-full w-full object-cover object-center"
                     />
                   </div>
                 ) : (
-                  <div className="bg-card w-12 h-12 mr-2 rounded flex items-center justify-center">
+                  <div className="bg-card w-12 h-12 rounded flex items-center justify-center">
                     <Image size={24} />
                   </div>
                 )}
-                <div className="w-full whitespace-nowrap overflow-hidden pr-8 justify-between flex flex-col flex-1">
-                  <div>
-                    <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
-                      {resource.modelName}
-                    </p>
-                  </div>
+                <div className="text-ellipsis overflow-hidden justify-between flex flex-col flex-1">
+                  <p className="text-sm leading-none dark:text-white font-bold text-ellipsis overflow-hidden">
+                    {resource.modelName}
+                  </p>
                   <div className="flex items-center space-x-2">
                     <Badge variant="modelTag">{resource.type}</Badge>
                     <Badge variant="outline">{resource.modelVersionName}</Badge>
