@@ -76,6 +76,6 @@ jobs:
       - name: Rehash
         if: matrix.os == 'windows-latest'
         env:
-          TARGET_PATH: ${{ github.workspace }}/dist/civitai-link-1.13.1-setup.exe
+          TARGET_PATH: ${{ github.workspace }}/dist/civitai-link-1.14.0-beta-setup.exe
           LATEST_YAML_PATH: ${{ github.workspace }}/dist/latest.yml
         run: npm run recompute-hash

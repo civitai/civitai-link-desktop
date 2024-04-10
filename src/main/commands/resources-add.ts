@@ -16,7 +16,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const hashLowercase = payload.hash.toLowerCase();
   const resourcePath = getResourcePath(payload.type);
-  const { previewImageUrl, civitaiUrl, modelVersionId } =
+  const { previewImageUrl, civitaiUrl, modelVersionId, baseModel } =
     await getModelByHash(hashLowercase);
   const timestamp = new Date().toISOString();
 
@@ -58,6 +58,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
       modelVersionId,
       previewImageUrl,
       civitaiUrl,
+      baseModel,
     },
     downloadPath: resourcePath,
     socket: params.socket,
