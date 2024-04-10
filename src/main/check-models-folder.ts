@@ -51,7 +51,8 @@ export async function checkModelsFolder() {
     }
   });
 
-  const results = await processPromisesBatch(promises, 10);
+  // We dont need to return results
+  await processPromisesBatch(promises, 10);
   // const results = await Promise.allSettled(promises);
 
   // Only check vault if API Key exists
@@ -76,21 +77,18 @@ export async function checkModelsFolder() {
     }
   }
 
-  return results;
+  return;
 }
 
 export async function processPromisesBatch(
   items: Array<any>,
   limit: number,
 ): Promise<any> {
-  let results: PromiseSettledResult<void>[] = [];
   for (let start = 0; start < items.length; start += limit) {
     const end = start + limit > items.length ? items.length : start + limit;
 
-    const slicedResults = await Promise.allSettled(items.slice(start, end));
-
-    results = [...results, ...slicedResults];
+    await Promise.allSettled(items.slice(start, end));
   }
 
-  return results;
+  return;
 }
