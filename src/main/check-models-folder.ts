@@ -51,7 +51,8 @@ export async function checkModelsFolder() {
     }
   });
 
-  const results = await processPromisesBatch(promises, 100);
+  const results = await processPromisesBatch(promises, 10);
+  // const results = await Promise.allSettled(promises);
 
   // Only check vault if API Key exists
   if (apiKey) {
