@@ -191,7 +191,10 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
 
-  checkModelsFolder();
+  // Only run on startup after we have a key
+  if (getUpgradeKey()) {
+    checkModelsFolder();
+  }
   createWindow();
   socketIOConnect({ mainWindow, app });
   // folderWatcher();

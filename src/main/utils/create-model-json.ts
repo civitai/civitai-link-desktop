@@ -21,6 +21,12 @@ export function createModelJson(file: Resource) {
   if (file.localPath) {
     const jsonFile = file.localPath.split('.').slice(0, -1).join('.') + '.json';
 
+    // If json file already exists, don't overwrite
+    if (fs.existsSync(jsonFile)) {
+      console.log(`File already exists: ${jsonFile}`);
+      return;
+    }
+
     fs.writeFile(jsonFile, JSON.stringify(data), (err) => {
       if (err) return console.log(err);
       console.log(JSON.stringify(data));
