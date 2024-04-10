@@ -1,14 +1,22 @@
 import { createHash } from 'crypto';
 import fs from 'fs';
 
-export async function hash(filePath: string) {
-  const CHUNK_SIZE = 1024 * 1024;
-  const hash_sha256 = createHash('sha256');
-  const stream = fs.createReadStream(filePath, { highWaterMark: CHUNK_SIZE });
+export async function hash(filePath: string): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const hash = createHash('sha256');
+    const fileStream = fs.createReadStream(filePath);
 
-  for await (const data of stream) {
-    hash_sha256.update(data);
-  }
+    fileStream.on('error', (err) => {
+      reject(err);
+    });
 
-  return hash_sha256.digest('hex').toLowerCase();
+    fileStream.on('data', (data) => {
+      hash.update(data);
+    });
+
+    fileStream.on('end', () => {
+      const fileHash = hash.digest('hex').toLowerCase();
+      resolve(fileHash);
+    });
+  });
 }
