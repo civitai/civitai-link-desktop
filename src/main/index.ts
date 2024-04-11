@@ -261,8 +261,10 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('settings-update', newValue);
   });
 
-  // Hides dock icon on macOS but keeps in taskbar
-  app.dock.hide();
+  if (process.platform !== 'darwin') {
+    // Hides dock icon on macOS but keeps in taskbar
+    app.dock.hide();
+  }
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

@@ -52,18 +52,10 @@ export function PrimaryLayout({
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup
         direction="horizontal"
+        id="parent"
         className="h-full items-stretch"
       >
-        <ResizablePanel
-          defaultSize={defaultLayout[0]}
-          minSize={defaultLayout[0]}
-          id="sidebar"
-          order={1}
-          className={cn(
-            isCollapsed &&
-              'min-w-[50px] transition-all duration-300 ease-in-out',
-          )}
-        >
+        <div className={cn('min-w-[240px] border-r')}>
           <div
             className={cn(
               'flex h-[56px] items-center justify-between',
@@ -142,7 +134,7 @@ export function PrimaryLayout({
               },
             ]}
           />
-        </ResizablePanel>
+        </div>
         <Outlet />
       </ResizablePanelGroup>
     </TooltipProvider>
