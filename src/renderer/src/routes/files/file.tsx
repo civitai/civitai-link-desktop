@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -79,31 +78,29 @@ export function File() {
                     <span>{file.trainedWords.join(', ')}</span>
                   </code>
                 </pre>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 z-10 h-6 w-6 text-zinc-50 hover:bg-zinc-700 hover:text-zinc-50 absolute right-2 top-2"
-                        onClick={() => {
-                          navigator.clipboard.writeText(
-                            file.trainedWords?.join(', ') || '',
-                          );
-                          setIsCopied(true);
-                        }}
-                      >
-                        {isCopied ? (
-                          <Check className="w-4 h-4" color="green" />
-                        ) : (
-                          <Copy className="w-4 h-4 cursor-pointer" />
-                        )}
-                        <span className="sr-only">Copy</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Copy to clipboard</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 z-10 h-6 w-6 text-zinc-50 hover:bg-zinc-700 hover:text-zinc-50 absolute right-2 top-2"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          file.trainedWords?.join(', ') || '',
+                        );
+                        setIsCopied(true);
+                      }}
+                    >
+                      {isCopied ? (
+                        <Check className="w-4 h-4" color="green" />
+                      ) : (
+                        <Copy className="w-4 h-4 cursor-pointer" />
+                      )}
+                      <span className="sr-only">Copy</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Copy to clipboard</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
           ) : null}

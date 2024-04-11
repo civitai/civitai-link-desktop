@@ -19,13 +19,11 @@ import { useVault } from '@/providers/vault';
 interface MailProps {
   defaultLayout?: number[];
   defaultCollapsed?: boolean;
-  navCollapsedSize: number;
 }
 
 export function PrimaryLayout({
   defaultLayout = [20, 40, 40],
   defaultCollapsed = false,
-  navCollapsedSize,
 }: MailProps) {
   const [isCollapsed] = React.useState(defaultCollapsed);
   const { connectionStatus } = useElectron();
@@ -58,7 +56,6 @@ export function PrimaryLayout({
       >
         <ResizablePanel
           defaultSize={defaultLayout[0]}
-          collapsedSize={navCollapsedSize}
           minSize={defaultLayout[0]}
           id="sidebar"
           order={1}

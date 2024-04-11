@@ -4,7 +4,7 @@ export default function Root() {
   return (
     <div className="flex flex-col h-screen">
       <div className="titlebar border-b border-border" />
-      <PrimaryLayout navCollapsedSize={4} />
+      <PrimaryLayout />
     </div>
   );
 }
