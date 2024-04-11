@@ -28,6 +28,12 @@ export function File() {
     }, 4000);
   }, [isCopied]);
 
+  // This is due to react-router not resetting state
+  useEffect(() => {
+    setImageFailed(false);
+    setIsCopied(false);
+  }, [hash]);
+
   if (!file) {
     return null;
   }

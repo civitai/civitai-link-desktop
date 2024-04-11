@@ -6,7 +6,7 @@ import { ElectronProvider } from './providers/electron';
 import { Toaster } from './components/ui/toaster';
 import { FileProvider } from './providers/files';
 import { VaultProvider } from './providers/vault';
-import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
+import { Routes, Route, HashRouter, Navigate } from 'react-router-dom';
 import { Files } from './routes/files';
 import { File } from './routes/files/file';
 import { Vault } from './routes/vault';
@@ -19,7 +19,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <ElectronProvider>
       <FileProvider>
         <VaultProvider>
-          <BrowserRouter basename="/">
+          <HashRouter basename="/">
             <Routes>
               <Route path="/" element={<App />}>
                 <Route index element={<Navigate to="/files" replace />} />
@@ -32,7 +32,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 <Route path="/settings" element={<Settings />} />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </VaultProvider>
       </FileProvider>
     </ElectronProvider>
