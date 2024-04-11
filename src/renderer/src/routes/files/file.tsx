@@ -3,7 +3,7 @@ import { Separator } from '@/components/ui/separator';
 import { useFile } from '@/providers/files';
 import { useParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
-import { DownloadCloud, Copy, Check } from 'lucide-react';
+import { DownloadCloud, Copy, Check, Image } from 'lucide-react';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ export function File() {
   const { fileList } = useFile();
   const file = fileList[hash || ''];
   const [isCopied, setIsCopied] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -37,12 +38,18 @@ export function File() {
       <Separator />
       <ScrollArea className="h-full">
         <div className="p-4 gap-2 flex flex-col pb-16">
-          {/* TODO: Add image failure fallback */}
-          <img
-            src={file.previewImageUrl}
-            alt={file.modelName}
-            className="aspect-square object-cover object-center rounded-lg"
-          />
+          {file.previewImageUrl && !imageFailed ? (
+            <img
+              src={file.previewImageUrl}
+              alt={file.modelName}
+              className="aspect-square object-cover object-center rounded-lg"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div className="bg-card w-12 h-12 rounded flex items-center justify-center">
+              <Image size={24} />
+            </div>
+          )}
           <h1>{file?.modelName}</h1>
           <p className="text-[10px] dark:text-[#909296]">{file.name}</p>
           {file.downloadDate ? (
