@@ -2,13 +2,13 @@ import { FilesItem } from '@/components/files/files-item';
 import { useMemo } from 'react';
 import { Files as FilesIcon, XCircle } from 'lucide-react';
 import { useFile } from '@/providers/files';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
 import { PanelWrapper } from '@/layout/panel-wrapper';
+import { Virtuoso } from 'react-virtuoso';
 
 export function Files() {
   const { filterFiles, filteredFileList, searchTerm, setSearchTerm } =
@@ -60,25 +60,26 @@ export function Files() {
             </div>
           </form>
         </div>
-        {/* // TODO: Virtualize list here */}
-        <ScrollArea className="h-screen pb-[145px]">
-          <div className="flex flex-col gap-2 p-4 pt-0">
-            {fileKeys?.map((file) => {
-              return (
-                <FilesItem
-                  resource={filteredFileList[file]}
-                  key={filteredFileList[file].hash}
-                />
-              );
-            })}
-            {fileKeys.length === 0 ? (
-              <div className="flex items-center justify-center py-4">
-                <FilesIcon />
-                <p className="ml-2 text-center text-sm">No Files</p>
-              </div>
-            ) : null}
+        {fileKeys.length === 0 ? (
+          <div className="flex items-center justify-center py-4">
+            <FilesIcon />
+            <p className="ml-2 text-center text-sm">No Files</p>
           </div>
-        </ScrollArea>
+        ) : (
+          <div className="h-full pb-[130px]">
+            <Virtuoso
+              totalCount={fileKeys?.length || 0}
+              itemContent={(index) => (
+                <div
+                  className="mx-4 py-1"
+                  key={filteredFileList[fileKeys[index]].hash}
+                >
+                  <FilesItem resource={filteredFileList[fileKeys[index]]} />
+                </div>
+              )}
+            />
+          </div>
+        )}
       </>
       <Outlet />
     </PanelWrapper>
