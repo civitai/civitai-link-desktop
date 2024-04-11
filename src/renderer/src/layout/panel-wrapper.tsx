@@ -11,7 +11,12 @@ export function PanelWrapper({ children }: { children: React.ReactNode }) {
     return (
       <>
         <ResizableHandle withHandle={isOdd} />
-        <ResizablePanel defaultSize={size} minSize={isOdd ? 30 : size}>
+        <ResizablePanel
+          defaultSize={size}
+          minSize={isOdd ? 30 : size}
+          order={i}
+          id={`panel-${i}`}
+        >
           {child}
         </ResizablePanel>
       </>

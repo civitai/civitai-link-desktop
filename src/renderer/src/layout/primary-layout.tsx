@@ -60,6 +60,8 @@ export function PrimaryLayout({
           defaultSize={defaultLayout[0]}
           collapsedSize={navCollapsedSize}
           minSize={defaultLayout[0]}
+          id="sidebar"
+          order={1}
           className={cn(
             isCollapsed &&
               'min-w-[50px] transition-all duration-300 ease-in-out',
