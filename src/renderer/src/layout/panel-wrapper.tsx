@@ -5,12 +5,16 @@ export function PanelWrapper({ children }: { children: React.ReactNode }) {
   const size = 80 / React.Children.count(children);
 
   // Temp removing collapsable navigation
-  return React.Children.map(children, (child, i) => (
-    <>
-      <ResizableHandle withHandle={i % 2 !== 0} />
-      <ResizablePanel defaultSize={size} minSize={size}>
-        {child}
-      </ResizablePanel>
-    </>
-  ));
+  return React.Children.map(children, (child, i) => {
+    const isOdd = i % 2 !== 0;
+
+    return (
+      <>
+        <ResizableHandle withHandle={isOdd} />
+        <ResizablePanel defaultSize={size} minSize={isOdd ? 30 : size}>
+          {child}
+        </ResizablePanel>
+      </>
+    );
+  });
 }
