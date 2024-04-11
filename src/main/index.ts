@@ -47,6 +47,7 @@ import unhandled from 'electron-unhandled';
 
 unhandled({
   logger: log.error,
+  showDialog: false,
 });
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -261,7 +262,7 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('settings-update', newValue);
   });
 
-  if (process.platform !== 'darwin') {
+  if (process.platform === 'darwin') {
     // Hides dock icon on macOS but keeps in taskbar
     app.dock.hide();
   }
@@ -282,12 +283,3 @@ app.whenReady().then(async () => {
 
 // Try to alleviate window flickering on Windows
 app.commandLine.appendSwitch('wm-window-animations-disabled');
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
