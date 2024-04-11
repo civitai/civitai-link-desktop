@@ -16,6 +16,7 @@ export function PanelWrapper({ children }: { children: React.ReactNode }) {
           minSize={isOdd ? 30 : size}
           order={i + 1}
           id={`panel-${i + 1}`}
+          className="min-w-96"
         >
           {child}
         </ResizablePanel>
