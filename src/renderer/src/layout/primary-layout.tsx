@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Files, Vault, Activity, Folder, Cog } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { ResizablePanelGroup } from '@/components/ui/resizable';
 import { Separator } from '@/components/ui/separator';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Nav } from './components/nav';
@@ -21,10 +21,7 @@ interface MailProps {
   defaultCollapsed?: boolean;
 }
 
-export function PrimaryLayout({
-  defaultLayout = [20, 40, 40],
-  defaultCollapsed = false,
-}: MailProps) {
+export function PrimaryLayout({ defaultCollapsed = false }: MailProps) {
   const [isCollapsed] = React.useState(defaultCollapsed);
   const { connectionStatus } = useElectron();
   const { fileListCount } = useFile();
