@@ -150,7 +150,10 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
 
-  autoUpdater.checkForUpdatesAndNotify();
+  // Only run updater when not in debug mode
+  if (!DEBUG) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 }
 
 function toggleWindow() {
