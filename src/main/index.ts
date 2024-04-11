@@ -43,6 +43,11 @@ import {
   watchVault,
   watchVaultMeta,
 } from './store/vault';
+import unhandled from 'electron-unhandled';
+
+unhandled({
+  logger: log.error,
+});
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 
