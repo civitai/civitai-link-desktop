@@ -4,6 +4,9 @@ import { useWizard } from 'react-use-wizard';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PathInput } from '@/components/path-input';
 import { ResourceType } from '@/types';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useApi } from '@/hooks/use-api';
+import { useElectron } from '@/providers/electron';
 
 type IntroSdProps = {
   folderValue: string | null;
@@ -14,6 +17,8 @@ type IntroSdProps = {
 
 export function IntroSd(props: IntroSdProps) {
   const { nextStep } = useWizard();
+  const { setNSFW } = useApi();
+  const { settings } = useElectron();
 
   return (
     <div className="space-y-4 flex flex-1 flex-col">
@@ -27,6 +32,19 @@ export function IntroSd(props: IntroSdProps) {
           Select which stable diffusion software you are using and where the
           models are stored. We'll take care of the rest.
         </p>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="nsfw"
+          checked={settings.nsfw}
+          onCheckedChange={(checked: boolean) => setNSFW(checked)}
+        />
+        <label
+          htmlFor="nsfw"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Add NSFW images to model preview
+        </label>
       </div>
       <div className="flex flex-1 flex-col justify-center space-y-4">
         <RadioGroup

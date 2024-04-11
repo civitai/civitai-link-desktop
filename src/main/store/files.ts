@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import Store, { Schema } from 'electron-store';
 import { createModelJson } from '../utils/create-model-json';
+import { createPreviewImage } from '../utils/create-preview-image';
 
 const schema: Schema<Record<string, unknown>> = {
   files: {
@@ -14,7 +15,9 @@ export const store = new Store({ schema });
 export function addFile(file: Resource) {
   const files = store.get('files') as ResourcesMap;
   const fileToAdd = { ...file, hash: file.hash.toLowerCase() };
+
   createModelJson(file);
+  createPreviewImage(file);
 
   return store.set('files', {
     [fileToAdd.hash]: fileToAdd,
@@ -34,6 +37,16 @@ export function searchFile(hash: string) {
   const files = store.get('files') as ResourcesMap;
 
   return files[hash.toLowerCase()];
+}
+
+export function findFileByFilename(filename: string) {
+  const files = store.get('files') as ResourcesMap;
+
+  const hash = Object.keys(files).find((hash) => files[hash].name === filename);
+
+  if (!hash) return;
+
+  return files[hash];
 }
 
 export function searchFileByModelVersionId(modelVersionId: number) {

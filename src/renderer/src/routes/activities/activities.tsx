@@ -1,9 +1,11 @@
 import { useElectron } from '@/providers/electron';
-import { ActivitiesItem } from './activities-item';
+import { ActivitiesItem } from '@/components/activities/activities-item';
 import { Activity } from 'lucide-react';
 import { useMemo } from 'react';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { PanelWrapper } from '@/layout/panel-wrapper';
 
 dayjs.extend(isSameOrBefore);
 
@@ -53,29 +55,36 @@ export function Activities() {
 
   if (activityList.length === 0) {
     return (
-      <div className="flex items-center justify-center">
-        <Activity />
-        <p className="ml-2 text-center text-sm">No Activity</p>
-      </div>
+      <PanelWrapper>
+        <div className="p-4 flex flex-1 h-full justify-center items-center">
+          <Activity />
+          <p className="ml-2 text-center text-sm">No Activity</p>
+        </div>
+      </PanelWrapper>
     );
   }
 
   return (
-    <div className="flex flex-col gap-y-4 mb-4 bg-background">
-      {Object.keys(activities).map((date, key) => {
-        return (
-          <div key={key}>
-            <div className="sticky top-[130px] py-2 bg-background">
-              <p className="text-md font-bold text-[#909296]">{date}</p>
-            </div>
-            <div className="flex flex-col gap-y-2 mt-2">
-              {activities[date].map((activity, key) => (
-                <ActivitiesItem {...activity} key={`${date}-${key}`} />
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
+    <PanelWrapper>
+      <ScrollArea className="h-full">
+        <div className="flex flex-col gap-y-4 mb-4 bg-background">
+          <div className="absolute top-0 border-b w-full min-h-14 z-10" />
+          {Object.keys(activities).map((date, key) => {
+            return (
+              <div key={key}>
+                <div className="sticky top-0 bg-background min-h-14 items-center flex px-4">
+                  <p className="text-md font-bold text-[#909296]">{date}</p>
+                </div>
+                <div className="flex flex-col gap-y-2 px-4">
+                  {activities[date].map((activity, key) => (
+                    <ActivitiesItem {...activity} key={`${date}-${key}`} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
+    </PanelWrapper>
   );
 }

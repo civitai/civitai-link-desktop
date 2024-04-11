@@ -28,6 +28,7 @@ declare global {
         modelVersionId: number;
       }) => void;
       setStableDiffusion: (type: string) => void;
+      searchFile: (hash: string) => Resource;
     };
   }
 

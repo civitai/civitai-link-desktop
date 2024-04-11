@@ -1,8 +1,7 @@
-import { Header } from '@/components/header';
 import { useElectron } from '@/providers/electron';
 import logo from '@/assets/logo.png';
-import { Content } from '@/components/content';
-import { Intro } from '@/components/intro';
+import Root from './routes/root';
+import { Intro } from './components/intro';
 
 function App() {
   const { appLoading, key } = useElectron();
@@ -14,19 +13,7 @@ function App() {
       </div>
     );
 
-  return (
-    <>
-      <div className="titlebar sticky top-0 z-50 bg-background" />
-      {key ? (
-        <>
-          <Header />
-          <Content />
-        </>
-      ) : (
-        <Intro />
-      )}
-    </>
-  );
+  return key ? <Root /> : <Intro />;
 }
 
 export default App;

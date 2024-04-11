@@ -14,6 +14,7 @@ import { eventFetchVaultMeta } from './fetch-vault-meta';
 import { eventToggleVaultItem } from './toggle-vault-item';
 import { eventFetchVaultModels } from './fetch-vault-models';
 import { eventSetStableDiffusion } from './set-stable-diffusion';
+import { eventSearchFile } from './search-file';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -26,10 +27,18 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   );
   ipcMain.on('set-root-path', eventSetRootPath);
   ipcMain.on('set-path', eventSetPath);
-  ipcMain.on('clear-settings', eventClearSettings);
+  ipcMain.on('clear-settings', () => {
+    mainWindow.setMinimumSize(400, 600);
+    mainWindow.setSize(400, 600, true);
+    eventClearSettings();
+  });
   ipcMain.on('close-app', eventCloseApp);
   ipcMain.on('open-root-model-folder', eventOpenRootModelFolder);
-  ipcMain.on('init', eventInit);
+  ipcMain.on('init', () => {
+    mainWindow.setMinimumSize(1060, 600);
+    mainWindow.setSize(1060, 600, true);
+    eventInit();
+  });
   ipcMain.on('set-nsfw', eventSetNSFW);
   ipcMain.on('open-model-file-folder', (_, filePath) =>
     eventOpenModelFileFolder(filePath),
@@ -39,4 +48,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('fetch-vault-models', eventFetchVaultModels);
   ipcMain.on('toggle-vault-item', eventToggleVaultItem);
   ipcMain.on('set-stable-diffusion', eventSetStableDiffusion);
+  ipcMain.on('search-file', eventSearchFile);
 }

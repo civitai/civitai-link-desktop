@@ -43,6 +43,13 @@ import {
   watchVault,
   watchVaultMeta,
 } from './store/vault';
+import unhandled from 'electron-unhandled';
+
+unhandled({
+  logger: log.error,
+});
+
+const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 
 log.info('Starting App...');
 
@@ -52,18 +59,11 @@ autoUpdater.logger.transports.file.level = 'info';
 
 let mainWindow;
 let tray;
+let isQuiting = DEBUG;
 
 //defaults
-let width = 400;
-
-const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
-const browserWindowOptions = {
-  frame: true,
-  fullscreenable: false,
-  alwaysOnTop: true,
-  skipTaskbar: true,
-  titleBarOverlay: true,
-};
+let width = getUpgradeKey() ? 1060 : 400;
+let height = 600;
 
 function createWindow() {
   const upgradeKey = getUpgradeKey();
@@ -71,13 +71,21 @@ function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: width,
-    maxWidth: width,
-    show: false,
-    useContentSize: true,
-    resizable: false,
+    height: height,
+    minHeight: 600,
+    minWidth: 1060,
+    show: true,
+    useContentSize: false,
+    resizable: true,
     hasShadow: true,
     darkTheme: true,
-    ...browserWindowOptions,
+    frame: true,
+    fullscreenable: false,
+    skipTaskbar: true,
+    titleBarOverlay: {
+      color: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
+      symbolColor: nativeTheme.shouldUseDarkColors ? '#fff' : '#000',
+    },
     ...(process.platform === 'linux' ? { logo } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -114,6 +122,20 @@ function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
+  mainWindow.on('minimize', function (event) {
+    event.preventDefault();
+    mainWindow.hide();
+  });
+
+  mainWindow.on('close', function (event) {
+    if (!isQuiting) {
+      event.preventDefault();
+      mainWindow.hide();
+    }
+
+    return false;
+  });
+
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url);
     return { action: 'deny' };
@@ -128,23 +150,10 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
   }
 
-  autoUpdater.checkForUpdatesAndNotify();
-}
-
-function setWindowAutoHide() {
-  const upgradeKey = getUpgradeKey();
-
-  if (upgradeKey) {
-    mainWindow.hide();
-  } else {
-    mainWindow.show();
+  // Only run updater when not in debug mode
+  if (!DEBUG) {
+    autoUpdater.checkForUpdatesAndNotify();
   }
-
-  mainWindow.on('blur', () => {
-    if (!DEBUG) {
-      mainWindow.hide();
-    }
-  });
 }
 
 function toggleWindow() {
@@ -152,13 +161,7 @@ function toggleWindow() {
 }
 
 function showWindow() {
-  // alignWindow();
-
-  if (DEBUG) {
-    mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
-  } else {
-    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-  }
+  mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
 }
 
 Menu.setApplicationMenu(null);
@@ -175,7 +178,10 @@ app.whenReady().then(async () => {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Quit',
-      click: () => app.quit(),
+      click: () => {
+        isQuiting = true;
+        app.quit();
+      },
     },
     {
       label: 'Dev Tools',
@@ -189,6 +195,9 @@ app.whenReady().then(async () => {
       toggleWindow();
     }
   });
+  tray.on('right-click', () => {
+    tray.popUpContextMenu(contextMenu);
+  });
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
@@ -200,7 +209,6 @@ app.whenReady().then(async () => {
   createWindow();
   socketIOConnect({ mainWindow, app });
   // folderWatcher();
-  setWindowAutoHide();
   setUser();
   setVaultMeta();
   setVault();
@@ -253,8 +261,10 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('settings-update', newValue);
   });
 
-  // Hides dock icon on macOS but keeps in taskbar
-  app.dock.hide();
+  if (process.platform !== 'darwin') {
+    // Hides dock icon on macOS but keeps in taskbar
+    app.dock.hide();
+  }
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

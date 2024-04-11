@@ -18,6 +18,7 @@ type VaultItemDeleteProps = {
   hash?: string;
   align?: 'left' | 'right';
   hidden?: boolean;
+  className?: string;
 };
 
 export function VaultItemDelete({
@@ -25,6 +26,7 @@ export function VaultItemDelete({
   hash,
   align = 'left',
   hidden,
+  className,
 }: VaultItemDeleteProps) {
   const { toggleVaultItem } = useApi();
 
@@ -37,11 +39,16 @@ export function VaultItemDelete({
       <AlertDialogTrigger asChild>
         <CloudOff
           color="#F15252"
-          className={classNames('absolute w-6 h-6 cursor-pointer', {
-            'top-3 left-3': align === 'left',
-            'top-1/2 right-3 transform -translate-y-1/2': align === 'right',
-            'hidden group-hover:flex': hidden,
-          })}
+          className={
+            className
+              ? className
+              : classNames('absolute w-6 h-6 cursor-pointer', {
+                  'top-3 left-3': align === 'left',
+                  'top-1/2 right-3 transform -translate-y-1/2':
+                    align === 'right',
+                  'hidden group-hover:flex': hidden,
+                })
+          }
         />
       </AlertDialogTrigger>
       <AlertDialogContent>

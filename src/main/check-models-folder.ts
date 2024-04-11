@@ -3,8 +3,15 @@ import { hash } from './hash';
 import { listDirectory } from './list-directory';
 import { getApiKey } from './store/store';
 import { getRootResourcePath } from './store/paths';
-import { addFile, searchFile, updateFile } from './store/files';
+import {
+  addFile,
+  findFileByFilename,
+  searchFile,
+  updateFile,
+} from './store/files';
 import path from 'path';
+import { resourcesList } from './commands';
+import { socket } from './socket';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
@@ -22,11 +29,8 @@ export async function checkModelsFolder() {
   const promises = files.map(async (file) => {
     const filePath = path.join(modelDirectory, file);
 
-    // Hash files
-    const modelHash = await hash(filePath);
-
-    // Check if exists in store
-    const resource = searchFile(modelHash);
+    // See if file already exists by filename
+    const resource = findFileByFilename(file.split('/', 2)[1]);
 
     // In case no path is stored, update it
     if (resource && !resource.localPath) {
@@ -42,6 +46,10 @@ export async function checkModelsFolder() {
 
     // If not, fetch from API and add to store
     if (!resource) {
+      // Hash files
+      const modelHash = await hash(filePath);
+      console.log('Hashing...', 'File:', file, 'Hash:', modelHash);
+
       try {
         const model = await getModelByHash(modelHash);
         addFile({ ...model, localPath: filePath });
@@ -53,7 +61,6 @@ export async function checkModelsFolder() {
 
   // We dont need to return results
   await processPromisesBatch(promises, 10);
-  // const results = await Promise.allSettled(promises);
 
   // Only check vault if API Key exists
   if (apiKey) {
@@ -88,6 +95,13 @@ export async function processPromisesBatch(
     const end = start + limit > items.length ? items.length : start + limit;
 
     await Promise.allSettled(items.slice(start, end));
+
+    // Update Civitai website with added files
+    const newPayload = resourcesList();
+    socket.emit('commandStatus', {
+      type: 'resources:list',
+      resources: newPayload,
+    });
   }
 
   return;
