@@ -6,7 +6,7 @@ export enum Resources {
   CONTROLNET = 'ControlNet',
   UPSCALER = 'Upscaler',
   HYPERNETWORK = 'Hypernetwork',
-  TEXTUALINVERSION = 'TextualInversion',
+  TEXTUALINVERSION = 'Embeddings',
   LORA = 'Lora',
   LOCON = 'LoCon',
   VAE = 'VAE',
@@ -66,7 +66,7 @@ const COMFY_UI_PATHS = {
   [Resources.CONTROLNET]: 'controlnet',
   [Resources.UPSCALER]: 'upscale_models',
   [Resources.HYPERNETWORK]: 'hypernetworks',
-  [Resources.TEXTUALINVERSION]: '',
+  [Resources.TEXTUALINVERSION]: 'embeddings',
   [Resources.LORA]: 'loras',
   [Resources.VAE]: 'vae',
 };
