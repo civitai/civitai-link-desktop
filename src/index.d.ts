@@ -84,7 +84,7 @@ declare global {
     CONTROLNET = 'ControlNet',
     UPSCALER = 'Upscaler',
     HYPERNETWORK = 'Hypernetwork',
-    TEXTUAL_INVERSION = 'TextualInversion',
+    TEXTUAL_INVERSION = 'Embeddings',
     LORA = 'Lora',
     LO_CON = 'LoCon',
     VAE = 'VAE',
