@@ -5,15 +5,14 @@ import { useParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { DownloadCloud, Copy, Check, Image } from 'lucide-react';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useMemo, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import classnames from 'classnames';
 
 export function File() {
   const { hash } = useParams();
   const { fileList } = useFile();
-  const file = fileList[hash || ''];
+  const file = useMemo(() => fileList[hash || ''], [fileList, hash]);
   const [isCopied, setIsCopied] = useState<number | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -32,8 +31,6 @@ export function File() {
   if (!file) {
     return null;
   }
-
-  console.log(file.trainedWords);
 
   return (
     <div className="flex h-full flex-col">
@@ -69,15 +66,21 @@ export function File() {
                   <Badge variant="outline">{file.modelVersionName}</Badge>
                 </td>
               </tr>
-              <tr>
-                <td>Downloaded</td>
-                <td>
-                  <p className="text-[10px] font-normal text-[#909296] flex items-center">
-                    <DownloadCloud className="mr-1" size={12} color="#909296" />
-                    {dayjs(file.downloadDate).fromNow()}
-                  </p>
-                </td>
-              </tr>
+              {file.downloadDate ? (
+                <tr>
+                  <td>Downloaded</td>
+                  <td>
+                    <p className="flex items-center">
+                      <DownloadCloud
+                        className="mr-1"
+                        size={12}
+                        color="#909296"
+                      />
+                      {dayjs(file.downloadDate).fromNow()}
+                    </p>
+                  </td>
+                </tr>
+              ) : null}
               {file.baseModel ? (
                 <tr>
                   <td>Base Model</td>
@@ -100,6 +103,7 @@ export function File() {
                             navigator.clipboard.writeText(word);
                             setIsCopied(i);
                           }}
+                          key={`${word}-${i}`}
                         >
                           {word}{' '}
                           <span className="ml-1">
