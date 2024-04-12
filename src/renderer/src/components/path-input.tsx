@@ -85,7 +85,7 @@ export function PathInput({
       <div className="w-full">
         <Tooltip>
           <TooltipTrigger className="text-left w-full">
-            <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden cursor-default min-h-14">
+            <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden cursor-default">
               <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40">
                 {ellipsis({ str: dirPath || 'Select a directory' })}
               </p>
@@ -96,8 +96,8 @@ export function PathInput({
           </TooltipContent>
         </Tooltip>
       </div>
-      <Button onClick={getDir} className="p-3 min-h-14 min-w-14">
-        <GoFileDirectory size={24} />
+      <Button onClick={getDir} className="p-3">
+        <GoFileDirectory size={16} />
       </Button>
     </div>
   );
