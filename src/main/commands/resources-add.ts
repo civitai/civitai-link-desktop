@@ -16,8 +16,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const hashLowercase = payload.hash.toLowerCase();
   const resourcePath = getResourcePath(payload.type);
-  const { previewImageUrl, civitaiUrl, modelVersionId, baseModel } =
-    await getModelByHash(hashLowercase);
+  const data = await getModelByHash(hashLowercase);
   const timestamp = new Date().toISOString();
 
   params.socket.emit('commandStatus', {
@@ -30,18 +29,16 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   params.mainWindow.webContents.send('activity-add', {
     id: params.id,
     downloadDate: timestamp,
-    ...payload,
-    previewImageUrl,
-    civitaiUrl,
     downloading: true,
-    modelVersionId,
+    ...payload,
+    ...data,
   });
 
   const activity: ActivityItem = {
     name: payload.modelName,
     date: timestamp,
     type: 'downloading' as ActivityType,
-    civitaiUrl,
+    civitaiUrl: data.civitaiUrl,
   };
 
   updateActivity(activity);
@@ -49,16 +46,8 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   await downloadFile({
     resource: {
       id: params.id,
-      name: payload.name,
-      url: payload.url,
-      type: payload.type,
-      hash: hashLowercase,
-      modelName: payload.modelName,
-      modelVersionName: payload.modelVersionName,
-      modelVersionId,
-      previewImageUrl,
-      civitaiUrl,
-      baseModel,
+      ...payload,
+      ...data,
     },
     downloadPath: resourcePath,
     socket: params.socket,
