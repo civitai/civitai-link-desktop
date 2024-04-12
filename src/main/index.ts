@@ -81,7 +81,6 @@ function createWindow() {
     hasShadow: true,
     darkTheme: true,
     frame: true,
-    fullscreenable: false,
     skipTaskbar: true,
     titleBarOverlay: {
       color: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
@@ -121,11 +120,6 @@ function createWindow() {
     });
 
     mainWindow.webContents.send('app-ready', true);
-  });
-
-  mainWindow.on('minimize', function (event) {
-    event.preventDefault();
-    mainWindow.hide();
   });
 
   mainWindow.on('close', function (event) {
