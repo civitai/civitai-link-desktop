@@ -7,35 +7,33 @@ import { DownloadCloud, Copy, Check, Image } from 'lucide-react';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import classnames from 'classnames';
 
 export function File() {
   const { hash } = useParams();
   const { fileList } = useFile();
   const file = fileList[hash || ''];
-  const [isCopied, setIsCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState<number | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
-      setIsCopied(false);
+      setIsCopied(null);
     }, 4000);
   }, [isCopied]);
 
   // This is due to react-router not resetting state
   useEffect(() => {
     setImageFailed(false);
-    setIsCopied(false);
+    setIsCopied(null);
   }, [hash]);
 
   if (!file) {
     return null;
   }
+
+  console.log(file.trainedWords);
 
   return (
     <div className="flex h-full flex-col">
@@ -47,7 +45,7 @@ export function File() {
             <img
               src={file.previewImageUrl}
               alt={file.modelName}
-              className="aspect-square object-cover object-center rounded-lg"
+              className="aspect-square object-cover object-center rounded-lg max-w-80"
               onError={() => setImageFailed(true)}
             />
           ) : (
@@ -57,54 +55,68 @@ export function File() {
           )}
           <h1>{file?.modelName}</h1>
           <p className="text-[10px] dark:text-[#909296]">{file.name}</p>
-          {file.downloadDate ? (
-            <p className="text-[10px] font-normal text-[#909296] flex items-center">
-              <DownloadCloud className="mr-1" size={12} color="#909296" />
-              {dayjs(file.downloadDate).fromNow()}
-            </p>
-          ) : null}
-          <div className="flex items-center space-x-2">
-            <Badge variant="modelTag">{file.type}</Badge>
-            <Badge variant="outline">{file.modelVersionName}</Badge>
-          </div>
-          {file.baseModel ? <p>Base Model: {file.baseModel}</p> : null}
-          {file.trainedWords && file.trainedWords.length > 0 ? (
-            <div className="mt-4">
-              <h2 className="text-xs font-semibold text-[#909296]">
-                Trigger Words
-              </h2>
-              <div className="relative">
-                <pre className="p-2 mb-4 max-h-[650px] overflow-x-auto rounded-lg border bg-muted py-4 over">
-                  <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm text-wrap">
-                    <span>{file.trainedWords.join(', ')}</span>
-                  </code>
-                </pre>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 z-10 h-6 w-6 text-zinc-50 hover:bg-zinc-700 hover:text-zinc-50 absolute right-2 top-2"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          file.trainedWords?.join(', ') || '',
-                        );
-                        setIsCopied(true);
-                      }}
-                    >
-                      {isCopied ? (
-                        <Check className="w-4 h-4" color="green" />
-                      ) : (
-                        <Copy className="w-4 h-4 cursor-pointer" />
-                      )}
-                      <span className="sr-only">Copy</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Copy to clipboard</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-          ) : null}
+          <table>
+            <tbody>
+              <tr>
+                <td>Type</td>
+                <td>
+                  <Badge variant="modelTag">{file.type}</Badge>
+                </td>
+              </tr>
+              <tr>
+                <td>Version</td>
+                <td>
+                  <Badge variant="outline">{file.modelVersionName}</Badge>
+                </td>
+              </tr>
+              <tr>
+                <td>Downloaded</td>
+                <td>
+                  <p className="text-[10px] font-normal text-[#909296] flex items-center">
+                    <DownloadCloud className="mr-1" size={12} color="#909296" />
+                    {dayjs(file.downloadDate).fromNow()}
+                  </p>
+                </td>
+              </tr>
+              {file.baseModel ? (
+                <tr>
+                  <td>Base Model</td>
+                  <td>{file.baseModel}</td>
+                </tr>
+              ) : null}
+              {file.trainedWords && file.trainedWords.length > 0 ? (
+                <tr>
+                  <td>Trigger Words</td>
+                  <td>
+                    <div className="flex flex-wrap gap-2">
+                      {file.trainedWords.map((word, i) => (
+                        <Badge
+                          variant="modelTag"
+                          className={classnames('cursor-pointer', {
+                            '!dark:bg-[#2f9e44]/20 !bg-[#2f9e44]/20 !text-[#B2F2BB] !dark:text-[#B2F2BB]':
+                              isCopied === i,
+                          })}
+                          onClick={() => {
+                            navigator.clipboard.writeText(word);
+                            setIsCopied(i);
+                          }}
+                        >
+                          {word}{' '}
+                          <span className="ml-1">
+                            {isCopied === i ? (
+                              <Check size={10} color="green" />
+                            ) : (
+                              <Copy size={10} className="cursor-pointer" />
+                            )}
+                          </span>
+                        </Badge>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
         </div>
       </ScrollArea>
     </div>
