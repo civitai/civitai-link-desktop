@@ -4,7 +4,6 @@ import { Outlet } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ResizablePanelGroup } from '@/components/ui/resizable';
 import { Separator } from '@/components/ui/separator';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { Nav } from './components/nav';
 import { useElectron } from '@/providers/electron';
 import { ConnectionStatus } from '@/types';
@@ -46,7 +45,7 @@ export function PrimaryLayout({ defaultCollapsed = false }: MailProps) {
 
   // TODO: Add back collapsable navigation
   return (
-    <TooltipProvider delayDuration={0}>
+    <>
       <ResizablePanelGroup
         direction="horizontal"
         id="parent"
@@ -127,6 +126,6 @@ export function PrimaryLayout({ defaultCollapsed = false }: MailProps) {
         </div>
         <Outlet />
       </ResizablePanelGroup>
-    </TooltipProvider>
+    </>
   );
 }
