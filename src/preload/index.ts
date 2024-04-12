@@ -39,6 +39,7 @@ const api = {
   setStableDiffusion: (type: string) =>
     ipcRenderer.send('set-stable-diffusion', type),
   searchFile: (hash: string) => ipcRenderer.send('search-file', hash),
+  restartApp: () => ipcRenderer.send('restart-app'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

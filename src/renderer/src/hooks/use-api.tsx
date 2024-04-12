@@ -58,5 +58,8 @@ export function useApi() {
     searchFile: async (hash: string) => {
       return await window.api.searchFile(hash);
     },
+    restartApp: async () => {
+      return await window.api.restartApp();
+    },
   };
 }

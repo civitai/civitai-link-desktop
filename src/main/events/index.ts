@@ -15,6 +15,7 @@ import { eventToggleVaultItem } from './toggle-vault-item';
 import { eventFetchVaultModels } from './fetch-vault-models';
 import { eventSetStableDiffusion } from './set-stable-diffusion';
 import { eventSearchFile } from './search-file';
+import { app } from 'electron';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -49,4 +50,8 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('toggle-vault-item', eventToggleVaultItem);
   ipcMain.on('set-stable-diffusion', eventSetStableDiffusion);
   ipcMain.on('search-file', eventSearchFile);
+  ipcMain.on('restart-app', () => {
+    app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
+    app.exit(0);
+  });
 }

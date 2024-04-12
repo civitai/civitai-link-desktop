@@ -13,6 +13,7 @@ type ElectronContextType = {
   settings: { nsfw: boolean };
   user?: object | null;
   appVersion: string;
+  updateAvailable: boolean;
 };
 
 const defaultValue: ElectronContextType = {
@@ -26,6 +27,7 @@ const defaultValue: ElectronContextType = {
   settings: { nsfw: false },
   user: null,
   appVersion: '',
+  updateAvailable: false,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -44,6 +46,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [user, setUser] = useState<object | null>(null);
   const [appVersion, setAppVersion] = useState<string>('');
+  const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -149,6 +152,16 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     };
   });
 
+  useEffect(() => {
+    ipcRenderer.on('update-available', function () {
+      setUpdateAvailable(true);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('update-available');
+    };
+  });
+
   const clearSettings = () => {
     window.api.clearSettings();
     setKey(null);
@@ -172,6 +185,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         apiKey,
         user,
         appVersion,
+        updateAvailable,
       }}
     >
       {children}

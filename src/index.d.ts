@@ -29,6 +29,7 @@ declare global {
       }) => void;
       setStableDiffusion: (type: string) => void;
       searchFile: (hash: string) => Resource;
+      restartApp: () => void;
     };
   }
 

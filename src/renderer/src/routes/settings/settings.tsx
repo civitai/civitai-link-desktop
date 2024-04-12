@@ -20,18 +20,28 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { RefreshCcw } from 'lucide-react';
 
 export function Settings() {
-  const { clearSettings, settings, appVersion } = useElectron();
-  const { setNSFW } = useApi();
+  const { clearSettings, settings, appVersion, updateAvailable } =
+    useElectron();
+  const { setNSFW, restartApp } = useApi();
 
   return (
     <PanelWrapper>
       <>
         <div className="flex items-center px-4 py-2 min-h-14 justify-between">
           <h1 className="text-xl font-bold">Settings</h1>
-          {/* TODO: Restart the app to update */}
-          <p className="text-sm text-primary">v{appVersion}</p>
+          <div className="flex gap-2 items-center">
+            {updateAvailable ? (
+              <RefreshCcw
+                size={16}
+                className="cursor-pointer"
+                onClick={restartApp}
+              />
+            ) : null}
+            <p className="text-sm text-primary">v{appVersion}</p>
+          </div>
         </div>
         <Separator />
 
