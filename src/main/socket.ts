@@ -17,6 +17,7 @@ import {
   resourcesRemove,
 } from './commands';
 import { BrowserWindow } from 'electron';
+import { filterResourcesList } from './utils/filter-reources-list';
 
 export const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, {
   path: '/api/socketio',
@@ -86,7 +87,6 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
 
   socket.on('command', (payload) => {
     console.log('command', payload);
-    const resourceList = resourcesList();
 
     switch (payload['type']) {
       case 'activities:list':
@@ -99,6 +99,7 @@ export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
         activitiesCancel({ mainWindow, activityId: payload.activityId });
         break;
       case 'resources:list':
+        const resourceList = filterResourcesList();
         socketCommandStatus({
           id: payload.id,
           type: payload.type,

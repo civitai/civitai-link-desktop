@@ -5,7 +5,7 @@ import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
-import { resourcesList } from './commands';
+import { filterResourcesList } from './utils/filter-reources-list';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -46,7 +46,7 @@ export async function downloadFile({
   const REPORT_INTERVAL = 1000;
   let last_reported_time = Date.now();
 
-  const newPayload = resourcesList();
+  const newPayload = filterResourcesList();
   socket.emit('commandStatus', {
     type: 'resources:list',
     resources: [
@@ -157,7 +157,7 @@ export async function downloadFile({
     });
 
     // Send entire list of resources to server
-    const newPayload = resourcesList();
+    const newPayload = filterResourcesList();
     socket.emit('commandStatus', {
       type: 'resources:list',
       resources: newPayload,
@@ -182,7 +182,7 @@ export async function downloadFile({
         id: resource.id,
       });
 
-      const newPayload = resourcesList();
+      const newPayload = filterResourcesList();
       socket.emit('commandStatus', {
         type: 'resources:list',
         resources: newPayload,

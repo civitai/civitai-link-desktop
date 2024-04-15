@@ -10,8 +10,8 @@ import {
   updateFile,
 } from './store/files';
 import path from 'path';
-import { resourcesList } from './commands';
 import { socket } from './socket';
+import { filterResourcesList } from './utils/filter-reources-list';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
@@ -97,7 +97,7 @@ export async function processPromisesBatch(
     await Promise.allSettled(items.slice(start, end));
 
     // Update Civitai website with added files
-    const newPayload = resourcesList();
+    const newPayload = filterResourcesList();
     socket.emit('commandStatus', {
       type: 'resources:list',
       resources: newPayload,
