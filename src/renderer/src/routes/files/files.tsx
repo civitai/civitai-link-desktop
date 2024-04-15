@@ -10,6 +10,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Virtuoso } from 'react-virtuoso';
 import { FilesSort } from '@/components/files/files-sort';
+import { FilesFilter } from '@/components/files/files-filter';
 
 export function Files() {
   const { filterFiles, filteredFileList, searchTerm, setSearchTerm } =
@@ -35,7 +36,8 @@ export function Files() {
       <>
         <div className="flex items-center justify-between px-4 py-2 min-h-14">
           <h1 className="text-xl font-bold">Files</h1>
-          <div>
+          <div className="flex">
+            <FilesFilter />
             <FilesSort />
           </div>
         </div>
