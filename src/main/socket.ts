@@ -13,7 +13,6 @@ import {
   activitiesList,
   imageTxt2img,
   resourcesAdd,
-  resourcesList,
   resourcesRemove,
 } from './commands';
 import { BrowserWindow } from 'electron';
