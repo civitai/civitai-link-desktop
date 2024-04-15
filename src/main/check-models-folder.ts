@@ -11,7 +11,7 @@ import {
 } from './store/files';
 import path from 'path';
 import { socket } from './socket';
-import { filterResourcesList } from './utils/filter-reources-list';
+import { filterResourcesList } from './commands/filter-reources-list';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();

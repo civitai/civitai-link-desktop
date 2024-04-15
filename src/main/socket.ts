@@ -16,7 +16,7 @@ import {
   resourcesRemove,
 } from './commands';
 import { BrowserWindow } from 'electron';
-import { filterResourcesList } from './utils/filter-reources-list';
+import { filterResourcesList } from './commands/filter-reources-list';
 
 export const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, {
   path: '/api/socketio',

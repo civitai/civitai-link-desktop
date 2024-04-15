@@ -5,7 +5,7 @@ import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
-import { filterResourcesList } from './utils/filter-reources-list';
+import { filterResourcesList } from './commands/filter-reources-list';
 
 type DownloadFileParams = {
   socket: Socket;

@@ -3,7 +3,7 @@ import { getResourcePath } from '../store/paths';
 import { deleteFile, searchFile } from '../store/files';
 import { updateActivity } from '../store/activities';
 import fs from 'fs';
-import { filterResourcesList } from '../utils/filter-reources-list';
+import { filterResourcesList } from './filter-reources-list';
 
 export function resourcesRemove(hash: string) {
   const resource = searchFile(hash);
