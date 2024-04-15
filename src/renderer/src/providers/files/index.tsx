@@ -14,12 +14,25 @@ type RemoveActivityParams = {
   description: string;
 };
 
-type sortType = 'modelName' | 'downloadDate';
+export enum sortType {
+  MODEL_NAME = 'modelName',
+  DOWNLOAD_DATE = 'downloadDate',
+}
+
+export enum sortDirection {
+  ASC = 'asc',
+  DESC = 'desc',
+}
 
 type sortFilesParams = {
   type: sortType;
-  direction: 'asc' | 'desc';
+  direction: sortDirection;
 };
+
+export enum FileListFilters {
+  TYPE = 'type',
+  BASE_MODEL = 'baseModel',
+}
 
 type FileContextType = {
   fileList: ResourcesMap;
@@ -147,7 +160,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
       const filtered = Object.values(fileList)
         .filter((file) => {
-          return file.modelName.toLowerCase().includes(search.toLowerCase());
+          return file.modelName?.toLowerCase().includes(search.toLowerCase());
         })
         .reduce(reduceFileMap, {});
 
