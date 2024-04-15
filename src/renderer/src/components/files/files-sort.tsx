@@ -13,18 +13,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { sortType, sortDirection } from '@/providers/files';
+import { SortType, SortDirection } from '@/providers/files';
 
 export function FilesSort() {
   const { sortFiles } = useFile();
-  const [direction, setDirection] = useState<sortDirection>(sortDirection.DESC);
-  const [type, setType] = useState<sortType | null>(null);
+  const [direction, setDirection] = useState<SortDirection>(SortDirection.DESC);
+  const [type, setType] = useState<SortType | null>(null);
 
-  const sort = (type: sortType) => {
+  const sort = (type: SortType) => {
     sortFiles({ type, direction });
     setType(type);
     setDirection(
-      direction === sortDirection.ASC ? sortDirection.DESC : sortDirection.ASC,
+      direction === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC,
     );
   };
 
@@ -40,16 +40,18 @@ export function FilesSort() {
           </Tooltip>
         </MenubarTrigger>
         <MenubarContent>
-          {/* <MenubarItem onClick={() => sort(sortType.DOWNLOAD_DATE)}>
-            Date Downloaded
-          </MenubarItem> */}
-          <MenubarCheckboxItem
-            checked={type === sortType.MODEL_NAME}
-            onClick={() => sort(sortType.MODEL_NAME)}
-          >
-            Name
-          </MenubarCheckboxItem>
-          {/* <MenubarItem>Size</MenubarItem> */}
+          {(Object.keys(SortType) as Array<keyof typeof SortType>).map(
+            (sortType) => (
+              <MenubarCheckboxItem
+                key={sortType}
+                checked={type === SortType[sortType]}
+                onClick={() => sort(SortType[sortType])}
+                className="capitalize"
+              >
+                {sortType.split('_').join(' ').toLowerCase()}
+              </MenubarCheckboxItem>
+            ),
+          )}
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

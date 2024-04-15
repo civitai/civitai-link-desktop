@@ -14,24 +14,46 @@ type RemoveActivityParams = {
   description: string;
 };
 
-export enum sortType {
+export enum SortType {
   MODEL_NAME = 'modelName',
   DOWNLOAD_DATE = 'downloadDate',
 }
 
-export enum sortDirection {
+export enum SortDirection {
   ASC = 'asc',
   DESC = 'desc',
 }
 
 type sortFilesParams = {
-  type: sortType;
-  direction: sortDirection;
+  type: SortType;
+  direction: SortDirection;
 };
 
 export enum FileListFilters {
   TYPE = 'type',
   BASE_MODEL = 'baseModel',
+}
+
+export enum ModelTypes {
+  CHECKPOINT = 'Checkpoint',
+  EMBEDDING = 'Embedding',
+  HYPERNETWORK = 'Hypernetwork',
+  AESTHETIC_GRADIENT = 'Aesthetic Gradient',
+  LORA = 'LoRA',
+  LYCORIS = 'LyCORIS',
+  DORA = 'DoRA',
+  CONTROLNET = 'ControlNet',
+  UPSCALER = 'Upscaler',
+  MOTION = 'Motion',
+  VAE = 'VAE',
+  POSES = 'Poses',
+  WILDCARDS = 'Wildcards',
+  WORKFLOWS = 'Workflows',
+}
+
+export enum BaseModels {
+  SD_1_5 = 'SD 1.5',
+  SDXL = 'SDXL',
 }
 
 type FileContextType = {
@@ -161,6 +183,24 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       const filtered = Object.values(fileList)
         .filter((file) => {
           return file.modelName?.toLowerCase().includes(search.toLowerCase());
+        })
+        .reduce(reduceFileMap, {});
+
+      setFilteredFileList(filtered);
+    },
+    [fileList],
+  );
+
+  const filterFilesByType = useCallback(
+    (filter: FileListFilters, value: string) => {
+      if (!value) {
+        setFilteredFileList(fileList);
+        return;
+      }
+
+      const filtered = Object.values(fileList)
+        .filter((file) => {
+          return file[filter]?.toLowerCase().includes(value.toLowerCase());
         })
         .reduce(reduceFileMap, {});
 
