@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { CodeInput } from './code-input';
+import { CodeInput } from '../inputs/code-input';
 import { useApi } from '@/hooks/use-api';
 import { useState } from 'react';
 import logo from '@/assets/logo.png';

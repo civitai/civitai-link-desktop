@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useApi } from '@/hooks/use-api';
-import { VaultItemDelete } from './vault/vault-item-delete';
+import { VaultItemDelete } from '../vault/vault-item-delete';
 import { useElectron } from '@/providers/electron';
 import {
   AlertDialog,

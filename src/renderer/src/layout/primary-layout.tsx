@@ -10,7 +10,7 @@ import { ConnectionStatus } from '@/types';
 import { useCallback } from 'react';
 import logo from '@/assets/logo.png';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { ResetKeyModal } from '@/components/reset-key-modal';
+import { ResetKeyModal } from '@/components/modals/reset-key-modal';
 import { useFile } from '@/providers/files';
 import { useApi } from '@/hooks/use-api';
 import { useVault } from '@/providers/vault';

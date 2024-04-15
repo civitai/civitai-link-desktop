@@ -1,12 +1,12 @@
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Button } from '@/components/ui/button';
-import { PathInput } from '@/components/path-input';
+import { PathInput } from '@/components/inputs/path-input';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useApi } from '@/hooks/use-api';
-import { ApiKeyInput } from '@/components/api-key-input';
+import { ApiKeyInput } from '@/components/inputs/api-key-input';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {

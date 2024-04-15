@@ -2,7 +2,7 @@ import { BrainCircuit, Bot } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useWizard } from 'react-use-wizard';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { PathInput } from '@/components/path-input';
+import { PathInput } from '@/components/inputs/path-input';
 import { ResourceType } from '@/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useApi } from '@/hooks/use-api';

@@ -14,7 +14,7 @@ import {
 import { useApi } from '@/hooks/use-api';
 import { FileItemDelete } from './file-item-delete';
 import { useEffect, useState } from 'react';
-import { StoreInVaultButton } from '../store-in-vault-button';
+import { StoreInVaultButton } from '../buttons/store-in-vault-button';
 
 type FileActionsProps = {
   file: Resource;

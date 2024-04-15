@@ -1,6 +1,6 @@
 import { useElectron } from '@/providers/electron';
-import { ApiKeyInput } from '@/components/api-key-input';
-import { MemberButton } from '@/components/member-button';
+import { ApiKeyInput } from '@/components/inputs/api-key-input';
+import { MemberButton } from '@/components/buttons/member-button';
 import { useVault } from '@/providers/vault';
 import { Progress } from '@/components/ui/progress';
 import { VaultItem } from '@/components/vault/vault-item';

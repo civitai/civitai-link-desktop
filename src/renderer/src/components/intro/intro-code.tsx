@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CodeInput } from '@/components/code-input';
+import { CodeInput } from '@/components/inputs/code-input';
 import { KeyRound } from 'lucide-react';
 import { useWizard } from 'react-use-wizard';
 

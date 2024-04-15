@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { GoFileDirectory } from 'react-icons/go';
 import { useApi } from '@/hooks/use-api';
 import { ResourceType } from '@/types';
 import { useElectron } from '@/providers/electron';
-import { toast } from './ui/use-toast';
+import { toast } from '../ui/use-toast';
 import { ellipsis } from '@/lib/utils';
 import {
   Tooltip,
