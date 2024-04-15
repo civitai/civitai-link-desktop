@@ -9,6 +9,7 @@ import { Outlet } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Virtuoso } from 'react-virtuoso';
+import { FilesSort } from '@/components/files/files-sort';
 
 export function Files() {
   const { filterFiles, filteredFileList, searchTerm, setSearchTerm } =
@@ -32,9 +33,11 @@ export function Files() {
   return (
     <PanelWrapper>
       <>
-        <div className="flex items-center px-4 py-2 min-h-14">
+        <div className="flex items-center justify-between px-4 py-2 min-h-14">
           <h1 className="text-xl font-bold">Files</h1>
-          {/* TODO: Dropdown Filter */}
+          <div>
+            <FilesSort />
+          </div>
         </div>
         <Separator />
         <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">

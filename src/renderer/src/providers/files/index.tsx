@@ -14,6 +14,8 @@ type RemoveActivityParams = {
   description: string;
 };
 
+type sortType = 'modelName' | 'dateDownloaded';
+
 type FileContextType = {
   fileList: ResourcesMap;
   removeActivity: (param: RemoveActivityParams) => void;
@@ -22,6 +24,13 @@ type FileContextType = {
   searchTerm: string;
   setSearchTerm: (search: string) => void;
   fileListCount: number;
+  sortFiles: ({
+    type,
+    direction,
+  }: {
+    type: sortType;
+    direction: 'asc' | 'desc';
+  }) => void;
 };
 
 const defaultValue: FileContextType = {
@@ -32,6 +41,7 @@ const defaultValue: FileContextType = {
   searchTerm: '',
   setSearchTerm: () => {},
   fileListCount: 0,
+  sortFiles: () => {},
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
@@ -93,6 +103,39 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     },
     [fileList],
   );
+
+  const sortFiles = ({
+    type,
+    direction,
+  }: {
+    type: 'modelName' | 'dateDownloaded';
+    direction: 'asc' | 'desc';
+  }) => {
+    const filtered = Object.keys(filteredFileList)
+      .sort((a, b) => {
+        const sortType = type as keyof Resource;
+        const filteredFileListA = filteredFileList[a][sortType] as string;
+        const filteredFileListB = filteredFileList[b][sortType] as string;
+
+        if (filteredFileListA && filteredFileListB) {
+          if (direction === 'desc') {
+            return filteredFileListB.localeCompare(filteredFileListA);
+          } else {
+            return filteredFileListA.localeCompare(filteredFileListB);
+          }
+        }
+
+        return 0;
+      })
+      .reduce<Record<string, Resource>>((acc, key) => {
+        return {
+          ...acc,
+          [key]: filteredFileList[key],
+        };
+      }, {});
+
+    setFilteredFileList(filtered);
+  };
 
   // Update when download starts
   useEffect(() => {
@@ -189,6 +232,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         searchTerm,
         setSearchTerm,
         fileListCount: Object.keys(fileList).length,
+        sortFiles,
       }}
     >
       {children}
