@@ -13,6 +13,11 @@ export function FilesSort() {
   const { sortFiles } = useFile();
   const [direction, setDirection] = useState<'asc' | 'desc'>('asc');
 
+  const sort = (type: 'modelName' | 'downloadDate') => {
+    sortFiles({ type, direction });
+    setDirection(direction === 'asc' ? 'desc' : 'asc');
+  };
+
   return (
     <Menubar>
       <MenubarMenu>
@@ -20,15 +25,10 @@ export function FilesSort() {
           <ArrowDownWideNarrow size={18} />
         </MenubarTrigger>
         <MenubarContent>
-          {/* <MenubarItem>Date Downloaded</MenubarItem> */}
-          <MenubarItem
-            onClick={() => {
-              sortFiles({ type: 'modelName', direction });
-              setDirection(direction === 'asc' ? 'desc' : 'asc');
-            }}
-          >
-            Name
-          </MenubarItem>
+          {/* <MenubarItem onClick={() => sort('downloadDate')}>
+            Date Downloaded
+          </MenubarItem> */}
+          <MenubarItem onClick={() => sort('modelName')}>Name</MenubarItem>
           {/* <MenubarItem>Size</MenubarItem> */}
         </MenubarContent>
       </MenubarMenu>

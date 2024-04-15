@@ -14,7 +14,12 @@ type RemoveActivityParams = {
   description: string;
 };
 
-type sortType = 'modelName' | 'dateDownloaded';
+type sortType = 'modelName' | 'downloadDate';
+
+type sortFilesParams = {
+  type: sortType;
+  direction: 'asc' | 'desc';
+};
 
 type FileContextType = {
   fileList: ResourcesMap;
@@ -24,13 +29,7 @@ type FileContextType = {
   searchTerm: string;
   setSearchTerm: (search: string) => void;
   fileListCount: number;
-  sortFiles: ({
-    type,
-    direction,
-  }: {
-    type: sortType;
-    direction: 'asc' | 'desc';
-  }) => void;
+  sortFiles: ({ type, direction }: sortFilesParams) => void;
 };
 
 const defaultValue: FileContextType = {
@@ -46,6 +45,64 @@ const defaultValue: FileContextType = {
 
 const FileContext = createContext<FileContextType>(defaultValue);
 export const useFile = () => useContext(FileContext);
+
+const reduceFileMap = (
+  acc: Record<string, Resource>,
+  file: Resource,
+): Record<string, Resource> => {
+  return {
+    ...acc,
+    [file.hash]: file,
+  };
+};
+
+const sortModelName = (
+  a: Resource,
+  b: Resource,
+  type: keyof Resource,
+  direction: sortFilesParams['direction'],
+) => {
+  const sortType = type as keyof Resource;
+  const filteredFileListA = a[sortType] as string;
+  const filteredFileListB = b[sortType] as string;
+
+  if (filteredFileListA && filteredFileListB) {
+    if (direction === 'desc') {
+      return filteredFileListB.localeCompare(filteredFileListA);
+    } else {
+      return filteredFileListA.localeCompare(filteredFileListB);
+    }
+  }
+
+  return 0;
+};
+
+const sortDownloadDate = (
+  a: Resource,
+  b: Resource,
+  type: keyof Resource,
+  direction: sortFilesParams['direction'],
+) => {
+  const sortType = type as keyof Resource;
+  const filteredFileListA = a[sortType] as string;
+  const filteredFileListB = b[sortType] as string;
+
+  if (filteredFileListA && filteredFileListB) {
+    if (direction === 'desc') {
+      return (
+        new Date(filteredFileListB).getTime() -
+        new Date(filteredFileListA).getTime()
+      );
+    } else {
+      return (
+        new Date(filteredFileListA).getTime() -
+        new Date(filteredFileListB).getTime()
+      );
+    }
+  }
+
+  return 0;
+};
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
@@ -92,47 +149,27 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         .filter((file) => {
           return file.modelName.toLowerCase().includes(search.toLowerCase());
         })
-        .reduce<Record<string, Resource>>((acc, file) => {
-          return {
-            ...acc,
-            [file.hash]: file,
-          };
-        }, {});
+        .reduce(reduceFileMap, {});
 
       setFilteredFileList(filtered);
     },
     [fileList],
   );
 
-  const sortFiles = ({
-    type,
-    direction,
-  }: {
-    type: 'modelName' | 'dateDownloaded';
-    direction: 'asc' | 'desc';
-  }) => {
-    const filtered = Object.keys(filteredFileList)
+  const sortFiles = ({ type, direction }: sortFilesParams) => {
+    const filtered = Object.values(filteredFileList)
       .sort((a, b) => {
-        const sortType = type as keyof Resource;
-        const filteredFileListA = filteredFileList[a][sortType] as string;
-        const filteredFileListB = filteredFileList[b][sortType] as string;
-
-        if (filteredFileListA && filteredFileListB) {
-          if (direction === 'desc') {
-            return filteredFileListB.localeCompare(filteredFileListA);
-          } else {
-            return filteredFileListA.localeCompare(filteredFileListB);
-          }
+        if (type === 'modelName') {
+          return sortModelName(a, b, type, direction);
+        }
+        if (type === 'downloadDate') {
+          return sortDownloadDate(a, b, type, direction);
         }
 
-        return 0;
+        // Default to sorting by modelName
+        return sortModelName(a, b, type, direction);
       })
-      .reduce<Record<string, Resource>>((acc, key) => {
-        return {
-          ...acc,
-          [key]: filteredFileList[key],
-        };
-      }, {});
+      .reduce(reduceFileMap, {});
 
     setFilteredFileList(filtered);
   };
