@@ -109,7 +109,9 @@ export function FilesFilter() {
                         FileListFilters.BASE_MODEL,
                       )
                     }
-                    checked={baseModelArray.includes(BaseModels[type])}
+                    checked={baseModelArray.includes(
+                      BaseModels[type].toLowerCase(),
+                    )}
                   >
                     {BaseModels[type]}
                   </MenubarCheckboxItem>

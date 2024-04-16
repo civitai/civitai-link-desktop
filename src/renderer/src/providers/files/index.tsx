@@ -211,8 +211,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      console.log(modelType, baseModelType);
-
       const filtered = Object.values(fileList)
         .filter((file) => {
           if (!file.type) return false;
