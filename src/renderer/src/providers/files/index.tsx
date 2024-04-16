@@ -53,8 +53,14 @@ export enum ModelTypes {
 
 export enum BaseModels {
   SD_1_5 = 'SD 1.5',
-  SDXL = 'SDXL',
+  SDXL_1_0 = 'SDXL 1.0',
+  PONY = 'Pony',
 }
+
+type FilterFilesByTypeParams = {
+  modelType: string[];
+  baseModelType: string[];
+};
 
 type FileContextType = {
   fileList: ResourcesMap;
@@ -65,6 +71,10 @@ type FileContextType = {
   setSearchTerm: (search: string) => void;
   fileListCount: number;
   sortFiles: ({ type, direction }: sortFilesParams) => void;
+  filterFilesByType: ({
+    modelType,
+    baseModelType,
+  }: FilterFilesByTypeParams) => void;
 };
 
 const defaultValue: FileContextType = {
@@ -76,6 +86,7 @@ const defaultValue: FileContextType = {
   setSearchTerm: () => {},
   fileListCount: 0,
   sortFiles: () => {},
+  filterFilesByType: () => {},
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
@@ -192,15 +203,34 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   );
 
   const filterFilesByType = useCallback(
-    (filter: FileListFilters, value: string) => {
-      if (!value) {
+    ({ modelType, baseModelType }: FilterFilesByTypeParams) => {
+      const modelLength = modelType.length > 0;
+      const baseModelLength = baseModelType.length > 0;
+      if (!modelLength && !baseModelLength) {
         setFilteredFileList(fileList);
         return;
       }
 
+      console.log(modelType, baseModelType);
+
       const filtered = Object.values(fileList)
         .filter((file) => {
-          return file[filter]?.toLowerCase().includes(value.toLowerCase());
+          if (!file.type) return false;
+
+          if (!modelLength) {
+            return true;
+          }
+
+          return modelType.includes(file.type.toLowerCase());
+        })
+        .filter((file) => {
+          if (!file.baseModel) return false;
+
+          if (!baseModelLength) {
+            return true;
+          }
+
+          return baseModelType.includes(file.baseModel?.toLowerCase());
         })
         .reduce(reduceFileMap, {});
 
@@ -323,6 +353,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         setSearchTerm,
         fileListCount: Object.keys(fileList).length,
         sortFiles,
+        filterFilesByType,
       }}
     >
       {children}
