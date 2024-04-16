@@ -17,6 +17,7 @@ type RemoveActivityParams = {
 export enum SortType {
   MODEL_NAME = 'modelName',
   DOWNLOAD_DATE = 'downloadDate',
+  FILE_SIZE = 'fileSize',
 }
 
 export enum SortDirection {
@@ -150,6 +151,27 @@ const sortDownloadDate = (
   return 0;
 };
 
+const sortFileSize = (
+  a: Resource,
+  b: Resource,
+  type: keyof Resource,
+  direction: sortFilesParams['direction'],
+) => {
+  const sortType = type as keyof Resource;
+  const filteredFileListA = a[sortType] as number;
+  const filteredFileListB = b[sortType] as number;
+
+  if (filteredFileListA && filteredFileListB) {
+    if (direction === 'desc') {
+      return filteredFileListB - filteredFileListA;
+    } else {
+      return filteredFileListA - filteredFileListB;
+    }
+  }
+
+  return 0;
+};
+
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   // Full source of files
@@ -246,9 +268,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         if (type === 'downloadDate') {
           return sortDownloadDate(a, b, type, direction);
         }
+        if (type === 'fileSize') {
+          return sortFileSize(a, b, type, direction);
+        }
 
         // Default to sorting by modelName
-        return sortModelName(a, b, type, direction);
+        return 0; // Return a default value of 0
       })
       .reduce(reduceFileMap, {});
 
