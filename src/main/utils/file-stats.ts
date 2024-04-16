@@ -8,6 +8,7 @@ export async function fileStats(path?: string) {
 
     return {
       fileSize: stats.size,
+      downloadDate: stats.birthtime,
     };
   } catch (err) {
     console.error(err);
