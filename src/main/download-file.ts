@@ -30,9 +30,7 @@ export async function downloadFile({
     method: 'GET',
     responseType: 'stream',
     signal: controller.signal,
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
   });
   const totalLength = parseInt(headers['content-length'], 10);
 
