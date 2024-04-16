@@ -51,6 +51,7 @@ declare global {
     trainedWords?: string[];
     description?: string;
     baseModel?: string;
+    fileSize?: number; // bytes
   };
 
   enum ActivityType {

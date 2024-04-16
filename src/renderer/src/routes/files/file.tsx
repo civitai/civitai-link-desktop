@@ -81,6 +81,12 @@ export function File() {
                   </td>
                 </tr>
               ) : null}
+              {file.fileSize ? (
+                <tr>
+                  <td>File Size</td>
+                  <td>{file.fileSize}</td>
+                </tr>
+              ) : null}
               {file.baseModel ? (
                 <tr>
                   <td>Base Model</td>

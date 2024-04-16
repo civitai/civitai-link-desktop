@@ -6,6 +6,7 @@ import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
 import { filterResourcesList } from './commands/filter-reources-list';
+import { getApiKey } from './store/store';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -20,6 +21,8 @@ export async function downloadFile({
   downloadPath,
   resource,
 }: DownloadFileParams) {
+  const apiKey = getApiKey();
+
   console.log('Connecting …');
   const controller = new AbortController();
   const { data, headers } = await axios({
@@ -27,6 +30,9 @@ export async function downloadFile({
     method: 'GET',
     responseType: 'stream',
     signal: controller.signal,
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
   });
   const totalLength = parseInt(headers['content-length'], 10);
 
@@ -122,11 +128,11 @@ export async function downloadFile({
       civitaiUrl: resource.civitaiUrl,
     };
 
-    updateActivity(activity);
-    addFile(fileData);
-
     console.log("Move file to: '" + filePath + "'!");
     fs.renameSync(tempFilePath, filePath);
+
+    updateActivity(activity);
+    addFile(fileData);
 
     new Notification({
       title: 'Download Complete',
