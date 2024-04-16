@@ -55,7 +55,7 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
           ) : (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <UploadCloud className="h-4 w-4" onClick={toggleInVault} />
+                <UploadCloud className="h-4 w-4" />
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -66,11 +66,12 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="p-2">
+                  <AlertDialogCancel className="p-2" onClick={toggleInVault}>
                     Keep File
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => {
+                      toggleInVault();
                       removeFile();
                     }}
                     className="p-2 destructive"
