@@ -28,16 +28,18 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
   const { toggleVaultItem, resourceRemove } = useApi();
   const { apiKey } = useElectron();
 
-  const removeFile = () => {
-    resourceRemove(file);
-  };
-
-  const toggleInVault = () => {
+  const toggleInVault = async ({ removeFile }: { removeFile?: boolean }) => {
     if (file.modelVersionId) {
-      toggleVaultItem({
+      await toggleVaultItem({
         hash: file.hash,
         modelVersionId: file.modelVersionId,
       });
+
+      if (removeFile) {
+        setTimeout(() => {
+          resourceRemove(file);
+        }, 500);
+      }
     }
   };
 
@@ -66,13 +68,15 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="p-2" onClick={toggleInVault}>
+                  <AlertDialogCancel
+                    className="p-2"
+                    onClick={() => toggleInVault({})}
+                  >
                     Keep File
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => {
-                      toggleInVault();
-                      removeFile();
+                      toggleInVault({ removeFile: true });
                     }}
                     className="p-2 destructive"
                   >
