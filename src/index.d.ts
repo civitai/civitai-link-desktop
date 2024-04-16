@@ -30,6 +30,7 @@ declare global {
       setStableDiffusion: (type: string) => void;
       searchFile: (hash: string) => Resource;
       restartApp: () => void;
+      fetchMetadata: (localPath: string) => JSON;
     };
   }
 

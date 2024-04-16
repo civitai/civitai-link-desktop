@@ -61,5 +61,8 @@ export function useApi() {
     restartApp: async () => {
       return await window.api.restartApp();
     },
+    fetchMetadata: async (localPath: string) => {
+      return await window.api.fetchMetadata(localPath);
+    },
   };
 }
