@@ -61,7 +61,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-1.14.3-setup.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-1.15.0-beta-setup.exe
           # Directory where signed code object(s) will be written.
           # output_path: ${{ github.workspace }}/artifacts
           # Scan code before sign
@@ -76,6 +76,6 @@ jobs:
       - name: Rehash
         if: matrix.os == 'windows-latest'
         env:
-          TARGET_PATH: ${{ github.workspace }}/dist/civitai-link-1.14.3-setup.exe
+          TARGET_PATH: ${{ github.workspace }}/dist/civitai-link-1.15.0-beta-setup.exe
           LATEST_YAML_PATH: ${{ github.workspace }}/dist/latest.yml
         run: npm run recompute-hash
