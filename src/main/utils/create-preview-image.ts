@@ -9,6 +9,9 @@ export async function createPreviewImage(file: Resource) {
     __dirname,
     file.localPath?.split('.').slice(0, -1).join('.') + '.preview.png',
   );
+
+  if (fs.existsSync(previewPath)) return;
+
   const writer = fs.createWriteStream(previewPath);
 
   const response = await axios({
