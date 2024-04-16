@@ -85,10 +85,10 @@ export function FileActions({ file }: FileActionsProps) {
                   ) : (
                     <ClipboardCopy className="h-4 w-4" />
                   )}
-                  <span className="sr-only">Copy Trigger Words</span>
+                  <span className="sr-only">Copy All Trigger Words</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Copy Trigger Words</TooltipContent>
+              <TooltipContent>Copy All Trigger Words</TooltipContent>
             </Tooltip>
           </>
         ) : null}

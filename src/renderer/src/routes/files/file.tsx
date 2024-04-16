@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import classnames from 'classnames';
+import prettyBytes from 'pretty-bytes';
 
 export function File() {
   const { hash } = useParams();
@@ -84,7 +85,7 @@ export function File() {
               {file.fileSize ? (
                 <tr>
                   <td>File Size</td>
-                  <td>{file.fileSize}</td>
+                  <td>{prettyBytes(file.fileSize)}</td>
                 </tr>
               ) : null}
               {file.baseModel ? (
