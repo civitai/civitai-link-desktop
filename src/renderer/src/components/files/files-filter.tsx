@@ -7,6 +7,8 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
+  MenubarItem,
+  MenubarSeparator,
 } from '@/components/ui/menubar';
 import { ListFilter } from 'lucide-react';
 import {
@@ -66,6 +68,15 @@ export function FilesFilter() {
     });
   };
 
+  const handleClearFilters = () => {
+    setModelTypeArray([]);
+    setBaseModelArray([]);
+    filterFilesByType({
+      modelType: [],
+      baseModelType: [],
+    });
+  };
+
   return (
     <Menubar>
       <MenubarMenu>
@@ -119,6 +130,8 @@ export function FilesFilter() {
               )}
             </MenubarSubContent>
           </MenubarSub>
+          <MenubarSeparator />
+          <MenubarItem onClick={handleClearFilters}>Clear Filters</MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
