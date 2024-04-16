@@ -15,7 +15,7 @@ import { useApi } from '@/hooks/use-api';
 import { FileItemDelete } from './file-item-delete';
 import { useEffect, useState } from 'react';
 import { StoreInVaultButton } from '../buttons/store-in-vault-button';
-import { FileFetchMetadata } from './file-fetch-metadata';
+// import { FileFetchMetadata } from './file-fetch-metadata';
 
 type FileActionsProps = {
   file: Resource;
