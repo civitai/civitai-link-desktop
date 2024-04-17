@@ -53,40 +53,42 @@ export enum BaseModels {
   PONY = 'Pony',
 }
 
-type FilterFilesByTypeParams = {
-  modelType: string[];
-  baseModelType: string[];
-};
-
 type FileContextType = {
   fileList: ResourcesMap;
   removeActivity: (param: RemoveActivityParams) => void;
   filteredFileList: ResourcesMap;
-  filterFiles: (search: string) => void;
+  searchFiles: (search: string) => void;
   searchTerm: string;
   setSearchTerm: (search: string) => void;
   fileListCount: number;
   sortFiles: (type: SortType) => void;
-  filterFilesByType: ({
-    modelType,
-    baseModelType,
-  }: FilterFilesByTypeParams) => void;
   sortDirection?: SortDirection;
   sortType: SortType | null;
+  clearFilters: () => void;
+  filterFiles: (type: string, filterType: FileListFilters) => void;
+  appliedFilters: {
+    modelType: string[];
+    baseModelType: string[];
+  };
 };
 
 const defaultValue: FileContextType = {
   fileList: {},
   removeActivity: () => {},
   filteredFileList: {},
-  filterFiles: () => {},
+  searchFiles: () => {},
   searchTerm: '',
   setSearchTerm: () => {},
   fileListCount: 0,
   sortFiles: () => {},
-  filterFilesByType: () => {},
   sortDirection: SortDirection.DESC,
   sortType: null,
+  clearFilters: () => {},
+  filterFiles: () => {},
+  appliedFilters: {
+    modelType: [],
+    baseModelType: [],
+  },
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
@@ -180,6 +182,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   );
   const [sortType, setSortType] = useState<SortType | null>(null);
 
+  // Filter types
+  const [modelTypeArray, setModelTypeArray] = useState<string[]>([]);
+  const [baseModelArray, setBaseModelArray] = useState<string[]>([]);
+
   const { toast } = useToast();
   const { cancelDownload } = useApi();
 
@@ -206,8 +212,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     [fileList, filteredFileList],
   );
 
-  const filterFiles = useCallback(
+  const searchFiles = useCallback(
     (search: string) => {
+      const modelLength = modelTypeArray.length > 0;
+      const baseModelLength = baseModelArray.length > 0;
+
       const filtered = Object.values(fileList)
         .filter((file) => {
           if (search === '') {
@@ -215,6 +224,24 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
           }
 
           return file.modelName?.toLowerCase().includes(search.toLowerCase());
+        })
+        .filter((file) => {
+          if (!file.type) return false;
+
+          if (!modelLength) {
+            return true;
+          }
+
+          return modelTypeArray.includes(file.type.toLowerCase());
+        })
+        .filter((file) => {
+          if (!file.baseModel) return false;
+
+          if (!baseModelLength) {
+            return true;
+          }
+
+          return baseModelArray.includes(file.baseModel?.toLowerCase());
         })
         .sort((a, b) => {
           if (sortType === SortType.MODEL_NAME) {
@@ -234,7 +261,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
       setFilteredFileList(filtered);
     },
-    [fileList, sortType, sortDirection],
+    [fileList, sortType, sortDirection, modelTypeArray, baseModelArray],
   );
 
   const sortFiles = (type: SortType) => {
@@ -245,48 +272,57 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         : SortDirection.ASC,
     );
 
-    filterFiles(searchTerm);
+    searchFiles(searchTerm);
   };
 
-  // Move types and base models to useState tracked here and let the filter update
-  const filterFilesByType = useCallback(
-    ({ modelType, baseModelType }: FilterFilesByTypeParams) => {
-      const modelLength = modelType.length > 0;
-      const baseModelLength = baseModelType.length > 0;
-      if (!modelLength && !baseModelLength) {
-        setFilteredFileList(fileList);
-        return;
+  const filterFiles = (type: string, filterType: FileListFilters) => {
+    const typeLowerCase = type.toLowerCase();
+    let modelType: string[] = [...modelTypeArray];
+    let baseModelType: string[] = [...baseModelArray];
+
+    if (filterType === FileListFilters.BASE_MODEL) {
+      if (baseModelArray.includes(typeLowerCase)) {
+        const newBaseModelArray = baseModelArray.filter(
+          (baseModelType) => baseModelType !== typeLowerCase,
+        );
+        setBaseModelArray(newBaseModelArray);
+
+        baseModelType = newBaseModelArray;
+      } else {
+        setBaseModelArray([...baseModelArray, typeLowerCase]);
+        baseModelType = [...baseModelArray, typeLowerCase];
       }
+    }
 
-      const filtered = Object.values(fileList)
-        .filter((file) => {
-          if (!file.type) return false;
+    if (filterType === FileListFilters.TYPE) {
+      if (modelTypeArray.includes(typeLowerCase)) {
+        const newModelTypeArray = modelTypeArray.filter(
+          (modelType) => modelType !== typeLowerCase,
+        );
+        setModelTypeArray(newModelTypeArray);
 
-          if (!modelLength) {
-            return true;
-          }
+        modelType = newModelTypeArray;
+      } else {
+        setModelTypeArray([...modelTypeArray, typeLowerCase]);
+        modelType = [...modelTypeArray, typeLowerCase];
+      }
+    }
 
-          return modelType.includes(file.type.toLowerCase());
-        })
-        .filter((file) => {
-          if (!file.baseModel) return false;
+    setBaseModelArray(baseModelType);
+    setModelTypeArray(modelType);
+    searchFiles(searchTerm);
+  };
 
-          if (!baseModelLength) {
-            return true;
-          }
+  const clearFilters = () => {
+    setModelTypeArray([]);
+    setBaseModelArray([]);
 
-          return baseModelType.includes(file.baseModel?.toLowerCase());
-        })
-        .reduce(reduceFileMap, {});
-
-      setFilteredFileList(filtered);
-    },
-    [fileList],
-  );
+    searchFiles(searchTerm);
+  };
 
   useEffect(() => {
-    filterFiles(searchTerm);
-  }, [searchTerm, sortDirection, sortType]);
+    searchFiles(searchTerm);
+  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
 
   // Update when download starts
   useEffect(() => {
@@ -379,14 +415,19 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         fileList,
         removeActivity,
         filteredFileList,
-        filterFiles,
+        searchFiles,
         searchTerm,
         setSearchTerm,
         fileListCount: Object.keys(fileList).length,
         sortFiles,
-        filterFilesByType,
         sortDirection,
         sortType,
+        clearFilters,
+        filterFiles,
+        appliedFilters: {
+          modelType: modelTypeArray,
+          baseModelType: baseModelArray,
+        },
       }}
     >
       {children}

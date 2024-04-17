@@ -22,60 +22,9 @@ import {
   ModelTypes,
   useFile,
 } from '@/providers/files';
-import { useState } from 'react';
 
 export function FilesFilter() {
-  const { filterFilesByType } = useFile();
-  const [modelTypeArray, setModelTypeArray] = useState<string[]>([]);
-  const [baseModelArray, setBaseModelArray] = useState<string[]>([]);
-
-  const handleModelTypeFilter = (type: string, filterType: FileListFilters) => {
-    const typeLowerCase = type.toLowerCase();
-    let modelType: string[] = [...modelTypeArray];
-    let baseModelType: string[] = [...baseModelArray];
-
-    if (filterType === FileListFilters.BASE_MODEL) {
-      if (baseModelArray.includes(typeLowerCase)) {
-        const newBaseModelArray = baseModelArray.filter(
-          (baseModelType) => baseModelType !== typeLowerCase,
-        );
-        setBaseModelArray(newBaseModelArray);
-
-        baseModelType = newBaseModelArray;
-      } else {
-        setBaseModelArray([...baseModelArray, typeLowerCase]);
-        baseModelType = [...baseModelArray, typeLowerCase];
-      }
-    }
-
-    if (filterType === FileListFilters.TYPE) {
-      if (modelTypeArray.includes(typeLowerCase)) {
-        const newModelTypeArray = modelTypeArray.filter(
-          (modelType) => modelType !== typeLowerCase,
-        );
-        setModelTypeArray(newModelTypeArray);
-
-        modelType = newModelTypeArray;
-      } else {
-        setModelTypeArray([...modelTypeArray, typeLowerCase]);
-        modelType = [...modelTypeArray, typeLowerCase];
-      }
-    }
-
-    filterFilesByType({
-      modelType,
-      baseModelType,
-    });
-  };
-
-  const handleClearFilters = () => {
-    setModelTypeArray([]);
-    setBaseModelArray([]);
-    filterFilesByType({
-      modelType: [],
-      baseModelType: [],
-    });
-  };
+  const { appliedFilters, clearFilters, filterFiles } = useFile();
 
   return (
     <Menubar>
@@ -96,10 +45,10 @@ export function FilesFilter() {
                 (type) => (
                   <MenubarCheckboxItem
                     key={type}
-                    onClick={() =>
-                      handleModelTypeFilter(type, FileListFilters.TYPE)
-                    }
-                    checked={modelTypeArray.includes(type.toLowerCase())}
+                    onClick={() => filterFiles(type, FileListFilters.TYPE)}
+                    checked={appliedFilters.modelType.includes(
+                      type.toLowerCase(),
+                    )}
                   >
                     {ModelTypes[type]}
                   </MenubarCheckboxItem>
@@ -115,12 +64,9 @@ export function FilesFilter() {
                   <MenubarCheckboxItem
                     key={type}
                     onClick={() =>
-                      handleModelTypeFilter(
-                        BaseModels[type],
-                        FileListFilters.BASE_MODEL,
-                      )
+                      filterFiles(BaseModels[type], FileListFilters.BASE_MODEL)
                     }
-                    checked={baseModelArray.includes(
+                    checked={appliedFilters.baseModelType.includes(
                       BaseModels[type].toLowerCase(),
                     )}
                   >
@@ -131,7 +77,7 @@ export function FilesFilter() {
             </MenubarSubContent>
           </MenubarSub>
           <MenubarSeparator />
-          <MenubarItem onClick={handleClearFilters}>Clear Filters</MenubarItem>
+          <MenubarItem onClick={clearFilters}>Clear Filters</MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

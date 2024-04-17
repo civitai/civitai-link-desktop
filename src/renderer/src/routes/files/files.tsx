@@ -13,7 +13,7 @@ import { FilesSort } from '@/components/files/files-sort';
 import { FilesFilter } from '@/components/files/files-filter';
 
 export function Files() {
-  const { filterFiles, filteredFileList, searchTerm, setSearchTerm } =
+  const { searchFiles, filteredFileList, searchTerm, setSearchTerm } =
     useFile();
   const fileKeys = useMemo(
     () => Object.keys(filteredFileList),
@@ -22,11 +22,11 @@ export function Files() {
 
   const clearFilter = () => {
     setSearchTerm('');
-    filterFiles('');
+    searchFiles('');
   };
 
   const search = () => {
-    filterFiles(searchTerm);
+    searchFiles(searchTerm);
   };
 
   const debouncedOnChange = useDebounce(search);
