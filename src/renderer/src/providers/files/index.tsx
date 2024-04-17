@@ -113,15 +113,14 @@ const sortModelName = (
   const filteredFileListA = a[sortType] as string;
   const filteredFileListB = b[sortType] as string;
 
-  if (filteredFileListA && filteredFileListB) {
-    if (direction === 'desc') {
-      return filteredFileListB.localeCompare(filteredFileListA);
-    } else {
-      return filteredFileListA.localeCompare(filteredFileListB);
-    }
-  }
+  if (!filteredFileListA) return 1;
+  if (!filteredFileListB) return -1;
 
-  return 0;
+  if (direction === 'desc') {
+    return filteredFileListB.localeCompare(filteredFileListA);
+  } else {
+    return filteredFileListA.localeCompare(filteredFileListB);
+  }
 };
 
 const sortDownloadDate = (
@@ -134,21 +133,20 @@ const sortDownloadDate = (
   const filteredFileListA = a[sortType] as string;
   const filteredFileListB = b[sortType] as string;
 
-  if (filteredFileListA && filteredFileListB) {
-    if (direction === 'desc') {
-      return (
-        new Date(filteredFileListB).getTime() -
-        new Date(filteredFileListA).getTime()
-      );
-    } else {
-      return (
-        new Date(filteredFileListA).getTime() -
-        new Date(filteredFileListB).getTime()
-      );
-    }
-  }
+  if (!filteredFileListA) return 1;
+  if (!filteredFileListB) return -1;
 
-  return 0;
+  if (direction === 'desc') {
+    return (
+      new Date(filteredFileListB).getTime() -
+      new Date(filteredFileListA).getTime()
+    );
+  } else {
+    return (
+      new Date(filteredFileListA).getTime() -
+      new Date(filteredFileListB).getTime()
+    );
+  }
 };
 
 const sortFileSize = (
@@ -161,15 +159,14 @@ const sortFileSize = (
   const filteredFileListA = a[sortType] as number;
   const filteredFileListB = b[sortType] as number;
 
-  if (filteredFileListA && filteredFileListB) {
-    if (direction === 'desc') {
-      return filteredFileListB - filteredFileListA;
-    } else {
-      return filteredFileListA - filteredFileListB;
-    }
-  }
+  if (!filteredFileListA) return 1;
+  if (!filteredFileListB) return -1;
 
-  return 0;
+  if (direction === 'desc') {
+    return filteredFileListA - filteredFileListB;
+  } else {
+    return filteredFileListB - filteredFileListA;
+  }
 };
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
@@ -224,6 +221,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     [fileList],
   );
 
+  // Move types and base models to useState tracked here and let the filter update
   const filterFilesByType = useCallback(
     ({ modelType, baseModelType }: FilterFilesByTypeParams) => {
       const modelLength = modelType.length > 0;

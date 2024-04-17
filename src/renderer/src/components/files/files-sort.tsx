@@ -6,7 +6,7 @@ import {
   MenubarCheckboxItem,
 } from '@/components/ui/menubar';
 import { useFile } from '@/providers/files';
-import { ArrowDownWideNarrow } from 'lucide-react';
+import { ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
 import { useState } from 'react';
 import {
   Tooltip,
@@ -28,13 +28,19 @@ export function FilesSort() {
     );
   };
 
+  console.log(direction);
+
   return (
     <Menubar>
       <MenubarMenu>
         <MenubarTrigger>
           <Tooltip>
             <TooltipTrigger asChild>
-              <ArrowDownWideNarrow size={18} />
+              {direction === SortDirection.ASC ? (
+                <ArrowUpWideNarrow size={18} />
+              ) : (
+                <ArrowDownWideNarrow size={18} />
+              )}
             </TooltipTrigger>
             <TooltipContent>Sort Files</TooltipContent>
           </Tooltip>
