@@ -16,19 +16,7 @@ import {
 import { SortType, SortDirection } from '@/providers/files';
 
 export function FilesSort() {
-  const { sortFiles } = useFile();
-  const [direction, setDirection] = useState<SortDirection>(SortDirection.DESC);
-  const [type, setType] = useState<SortType | null>(null);
-
-  const sort = (type: SortType) => {
-    sortFiles({ type, direction });
-    setType(type);
-    setDirection(
-      direction === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC,
-    );
-  };
-
-  console.log(direction);
+  const { sortFiles, sortType: type, sortDirection } = useFile();
 
   return (
     <Menubar>
@@ -36,7 +24,7 @@ export function FilesSort() {
         <MenubarTrigger>
           <Tooltip>
             <TooltipTrigger asChild>
-              {direction === SortDirection.ASC ? (
+              {sortDirection === SortDirection.ASC ? (
                 <ArrowUpWideNarrow size={18} />
               ) : (
                 <ArrowDownWideNarrow size={18} />
@@ -51,7 +39,7 @@ export function FilesSort() {
               <MenubarCheckboxItem
                 key={sortType}
                 checked={type === SortType[sortType]}
-                onClick={() => sort(SortType[sortType])}
+                onClick={() => sortFiles(SortType[sortType])}
                 className="capitalize"
               >
                 {sortType.split('_').join(' ').toLowerCase()}

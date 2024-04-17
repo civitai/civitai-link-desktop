@@ -25,11 +25,6 @@ export enum SortDirection {
   DESC = 'desc',
 }
 
-type sortFilesParams = {
-  type: SortType;
-  direction: SortDirection;
-};
-
 export enum FileListFilters {
   TYPE = 'type',
   BASE_MODEL = 'baseModel',
@@ -71,11 +66,13 @@ type FileContextType = {
   searchTerm: string;
   setSearchTerm: (search: string) => void;
   fileListCount: number;
-  sortFiles: ({ type, direction }: sortFilesParams) => void;
+  sortFiles: (type: SortType) => void;
   filterFilesByType: ({
     modelType,
     baseModelType,
   }: FilterFilesByTypeParams) => void;
+  sortDirection?: SortDirection;
+  sortType: SortType | null;
 };
 
 const defaultValue: FileContextType = {
@@ -88,6 +85,8 @@ const defaultValue: FileContextType = {
   fileListCount: 0,
   sortFiles: () => {},
   filterFilesByType: () => {},
+  sortDirection: SortDirection.DESC,
+  sortType: null,
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
@@ -107,7 +106,7 @@ const sortModelName = (
   a: Resource,
   b: Resource,
   type: keyof Resource,
-  direction: sortFilesParams['direction'],
+  direction: SortDirection,
 ) => {
   const sortType = type as keyof Resource;
   const filteredFileListA = a[sortType] as string;
@@ -116,7 +115,7 @@ const sortModelName = (
   if (!filteredFileListA) return 1;
   if (!filteredFileListB) return -1;
 
-  if (direction === 'desc') {
+  if (direction === SortDirection.DESC) {
     return filteredFileListB.localeCompare(filteredFileListA);
   } else {
     return filteredFileListA.localeCompare(filteredFileListB);
@@ -127,7 +126,7 @@ const sortDownloadDate = (
   a: Resource,
   b: Resource,
   type: keyof Resource,
-  direction: sortFilesParams['direction'],
+  direction: SortDirection,
 ) => {
   const sortType = type as keyof Resource;
   const filteredFileListA = a[sortType] as string;
@@ -136,7 +135,7 @@ const sortDownloadDate = (
   if (!filteredFileListA) return 1;
   if (!filteredFileListB) return -1;
 
-  if (direction === 'desc') {
+  if (direction === SortDirection.DESC) {
     return (
       new Date(filteredFileListB).getTime() -
       new Date(filteredFileListA).getTime()
@@ -153,7 +152,7 @@ const sortFileSize = (
   a: Resource,
   b: Resource,
   type: keyof Resource,
-  direction: sortFilesParams['direction'],
+  direction: SortDirection,
 ) => {
   const sortType = type as keyof Resource;
   const filteredFileListA = a[sortType] as number;
@@ -162,7 +161,7 @@ const sortFileSize = (
   if (!filteredFileListA) return 1;
   if (!filteredFileListB) return -1;
 
-  if (direction === 'desc') {
+  if (direction === SortDirection.DESC) {
     return filteredFileListA - filteredFileListB;
   } else {
     return filteredFileListB - filteredFileListA;
@@ -176,6 +175,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   // Filtered source of files (whats displayed)
   const [filteredFileList, setFilteredFileList] = useState<ResourcesMap>({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    SortDirection.DESC,
+  );
+  const [sortType, setSortType] = useState<SortType | null>(null);
 
   const { toast } = useToast();
   const { cancelDownload } = useApi();
@@ -205,21 +208,41 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   const filterFiles = useCallback(
     (search: string) => {
-      if (!search) {
-        setFilteredFileList(fileList);
-        return;
-      }
-
       const filtered = Object.values(fileList)
         .filter((file) => {
           return file.modelName?.toLowerCase().includes(search.toLowerCase());
+        })
+        .sort((a, b) => {
+          if (sortType === SortType.MODEL_NAME) {
+            return sortModelName(a, b, sortType, sortDirection);
+          }
+          if (sortType === SortType.DOWNLOAD_DATE) {
+            return sortDownloadDate(a, b, sortType, sortDirection);
+          }
+          if (sortType === SortType.FILE_SIZE) {
+            return sortFileSize(a, b, sortType, sortDirection);
+          }
+
+          // Default to sorting by modelName
+          return 1;
         })
         .reduce(reduceFileMap, {});
 
       setFilteredFileList(filtered);
     },
-    [fileList],
+    [fileList, sortType, sortDirection],
   );
+
+  const sortFiles = (type: SortType) => {
+    setSortType(type);
+    setSortDirection(
+      sortDirection === SortDirection.ASC
+        ? SortDirection.DESC
+        : SortDirection.ASC,
+    );
+
+    filterFiles(searchTerm);
+  };
 
   // Move types and base models to useState tracked here and let the filter update
   const filterFilesByType = useCallback(
@@ -257,26 +280,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     [fileList],
   );
 
-  const sortFiles = ({ type, direction }: sortFilesParams) => {
-    const filtered = Object.values(filteredFileList)
-      .sort((a, b) => {
-        if (type === 'modelName') {
-          return sortModelName(a, b, type, direction);
-        }
-        if (type === 'downloadDate') {
-          return sortDownloadDate(a, b, type, direction);
-        }
-        if (type === 'fileSize') {
-          return sortFileSize(a, b, type, direction);
-        }
-
-        // Default to sorting by modelName
-        return 0; // Return a default value of 0
-      })
-      .reduce(reduceFileMap, {});
-
-    setFilteredFileList(filtered);
-  };
+  useEffect(() => {
+    filterFiles(searchTerm);
+  }, [searchTerm, sortDirection, sortType]);
 
   // Update when download starts
   useEffect(() => {
@@ -375,6 +381,8 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         fileListCount: Object.keys(fileList).length,
         sortFiles,
         filterFilesByType,
+        sortDirection,
+        sortType,
       }}
     >
       {children}
