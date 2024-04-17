@@ -1,4 +1,3 @@
-import { is } from '@electron-toolkit/utils';
 import { getModelByHash } from '../civitai-api';
 import { updateFile } from '../store/files';
 import { fileStats } from './file-stats';

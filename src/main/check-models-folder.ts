@@ -31,7 +31,7 @@ export async function checkModelsFolder() {
     const filePath = path.join(modelDirectory, file);
 
     // See if file already exists by filename
-    const resource = findFileByFilename(file.split('/', 2)[1]);
+    const resource = findFileByFilename(path.basename(file));
 
     // Update file path and any missing fields
     if (resource) {
