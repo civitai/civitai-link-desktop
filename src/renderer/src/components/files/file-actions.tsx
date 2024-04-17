@@ -15,7 +15,7 @@ import { useApi } from '@/hooks/use-api';
 import { FileItemDelete } from './file-item-delete';
 import { useEffect, useState } from 'react';
 import { StoreInVaultButton } from '../buttons/store-in-vault-button';
-// import { FileFetchMetadata } from './file-fetch-metadata';
+import { FileFetchMetadata } from './file-fetch-metadata';
 
 type FileActionsProps = {
   file: Resource;
@@ -66,9 +66,9 @@ export function FileActions({ file }: FileActionsProps) {
             <TooltipContent>Open Model on Civitai</TooltipContent>
           </Tooltip>
         ) : null}
-        {/* {file.localPath ? (
+        {file.localPath ? (
           <FileFetchMetadata localPath={file.localPath} />
-        ) : null} */}
+        ) : null}
         {file.trainedWords && file.trainedWords.length > 0 ? (
           <>
             <Separator orientation="vertical" className="mx-1 h-6" />

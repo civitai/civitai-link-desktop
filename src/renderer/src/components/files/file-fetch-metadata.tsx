@@ -5,23 +5,26 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  Dialog,
+  DialogTrigger,
 } from '@/components/ui/dialog';
-import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
 export function FileFetchMetadata({ localPath }: { localPath: string }) {
   const { fetchMetadata } = useApi();
   const [metadata, setMetadata] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFetchMetadata = async () => {
+    setLoading(true);
     const data = await fetchMetadata(localPath);
 
     if (data) {
       setMetadata(data);
+      setLoading(false);
     }
   };
 
-  // TODO: Style pre
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -29,13 +32,17 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
           <Braces className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[360px] rounded p-4">
+      <DialogContent className="max-h-[600px] min-w-[800px] rounded p-4 overflow-scroll">
         <DialogHeader>
           <DialogTitle>Model Metadata</DialogTitle>
         </DialogHeader>
-        <div>
-          <pre>{JSON.stringify(metadata, null, 2)}</pre>
-        </div>
+        {loading ? (
+          <pre>Loading...</pre>
+        ) : (
+          <pre className="text-sm bg-black/20">
+            {JSON.stringify(metadata, null, 2)}
+          </pre>
+        )}
       </DialogContent>
     </Dialog>
   );

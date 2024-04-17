@@ -5,20 +5,20 @@ export async function readMetadata(
 ): Promise<Record<string, any>> {
   const file = await fs.readFileSync(filePath);
 
-  const metadataLenBytes = await file.slice(0, 8).buffer;
+  const metadataLenBytes = await file.buffer.slice(0, 8);
   const metadataLen = new DataView(metadataLenBytes).getUint32(0, true);
 
   if (metadataLen <= 2) {
     throw new Error(`${filePath} is not a safetensors file`);
   }
 
-  const jsonStartBytes = await file.slice(8, 10).buffer;
+  const jsonStartBytes = await file.buffer.slice(8, 10);
   const jsonStartStr = new TextDecoder().decode(jsonStartBytes);
   if (!["{'", '{"'].includes(jsonStartStr)) {
     throw new Error(`${filePath} is not a safetensors file`);
   }
 
-  const jsonDataBytes = await file.slice(10, 10 + metadataLen - 2).buffer;
+  const jsonDataBytes = await file.buffer.slice(10, 10 + metadataLen - 2);
   const jsonDataStr = jsonStartStr + new TextDecoder().decode(jsonDataBytes);
   const jsonObj = JSON.parse(jsonDataStr);
 
