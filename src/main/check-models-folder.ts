@@ -12,6 +12,7 @@ import {
 import path from 'path';
 import { socket } from './socket';
 import { filterResourcesList } from './commands/filter-reources-list';
+import { checkMissingFields } from './utils/check-missing-fields';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
@@ -32,9 +33,9 @@ export async function checkModelsFolder() {
     // See if file already exists by filename
     const resource = findFileByFilename(file.split('/', 2)[1]);
 
-    // In case no path is stored, update it
-    if (resource && !resource.localPath) {
-      updateFile({ ...resource, localPath: filePath });
+    // Update file path and any missing fields
+    if (resource) {
+      checkMissingFields(resource, filePath);
     }
 
     if (resource?.modelVersionId && apiKey) {
