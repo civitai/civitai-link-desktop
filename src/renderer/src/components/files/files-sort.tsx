@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/menubar';
 import { useFile } from '@/providers/files';
 import { ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
-import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,

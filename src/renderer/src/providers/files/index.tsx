@@ -353,7 +353,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       if (!searchTerm) {
         setFilteredFileList(files);
       } else {
-        filterFiles(searchTerm);
+        searchFiles(searchTerm);
       }
     });
 
