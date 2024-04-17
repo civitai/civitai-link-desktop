@@ -1,4 +1,4 @@
-import { Braces } from 'lucide-react';
+import { Braces, Check, ClipboardCopy } from 'lucide-react';
 import { useApi } from '@/hooks/use-api';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,12 +8,19 @@ import {
   Dialog,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export function FileFetchMetadata({ localPath }: { localPath: string }) {
   const { fetchMetadata } = useApi();
   const [metadata, setMetadata] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 4000);
+  }, [isCopied]);
 
   const handleFetchMetadata = async () => {
     setLoading(true);
@@ -32,16 +39,35 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
           <Braces className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[600px] min-w-[800px] rounded p-4 overflow-scroll">
+      <DialogContent className="max-h-[500px] min-h-0 min-w-[800px] rounded p-4 overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Model Metadata</DialogTitle>
+          <DialogTitle>
+            Model Metadata{' '}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                navigator.clipboard.writeText(JSON.stringify(metadata) || '');
+                setIsCopied(true);
+              }}
+            >
+              {isCopied ? (
+                <Check className="w-4 h-4" color="green" />
+              ) : (
+                <ClipboardCopy className="h-4 w-4" />
+              )}
+              <span className="sr-only">Copy All Trigger Words</span>
+            </Button>
+          </DialogTitle>
         </DialogHeader>
         {loading ? (
           <pre>Loading...</pre>
         ) : (
-          <pre className="text-sm bg-black/20">
-            {JSON.stringify(metadata, null, 2)}
-          </pre>
+          <div className="flex max-h-[440px] overflow-auto bg-black/20 p-2 rounded">
+            <pre className="text-sm text-primary">
+              {JSON.stringify(metadata, null, 2)}
+            </pre>
+          </div>
         )}
       </DialogContent>
     </Dialog>
