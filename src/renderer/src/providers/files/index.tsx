@@ -210,6 +210,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     (search: string) => {
       const filtered = Object.values(fileList)
         .filter((file) => {
+          if (search === '') {
+            return true;
+          }
+
           return file.modelName?.toLowerCase().includes(search.toLowerCase());
         })
         .sort((a, b) => {
