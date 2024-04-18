@@ -9,6 +9,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export function FileFetchMetadata({ localPath }: { localPath: string }) {
   const { fetchMetadata } = useApi();
@@ -34,11 +39,17 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" onClick={handleFetchMetadata}>
-          <Braces className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+      <Tooltip>
+        <DialogTrigger asChild>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={handleFetchMetadata}>
+              <Braces className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+        </DialogTrigger>
+        <TooltipContent>View Model Metadata</TooltipContent>
+      </Tooltip>
+
       <DialogContent className="max-h-[500px] min-h-0 min-w-[800px] rounded p-4 overflow-hidden">
         <DialogHeader>
           <DialogTitle>
