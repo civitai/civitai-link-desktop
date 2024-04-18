@@ -82,7 +82,6 @@ function createWindow() {
     hasShadow: true,
     darkTheme: true,
     frame: true,
-    skipTaskbar: true,
     titleBarOverlay: {
       color: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
       symbolColor: nativeTheme.shouldUseDarkColors ? '#fff' : '#000',
