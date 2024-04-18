@@ -47,7 +47,7 @@ export function PathInput({
   }, [rootResourcePath]);
 
   async function getDir() {
-    const selectedDir = await selectDirectory();
+    const selectedDir = await selectDirectory(dirPath || '');
     const directory =
       selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 

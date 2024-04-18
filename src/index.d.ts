@@ -5,7 +5,7 @@ declare global {
     electron: ElectronAPI;
     api: {
       setKey: (key: string) => void;
-      selectFolder: () => void;
+      selectFolder: (dirPath: string) => void;
       setRootResourcePath: (path: string) => void;
       clearSettings: () => void;
       cancelDownload: (id: string) => void;

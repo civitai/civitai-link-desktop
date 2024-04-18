@@ -223,9 +223,10 @@ app.whenReady().then(async () => {
     return getResourcePath(type);
   });
 
-  ipcMain.handle('dialog:openDirectory', async () => {
+  ipcMain.handle('dialog:openDirectory', async (_, dirPath: string) => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openDirectory'],
+      defaultPath: dirPath,
+      properties: ['openDirectory', 'createDirectory'],
     });
 
     // Fix closed window when dialog takes focus Windows

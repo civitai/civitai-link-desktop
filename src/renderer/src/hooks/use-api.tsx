@@ -4,8 +4,8 @@ export function useApi() {
     setKey: async (key: string) => {
       return await window.api.setKey(key);
     },
-    selectDirectory: async () => {
-      return await window.api.selectFolder();
+    selectDirectory: async (dirPath: string) => {
+      return await window.api.selectFolder(dirPath);
     },
     setRootResourcePath: async (path: string) => {
       return await window.api.setRootResourcePath(path);

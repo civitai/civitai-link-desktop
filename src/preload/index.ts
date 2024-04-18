@@ -4,7 +4,8 @@ import { electronAPI } from '@electron-toolkit/preload';
 // Custom APIs for renderer
 const api = {
   setKey: (key: string) => ipcRenderer.send('set-key', key),
-  selectFolder: () => ipcRenderer.invoke('dialog:openDirectory'),
+  selectFolder: (dirPath: string) =>
+    ipcRenderer.invoke('dialog:openDirectory', dirPath),
   setRootResourcePath: (path: string) =>
     ipcRenderer.send('set-root-path', {
       path,
