@@ -74,7 +74,34 @@ export function updateFile(file: Resource) {
 }
 
 export function getFiles() {
-  return store.get('files') as ResourcesMap;
+  const files = store.get('files') as ResourcesMap;
+  const sortedFiles = Object.values(files)
+    .sort((a, b) => {
+      const filteredFileListA = a.downloadDate;
+      const filteredFileListB = b.downloadDate;
+
+      if (!filteredFileListA) return 1;
+      if (!filteredFileListB) return -1;
+
+      return (
+        new Date(filteredFileListB).getTime() -
+        new Date(filteredFileListA).getTime()
+      );
+    })
+    .reduce(
+      (
+        acc: Record<string, Resource>,
+        file: Resource,
+      ): Record<string, Resource> => {
+        return {
+          ...acc,
+          [file.hash]: file,
+        };
+      },
+      {},
+    );
+
+  return sortedFiles;
 }
 
 export function clearFiles() {

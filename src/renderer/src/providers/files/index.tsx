@@ -322,14 +322,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     searchFiles(searchTerm);
-  }, [
-    searchTerm,
-    sortDirection,
-    sortType,
-    modelTypeArray,
-    baseModelArray,
-    fileList,
-  ]);
+  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
 
   // Update when download starts
   useEffect(() => {
