@@ -123,6 +123,8 @@ function createWindow() {
   });
 
   mainWindow.on('close', function (event) {
+    // TODO: clean up any files in temp
+
     if (!isQuiting) {
       event.preventDefault();
       mainWindow.hide();
