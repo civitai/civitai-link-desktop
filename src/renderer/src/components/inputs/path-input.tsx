@@ -36,7 +36,7 @@ export function PathInput({
     const fetchResourcePath = async () => {
       const resourecePath = await getResourcePath(type);
 
-      if (type === ResourceType.DEFAULT) {
+      if ((type as string) === 'DEFAULT') {
         setDirPath(rootResourcePath);
       } else {
         setDirPath(resourecePath);
@@ -55,7 +55,7 @@ export function PathInput({
 
     setDirPath(directory);
 
-    if (type !== ResourceType.DEFAULT) {
+    if ((type as string) !== 'DEFAULT') {
       setResourcePath(type, directory);
 
       if (showToast) {
