@@ -44,7 +44,7 @@ export function PathInput({
     };
 
     fetchResourcePath();
-  }, []);
+  }, [rootResourcePath]);
 
   async function getDir() {
     const selectedDir = await selectDirectory();
@@ -61,7 +61,7 @@ export function PathInput({
       if (showToast) {
         toast({
           title: `${type} Model directory set`,
-          description: 'Root Model directory has been set successfully',
+          description: `${type} Model directory has been set successfully`,
         });
       }
     } else {
