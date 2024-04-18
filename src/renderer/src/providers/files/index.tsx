@@ -180,7 +180,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(
     SortDirection.DESC,
   );
-  const [sortType, setSortType] = useState<SortType | null>(null);
+  const [sortType, setSortType] = useState<SortType>(SortType.DOWNLOAD_DATE);
 
   // Filter types
   const [modelTypeArray, setModelTypeArray] = useState<string[]>([]);
@@ -322,7 +322,14 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     searchFiles(searchTerm);
-  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
+  }, [
+    searchTerm,
+    sortDirection,
+    sortType,
+    modelTypeArray,
+    baseModelArray,
+    fileList,
+  ]);
 
   // Update when download starts
   useEffect(() => {
