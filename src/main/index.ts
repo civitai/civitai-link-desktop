@@ -44,6 +44,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 import unhandled from 'electron-unhandled';
+import { clearTempFolders } from './utils/clear-temp-folders';
 
 unhandled({
   logger: log.error,
@@ -123,11 +124,11 @@ function createWindow() {
   });
 
   mainWindow.on('close', function (event) {
-    // TODO: clean up any files in temp
-
     if (!isQuiting) {
       event.preventDefault();
       mainWindow.hide();
+    } else {
+      clearTempFolders();
     }
 
     return false;
