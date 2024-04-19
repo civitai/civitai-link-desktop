@@ -14,6 +14,6 @@ export async function eventFetchMetadata(_, localPath: string) {
     if (error.code === 'ERR_FS_FILE_TOO_LARGE')
       return 'No readable Metadata is available for this resource';
 
-    return { error: 'No readable Metadata is available for this resource' };
+    return 'No readable Metadata is available for this resource';
   }
 }
