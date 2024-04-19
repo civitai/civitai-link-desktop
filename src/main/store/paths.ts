@@ -34,6 +34,10 @@ const schema: Schema<Record<string, unknown>> = {
     type: 'object',
     default: {},
   },
+  rootResourcePath: {
+    type: 'string',
+    default: '',
+  },
 };
 
 // Check if paths set in store and migrate over at startup
@@ -56,12 +60,12 @@ export function setResourcePath(resource: string, path: string) {
   });
 }
 
-const A1111_PATHS = {
+const A1111_PATHS: { [key in Resources]?: string } = {
   [Resources.CHECKPOINT]: 'Stable-diffusion',
   [Resources.VAE]: 'VAE',
 };
 
-const COMFY_UI_PATHS = {
+const COMFY_UI_PATHS: { [key in Resources]?: string } = {
   [Resources.CHECKPOINT]: 'checkpoints',
   [Resources.CONTROLNET]: 'controlnet',
   [Resources.UPSCALER]: 'upscale_models',
@@ -76,18 +80,17 @@ export function setSDType(sdType: string) {
 }
 
 export function getResourcePath(resourcePath: string) {
-  const resource = Resources[resourcePath.toUpperCase()];
-  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+  const resource = resourcePath.toUpperCase();
+  const resourcePaths = store.get('resourcePaths') as {
+    [key in Resources]?: string;
+  };
 
-  if (resourcePaths[resource] === '') {
+  if (!resourcePaths[resource] || resourcePaths[resource] === '') {
     const rootResourcePath = getRootResourcePath();
-    const uppercaseResourcePath = resourcePath.toUpperCase();
     const sdType = store.get('sdType') as string;
     const PATHS =
-      sdType === 'a1111'
-        ? A1111_PATHS[uppercaseResourcePath]
-        : COMFY_UI_PATHS[uppercaseResourcePath];
-    const DEFAULT_PATH = Resources[uppercaseResourcePath];
+      sdType === 'a1111' ? A1111_PATHS[resource] : COMFY_UI_PATHS[resource];
+    const DEFAULT_PATH = Resources[resource];
 
     if (!PATHS || sdType === 'symlink') {
       return path.resolve(rootResourcePath, DEFAULT_PATH);

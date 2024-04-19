@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 
 type PathInputProps = {
-  type: ResourceType;
+  type: keyof typeof ResourceType;
   onChange?: (value: string) => void;
   showToast?: boolean;
 };

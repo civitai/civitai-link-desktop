@@ -11,8 +11,8 @@ declare global {
       cancelDownload: (id: string) => void;
       closeApp: () => void;
       resourceRemove: (resource: Resource) => void;
-      setResourcePath: (type: ResourceType, path: string) => void;
-      getResourcePath: (type: ResourceType) => string;
+      setResourcePath: (type: keyof typeof ResourceType, path: string) => void;
+      getResourcePath: (type: keyof typeof ResourceType) => string;
       openRootModelFolder: () => void;
       init: () => void;
       setNSFW: (nsfw: boolean) => void;

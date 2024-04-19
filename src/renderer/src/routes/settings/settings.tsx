@@ -72,7 +72,7 @@ export function Settings() {
                     : ResourceType[key].toLowerCase()}{' '}
                   Folder
                 </Label>
-                <PathInput type={key as ResourceType} />
+                <PathInput type={key} />
               </div>
             ))}
             <AlertDialog>
