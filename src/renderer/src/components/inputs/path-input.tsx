@@ -60,8 +60,10 @@ export function PathInput({
 
       if (showToast) {
         toast({
-          title: `${type} Model directory set`,
-          description: `${type} Model directory has been set successfully`,
+          // @ts-ignore
+          title: `${ResourceType[type]} Model directory set`,
+          // @ts-ignore
+          description: `${ResourceType[type]} Model directory has been set successfully`,
         });
       }
     } else {
