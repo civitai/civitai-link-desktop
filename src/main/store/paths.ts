@@ -76,15 +76,18 @@ export function setSDType(sdType: string) {
 }
 
 export function getResourcePath(resourcePath: string) {
-  const resource = resourcePath.toUpperCase();
+  const resource = Resources[resourcePath.toUpperCase()];
   const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
 
-  if (!resourcePaths[resource]) {
+  if (resourcePaths[resource] === '') {
     const rootResourcePath = getRootResourcePath();
+    const uppercaseResourcePath = resourcePath.toUpperCase();
     const sdType = store.get('sdType') as string;
     const PATHS =
-      sdType === 'a1111' ? A1111_PATHS[resource] : COMFY_UI_PATHS[resource];
-    const DEFAULT_PATH = Resources[resource];
+      sdType === 'a1111'
+        ? A1111_PATHS[uppercaseResourcePath]
+        : COMFY_UI_PATHS[uppercaseResourcePath];
+    const DEFAULT_PATH = Resources[uppercaseResourcePath];
 
     if (!PATHS || sdType === 'symlink') {
       return path.resolve(rootResourcePath, DEFAULT_PATH);

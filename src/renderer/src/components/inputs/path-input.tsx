@@ -11,7 +11,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { dir } from 'console';
 
 type PathInputProps = {
   type: ResourceType;
@@ -30,7 +29,7 @@ export function PathInput({
     setResourcePath,
     getResourcePath,
   } = useApi();
-  const { rootResourcePath, setRootResourcePath: setRoot } = useElectron();
+  const { rootResourcePath } = useElectron();
   const [dirPath, setDirPath] = useState<string | null>();
 
   useEffect(() => {
@@ -67,7 +66,6 @@ export function PathInput({
         });
       }
     } else {
-      setRoot(directory);
       setRootResourcePath(directory);
 
       if (showToast) {
