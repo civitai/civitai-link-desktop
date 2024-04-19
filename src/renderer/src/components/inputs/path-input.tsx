@@ -28,6 +28,7 @@ export function PathInput({
     setRootResourcePath,
     setResourcePath,
     getResourcePath,
+    getRootPath,
   } = useApi();
   const { rootResourcePath } = useElectron();
   const [dirPath, setDirPath] = useState<string | null>();
@@ -35,7 +36,8 @@ export function PathInput({
   useEffect(() => {
     const fetchResourcePath = async () => {
       if ((type as string) === 'DEFAULT') {
-        setDirPath(rootResourcePath);
+        const root = await getRootPath();
+        setDirPath(root);
       } else {
         const resourecePath = await getResourcePath(type);
         setDirPath(resourecePath);

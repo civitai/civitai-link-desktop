@@ -31,6 +31,7 @@ declare global {
       searchFile: (hash: string) => Resource;
       restartApp: () => void;
       fetchMetadata: (localPath: string) => JSON;
+      getRootPath: () => string;
     };
   }
 

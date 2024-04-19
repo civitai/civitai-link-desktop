@@ -81,7 +81,7 @@ export function IntroSd(props: IntroSdProps) {
         </RadioGroup>
         <div className="flex flex-col gap-y-4 overflow-hidden">
           <PathInput
-            type={ResourceType.DEFAULT}
+            type="DEFAULT"
             onChange={(value) => props.setFolderValue(value)}
             showToast={false}
           />

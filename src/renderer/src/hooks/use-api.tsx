@@ -22,6 +22,9 @@ export function useApi() {
     resourceRemove: async (resource: Resource) => {
       return await window.api.resourceRemove(resource);
     },
+    getRootPath: async () => {
+      return await window.api.getRootPath();
+    },
     getResourcePath: async (type: keyof typeof ResourceType) => {
       return await window.api.getResourcePath(type);
     },

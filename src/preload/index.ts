@@ -20,7 +20,7 @@ const api = {
       type,
       path,
     }),
-  getResourcePath: (type: ResourceType) =>
+  getResourcePath: (type: keyof typeof ResourceType) =>
     ipcRenderer.invoke('get-resource-path', type),
   openRootModelFolder: () => ipcRenderer.send('open-root-model-folder'),
   init: () => ipcRenderer.send('init'),
@@ -43,6 +43,7 @@ const api = {
   restartApp: () => ipcRenderer.send('restart-app'),
   fetchMetadata: (localPath: string) =>
     ipcRenderer.invoke('fetch-metadata', localPath),
+  getRootPath: () => ipcRenderer.invoke('get-root-path'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

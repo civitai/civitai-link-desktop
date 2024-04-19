@@ -22,7 +22,7 @@ import {
   watcherUser,
   watchApiKey,
 } from './store/store';
-import { getResourcePath } from './store/paths';
+import { getResourcePath, getRootResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
@@ -219,8 +219,12 @@ app.whenReady().then(async () => {
   watchApiKey({ mainWindow });
   watchVaultMeta({ mainWindow });
 
-  ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
+  ipcMain.handle('get-resource-path', (_, type: keyof typeof ResourceType) => {
     return getResourcePath(type);
+  });
+
+  ipcMain.handle('get-root-path', () => {
+    return getRootResourcePath();
   });
 
   ipcMain.handle('dialog:openDirectory', async (_, dirPath: string) => {
