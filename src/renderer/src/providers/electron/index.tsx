@@ -14,6 +14,7 @@ type ElectronContextType = {
   user?: object | null;
   appVersion: string;
   updateAvailable: boolean;
+  setRootResourcePath: (path: string) => void;
 };
 
 const defaultValue: ElectronContextType = {
@@ -28,6 +29,7 @@ const defaultValue: ElectronContextType = {
   user: null,
   appVersion: '',
   updateAvailable: false,
+  setRootResourcePath: () => {},
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -186,6 +188,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         user,
         appVersion,
         updateAvailable,
+        setRootResourcePath,
       }}
     >
       {children}
