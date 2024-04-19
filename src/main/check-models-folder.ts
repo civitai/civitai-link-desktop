@@ -10,8 +10,9 @@ import {
   updateFile,
 } from './store/files';
 import path from 'path';
-import { resourcesList } from './commands';
 import { socket } from './socket';
+import { filterResourcesList } from './commands/filter-reources-list';
+import { checkMissingFields } from './utils/check-missing-fields';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
@@ -30,11 +31,11 @@ export async function checkModelsFolder() {
     const filePath = path.join(modelDirectory, file);
 
     // See if file already exists by filename
-    const resource = findFileByFilename(file.split('/', 2)[1]);
+    const resource = findFileByFilename(path.basename(file));
 
-    // In case no path is stored, update it
-    if (resource && !resource.localPath) {
-      updateFile({ ...resource, localPath: filePath });
+    // Update file path and any missing fields
+    if (resource) {
+      checkMissingFields(resource, filePath);
     }
 
     if (resource?.modelVersionId && apiKey) {
@@ -97,7 +98,7 @@ export async function processPromisesBatch(
     await Promise.allSettled(items.slice(start, end));
 
     // Update Civitai website with added files
-    const newPayload = resourcesList();
+    const newPayload = filterResourcesList();
     socket.emit('commandStatus', {
       type: 'resources:list',
       resources: newPayload,

@@ -5,7 +5,7 @@
 .titlebar {
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  height: 1.75rem;
+  height: 2.10rem;
 }
 
 @layer base {
@@ -83,5 +83,15 @@
   }
   body {
     @apply bg-background text-foreground overflow-auto;
+  }
+
+  table {
+    @apply text-sm font-normal text-[#909296];
+  }
+  td {
+    @apply border p-2;
+  }
+  td:first-child {
+    @apply bg-[#25262b];
   }
 }

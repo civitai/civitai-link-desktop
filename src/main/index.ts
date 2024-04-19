@@ -22,7 +22,7 @@ import {
   watcherUser,
   watchApiKey,
 } from './store/store';
-import { getResourcePath } from './store/paths';
+import { getResourcePath, getRootResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
@@ -44,6 +44,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 import unhandled from 'electron-unhandled';
+import { clearTempFolders } from './utils/clear-temp-folders';
 
 unhandled({
   logger: log.error,
@@ -81,8 +82,6 @@ function createWindow() {
     hasShadow: true,
     darkTheme: true,
     frame: true,
-    fullscreenable: false,
-    skipTaskbar: true,
     titleBarOverlay: {
       color: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
       symbolColor: nativeTheme.shouldUseDarkColors ? '#fff' : '#000',
@@ -123,15 +122,12 @@ function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
-  mainWindow.on('minimize', function (event) {
-    event.preventDefault();
-    mainWindow.hide();
-  });
-
   mainWindow.on('close', function (event) {
     if (!isQuiting) {
       event.preventDefault();
       mainWindow.hide();
+    } else {
+      clearTempFolders();
     }
 
     return false;
@@ -223,13 +219,18 @@ app.whenReady().then(async () => {
   watchApiKey({ mainWindow });
   watchVaultMeta({ mainWindow });
 
-  ipcMain.handle('get-resource-path', (_, type: ResourceType) => {
+  ipcMain.handle('get-resource-path', (_, type: keyof typeof ResourceType) => {
     return getResourcePath(type);
   });
 
-  ipcMain.handle('dialog:openDirectory', async () => {
+  ipcMain.handle('get-root-path', () => {
+    return getRootResourcePath();
+  });
+
+  ipcMain.handle('dialog:openDirectory', async (_, dirPath: string) => {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openDirectory'],
+      defaultPath: dirPath,
+      properties: ['openDirectory', 'createDirectory'],
     });
 
     // Fix closed window when dialog takes focus Windows
@@ -262,10 +263,9 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('settings-update', newValue);
   });
 
-  if (process.platform === 'darwin') {
-    // Hides dock icon on macOS but keeps in taskbar
-    app.dock.hide();
-  }
+  autoUpdater.on('update-available', () => {
+    mainWindow.webContents.send('update-available');
+  });
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.

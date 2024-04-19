@@ -2,13 +2,13 @@ import Store, { Schema } from 'electron-store';
 import path from 'path';
 
 export enum Resources {
-  CHECKPOINT = 'Checkpoint',
-  CONTROLNET = 'ControlNet',
-  UPSCALER = 'Upscaler',
-  HYPERNETWORK = 'Hypernetwork',
-  TEXTUALINVERSION = 'TextualInversion',
-  LORA = 'Lora',
-  LOCON = 'LoCon',
+  CHECKPOINT = 'CHECKPOINT',
+  CONTROLNET = 'CONTROLNET',
+  UPSCALER = 'UPSCALER',
+  HYPERNETWORK = 'HYPERNETWORK',
+  TEXTUALINVERSION = 'TEXTUALINVERSION',
+  LORA = 'LORA',
+  LOCON = 'LOCON',
   VAE = 'VAE',
 }
 
@@ -56,17 +56,29 @@ export function setResourcePath(resource: string, path: string) {
   });
 }
 
-const A1111_PATHS = {
-  [Resources.CHECKPOINT]: 'Stable-diffusion',
+const SYMLINK: { [key in Resources]?: string } = {
+  [Resources.CHECKPOINT]: 'Checkpoints',
+  [Resources.CONTROLNET]: 'ControlNet',
+  [Resources.UPSCALER]: 'Upscaler',
+  [Resources.HYPERNETWORK]: 'Hypernetwork',
+  [Resources.TEXTUALINVERSION]: 'embeddings',
+  [Resources.LORA]: 'Lora',
+  [Resources.LOCON]: 'LoCon',
   [Resources.VAE]: 'VAE',
 };
 
-const COMFY_UI_PATHS = {
+const A1111_PATHS: { [key in Resources]?: string } = {
+  [Resources.CHECKPOINT]: 'Stable-diffusion',
+  [Resources.VAE]: 'VAE',
+  [Resources.TEXTUALINVERSION]: 'embeddings',
+};
+
+const COMFY_UI_PATHS: { [key in Resources]?: string } = {
   [Resources.CHECKPOINT]: 'checkpoints',
   [Resources.CONTROLNET]: 'controlnet',
   [Resources.UPSCALER]: 'upscale_models',
   [Resources.HYPERNETWORK]: 'hypernetworks',
-  [Resources.TEXTUALINVERSION]: '',
+  [Resources.TEXTUALINVERSION]: 'embeddings',
   [Resources.LORA]: 'loras',
   [Resources.VAE]: 'vae',
 };
@@ -76,24 +88,25 @@ export function setSDType(sdType: string) {
 }
 
 export function getResourcePath(resourcePath: string) {
-  const resource = Resources[resourcePath.toUpperCase()];
-  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
+  const resource = resourcePath.toUpperCase();
+  const resourcePaths = store.get('resourcePaths') as {
+    [k: string]: string;
+  };
 
-  if (resourcePaths[resource] === '') {
+  if (!resourcePaths[resource] || resourcePaths[resource] === '') {
     const rootResourcePath = getRootResourcePath();
-    const uppercaseResourcePath = resourcePath.toUpperCase();
     const sdType = store.get('sdType') as string;
-    const PATHS =
-      sdType === 'a1111'
-        ? A1111_PATHS[uppercaseResourcePath]
-        : COMFY_UI_PATHS[uppercaseResourcePath];
-    const DEFAULT_PATH = Resources[uppercaseResourcePath];
 
-    if (!PATHS || sdType === 'symlink') {
-      return path.resolve(rootResourcePath, DEFAULT_PATH);
-    }
+    const PATHS = {
+      ...SYMLINK,
+      ...(sdType === 'a1111'
+        ? A1111_PATHS
+        : sdType === 'comfyui'
+          ? COMFY_UI_PATHS
+          : {}),
+    };
 
-    return path.resolve(rootResourcePath, PATHS);
+    return path.join(rootResourcePath, PATHS[resource]);
   }
 
   return resourcePaths[resource];

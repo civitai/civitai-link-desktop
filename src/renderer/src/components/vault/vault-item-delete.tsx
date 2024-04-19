@@ -63,7 +63,7 @@ export function VaultItemDelete({
           <AlertDialogCancel className="py-2">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={removeFromVault}
-            className="py-2 destructive"
+            className="p-2 destructive"
           >
             Delete
           </AlertDialogAction>

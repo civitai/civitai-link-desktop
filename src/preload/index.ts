@@ -4,7 +4,8 @@ import { electronAPI } from '@electron-toolkit/preload';
 // Custom APIs for renderer
 const api = {
   setKey: (key: string) => ipcRenderer.send('set-key', key),
-  selectFolder: () => ipcRenderer.invoke('dialog:openDirectory'),
+  selectFolder: (dirPath: string) =>
+    ipcRenderer.invoke('dialog:openDirectory', dirPath),
   setRootResourcePath: (path: string) =>
     ipcRenderer.send('set-root-path', {
       path,
@@ -19,7 +20,7 @@ const api = {
       type,
       path,
     }),
-  getResourcePath: (type: ResourceType) =>
+  getResourcePath: (type: keyof typeof ResourceType) =>
     ipcRenderer.invoke('get-resource-path', type),
   openRootModelFolder: () => ipcRenderer.send('open-root-model-folder'),
   init: () => ipcRenderer.send('init'),
@@ -39,6 +40,10 @@ const api = {
   setStableDiffusion: (type: string) =>
     ipcRenderer.send('set-stable-diffusion', type),
   searchFile: (hash: string) => ipcRenderer.send('search-file', hash),
+  restartApp: () => ipcRenderer.send('restart-app'),
+  fetchMetadata: (localPath: string) =>
+    ipcRenderer.invoke('fetch-metadata', localPath),
+  getRootPath: () => ipcRenderer.invoke('get-root-path'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

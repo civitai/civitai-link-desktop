@@ -5,14 +5,14 @@ declare global {
     electron: ElectronAPI;
     api: {
       setKey: (key: string) => void;
-      selectFolder: () => void;
+      selectFolder: (dirPath: string) => void;
       setRootResourcePath: (path: string) => void;
       clearSettings: () => void;
       cancelDownload: (id: string) => void;
       closeApp: () => void;
       resourceRemove: (resource: Resource) => void;
-      setResourcePath: (type: ResourceType, path: string) => void;
-      getResourcePath: (type: ResourceType) => string;
+      setResourcePath: (type: keyof typeof ResourceType, path: string) => void;
+      getResourcePath: (type: keyof typeof ResourceType) => string;
       openRootModelFolder: () => void;
       init: () => void;
       setNSFW: (nsfw: boolean) => void;
@@ -29,6 +29,9 @@ declare global {
       }) => void;
       setStableDiffusion: (type: string) => void;
       searchFile: (hash: string) => Resource;
+      restartApp: () => void;
+      fetchMetadata: (localPath: string) => JSON;
+      getRootPath: () => string;
     };
   }
 
@@ -50,6 +53,7 @@ declare global {
     trainedWords?: string[];
     description?: string;
     baseModel?: string;
+    fileSize?: number; // bytes
   };
 
   enum ActivityType {
@@ -84,9 +88,9 @@ declare global {
     CONTROLNET = 'ControlNet',
     UPSCALER = 'Upscaler',
     HYPERNETWORK = 'Hypernetwork',
-    TEXTUAL_INVERSION = 'TextualInversion',
+    TEXTUALINVERSION = 'Embeddings',
     LORA = 'Lora',
-    LO_CON = 'LoCon',
+    LOCON = 'LoCon',
     VAE = 'VAE',
   }
 

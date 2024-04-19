@@ -1,25 +1,47 @@
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Button } from '@/components/ui/button';
-import { PathInput } from '@/components/path-input';
+import { PathInput } from '@/components/inputs/path-input';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useApi } from '@/hooks/use-api';
-import { ApiKeyInput } from '@/components/api-key-input';
+import { ApiKeyInput } from '@/components/inputs/api-key-input';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { RefreshCcw } from 'lucide-react';
 
 export function Settings() {
-  const { clearSettings, settings, appVersion } = useElectron();
-  const { setNSFW } = useApi();
+  const { clearSettings, settings, appVersion, updateAvailable } =
+    useElectron();
+  const { setNSFW, restartApp } = useApi();
 
   return (
     <PanelWrapper>
       <>
         <div className="flex items-center px-4 py-2 min-h-14 justify-between">
           <h1 className="text-xl font-bold">Settings</h1>
-          <p className="text-sm text-primary">v{appVersion}</p>
+          <div className="flex gap-2 items-center">
+            {updateAvailable ? (
+              <RefreshCcw
+                size={16}
+                className="cursor-pointer"
+                onClick={restartApp}
+              />
+            ) : null}
+            <p className="text-sm text-primary">v{appVersion}</p>
+          </div>
         </div>
         <Separator />
 
@@ -44,26 +66,40 @@ export function Settings() {
               Object.keys(ResourceType) as Array<keyof typeof ResourceType>
             ).map((key) => (
               <div className="flex flex-col gap-y-4 overflow-hidden" key={key}>
-                <Label className="text-primary">
-                  {key === 'DEFAULT' ? 'Root Model' : key} Folder
+                <Label className="text-primary capitalize">
+                  {ResourceType[key] === ResourceType.DEFAULT
+                    ? 'Root Model'
+                    : ResourceType[key].toLowerCase()}{' '}
+                  Folder
                 </Label>
-                <PathInput type={ResourceType[key]} />
+                <PathInput type={key} />
               </div>
             ))}
-            <div className="bg-red-200 border border-red-400 py-4 px-10 rounded mt-6">
-              <p className="text-center text-black font-bold uppercase mb-2">
-                Danger Zone
-              </p>
-              <div className="flex flex-col justify-center">
-                <Button
-                  onClick={() => clearSettings()}
-                  variant="destructive"
-                  className="py-4"
-                >
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-36 py-4">
                   Reset Settings
                 </Button>
-              </div>
-            </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Reseting this will clear all settings, keys, paths and
+                    connections within the Link app.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="p-2">Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={clearSettings}
+                    className="p-2 destructive"
+                  >
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </ScrollArea>
       </>

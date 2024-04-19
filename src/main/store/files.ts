@@ -2,6 +2,7 @@ import { BrowserWindow } from 'electron';
 import Store, { Schema } from 'electron-store';
 import { createModelJson } from '../utils/create-model-json';
 import { createPreviewImage } from '../utils/create-preview-image';
+import { fileStats } from '../utils/file-stats';
 
 const schema: Schema<Record<string, unknown>> = {
   files: {
@@ -12,9 +13,11 @@ const schema: Schema<Record<string, unknown>> = {
 
 export const store = new Store({ schema });
 
-export function addFile(file: Resource) {
+export async function addFile(file: Resource) {
   const files = store.get('files') as ResourcesMap;
-  const fileToAdd = { ...file, hash: file.hash.toLowerCase() };
+  const stats = await fileStats(file.localPath);
+
+  const fileToAdd = { ...file, hash: file.hash.toLowerCase(), ...stats };
 
   createModelJson(file);
   createPreviewImage(file);
@@ -71,7 +74,34 @@ export function updateFile(file: Resource) {
 }
 
 export function getFiles() {
-  return store.get('files') as ResourcesMap;
+  const files = store.get('files') as ResourcesMap;
+  const sortedFiles = Object.values(files)
+    .sort((a, b) => {
+      const filteredFileListA = a.downloadDate;
+      const filteredFileListB = b.downloadDate;
+
+      if (!filteredFileListA) return 1;
+      if (!filteredFileListB) return -1;
+
+      return (
+        new Date(filteredFileListB).getTime() -
+        new Date(filteredFileListA).getTime()
+      );
+    })
+    .reduce(
+      (
+        acc: Record<string, Resource>,
+        file: Resource,
+      ): Record<string, Resource> => {
+        return {
+          ...acc,
+          [file.hash]: file,
+        };
+      },
+      {},
+    );
+
+  return sortedFiles;
 }
 
 export function clearFiles() {

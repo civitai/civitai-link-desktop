@@ -5,7 +5,9 @@ import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
-import { resourcesList } from './commands';
+import { getRootResourcePath } from './store/paths';
+import { filterResourcesList } from './commands/filter-reources-list';
+import { uuid } from 'uuidv4';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -40,13 +42,14 @@ export async function downloadFile({
   let progress = (current / totalLength) * 100;
   let downloaded = 0;
   const dirPath = path.resolve(__dirname, '', downloadPath);
-  const tempDirPath = path.resolve(dirPath, 'temp');
-  const tempFilePath = path.resolve(tempDirPath, resource.name);
+  const tempDirPath = path.resolve(getRootResourcePath(), 'tmp');
+  const tempFileName = uuid();
+  const tempFilePath = path.resolve(tempDirPath, tempFileName);
   const filePath = path.resolve(dirPath, resource.name);
   const REPORT_INTERVAL = 1000;
   let last_reported_time = Date.now();
 
-  const newPayload = resourcesList();
+  const newPayload = filterResourcesList();
   socket.emit('commandStatus', {
     type: 'resources:list',
     resources: [
@@ -122,11 +125,11 @@ export async function downloadFile({
       civitaiUrl: resource.civitaiUrl,
     };
 
-    updateActivity(activity);
-    addFile(fileData);
-
     console.log("Move file to: '" + filePath + "'!");
     fs.renameSync(tempFilePath, filePath);
+
+    updateActivity(activity);
+    addFile(fileData);
 
     new Notification({
       title: 'Download Complete',
@@ -157,7 +160,7 @@ export async function downloadFile({
     });
 
     // Send entire list of resources to server
-    const newPayload = resourcesList();
+    const newPayload = filterResourcesList();
     socket.emit('commandStatus', {
       type: 'resources:list',
       resources: newPayload,
@@ -182,7 +185,7 @@ export async function downloadFile({
         id: resource.id,
       });
 
-      const newPayload = resourcesList();
+      const newPayload = filterResourcesList();
       socket.emit('commandStatus', {
         type: 'resources:list',
         resources: newPayload,

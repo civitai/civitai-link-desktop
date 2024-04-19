@@ -68,6 +68,16 @@ The Civitai Link Key is a short 6 character token that you'll receive when setti
 
 Since Civitai Link is still in alpha, it is currently only available to Supporters as part of the Civitai Early Access program. You can get access to Civitai Link today by [becoming a supporter](https://civitai.com/pricing) 🥰 or you can wait until we've gotten it to a state that we're ready for a full release.
 
+## Filing an Issue
+
+When filing an issue provide as much replication and detail as possible. It can also help if you paste your app logs into your issue.
+
+```
+on Linux: ~/.config/{app name}/logs/main.log
+on macOS: ~/Library/Logs/{app name}/main.log
+on Windows: %USERPROFILE%\AppData\Roaming\{app name}\logs\main.log
+```
+
 ## Contributing
 
 Any contributions you make are **greatly appreciated**.

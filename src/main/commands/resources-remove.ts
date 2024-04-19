@@ -3,7 +3,7 @@ import { getResourcePath } from '../store/paths';
 import { deleteFile, searchFile } from '../store/files';
 import { updateActivity } from '../store/activities';
 import fs from 'fs';
-import { resourcesList } from './resources-list';
+import { filterResourcesList } from './filter-reources-list';
 
 export function resourcesRemove(hash: string) {
   const resource = searchFile(hash);
@@ -32,5 +32,5 @@ export function resourcesRemove(hash: string) {
   updateActivity(activity);
 
   // Return resource list
-  return resourcesList();
+  return filterResourcesList();
 }

@@ -4,13 +4,13 @@ export function useApi() {
     setKey: async (key: string) => {
       return await window.api.setKey(key);
     },
-    selectDirectory: async () => {
-      return await window.api.selectFolder();
+    selectDirectory: async (dirPath: string) => {
+      return await window.api.selectFolder(dirPath);
     },
     setRootResourcePath: async (path: string) => {
       return await window.api.setRootResourcePath(path);
     },
-    setResourcePath: async (type: ResourceType, path: string) => {
+    setResourcePath: async (type: keyof typeof ResourceType, path: string) => {
       return await window.api.setResourcePath(type, path);
     },
     cancelDownload: async (id: string) => {
@@ -22,7 +22,10 @@ export function useApi() {
     resourceRemove: async (resource: Resource) => {
       return await window.api.resourceRemove(resource);
     },
-    getResourcePath: async (type: ResourceType) => {
+    getRootPath: async () => {
+      return await window.api.getRootPath();
+    },
+    getResourcePath: async (type: keyof typeof ResourceType) => {
       return await window.api.getResourcePath(type);
     },
     openRootModelFolder: async () => {
@@ -57,6 +60,12 @@ export function useApi() {
     },
     searchFile: async (hash: string) => {
       return await window.api.searchFile(hash);
+    },
+    restartApp: async () => {
+      return await window.api.restartApp();
+    },
+    fetchMetadata: async (localPath: string) => {
+      return await window.api.fetchMetadata(localPath);
     },
   };
 }

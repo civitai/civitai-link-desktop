@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { GoFileDirectory } from 'react-icons/go';
 import { useApi } from '@/hooks/use-api';
 import { ResourceType } from '@/types';
 import { useElectron } from '@/providers/electron';
-import { toast } from './ui/use-toast';
+import { toast } from '../ui/use-toast';
 import { ellipsis } from '@/lib/utils';
 import {
   Tooltip,
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/tooltip';
 
 type PathInputProps = {
-  type: ResourceType;
+  type: keyof typeof ResourceType;
   onChange?: (value: string) => void;
   showToast?: boolean;
 };
@@ -28,26 +28,27 @@ export function PathInput({
     setRootResourcePath,
     setResourcePath,
     getResourcePath,
+    getRootPath,
   } = useApi();
   const { rootResourcePath } = useElectron();
   const [dirPath, setDirPath] = useState<string | null>();
 
   useEffect(() => {
     const fetchResourcePath = async () => {
-      const resourecePath = await getResourcePath(type);
-
-      if (type === ResourceType.DEFAULT) {
-        setDirPath(rootResourcePath);
+      if ((type as string) === 'DEFAULT') {
+        const root = await getRootPath();
+        setDirPath(root);
       } else {
+        const resourecePath = await getResourcePath(type);
         setDirPath(resourecePath);
       }
     };
 
     fetchResourcePath();
-  }, []);
+  }, [rootResourcePath]);
 
   async function getDir() {
-    const selectedDir = await selectDirectory();
+    const selectedDir = await selectDirectory(dirPath || '');
     const directory =
       selectedDir !== null && selectedDir !== undefined ? selectedDir : '';
 
@@ -55,13 +56,15 @@ export function PathInput({
 
     setDirPath(directory);
 
-    if (type !== ResourceType.DEFAULT) {
+    if ((type as string) !== 'DEFAULT') {
       setResourcePath(type, directory);
 
       if (showToast) {
         toast({
-          title: `${type} Model directory set`,
-          description: 'Root Model directory has been set successfully',
+          // @ts-ignore
+          title: `${ResourceType[type]} Model directory set`,
+          // @ts-ignore
+          description: `${ResourceType[type]} Model directory has been set successfully`,
         });
       }
     } else {
@@ -85,7 +88,7 @@ export function PathInput({
       <div className="w-full">
         <Tooltip>
           <TooltipTrigger className="text-left w-full">
-            <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden cursor-default min-h-14">
+            <div className="p-2 border bg-secondary dark:border-[#373A40] dark:bg-[#2C2E33] rounded-lg overflow-hidden cursor-default">
               <p className="text-sm text-ellipsis overflow-hidden dark:text-[#ADB5BD] text-black/40">
                 {ellipsis({ str: dirPath || 'Select a directory' })}
               </p>
@@ -96,8 +99,8 @@ export function PathInput({
           </TooltipContent>
         </Tooltip>
       </div>
-      <Button onClick={getDir} className="p-3 min-h-14 min-w-14">
-        <GoFileDirectory size={24} />
+      <Button onClick={getDir} className="p-3">
+        <GoFileDirectory size={16} />
       </Button>
     </div>
   );

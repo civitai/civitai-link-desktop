@@ -9,18 +9,12 @@ export async function createPreviewImage(file: Resource) {
     __dirname,
     file.localPath?.split('.').slice(0, -1).join('.') + '.preview.png',
   );
-  const writer = fs.createWriteStream(previewPath);
 
-  const response = await axios({
-    url: file.previewImageUrl,
-    method: 'GET',
-    responseType: 'stream',
+  if (fs.existsSync(previewPath)) return;
+
+  const response = await axios.get(file.previewImageUrl, {
+    responseType: 'arraybuffer',
   });
 
-  response.data.pipe(writer);
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', resolve);
-    writer.on('error', reject);
-  });
+  return await fs.promises.writeFile(previewPath, response.data);
 }
