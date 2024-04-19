@@ -10,10 +10,10 @@ export async function eventFetchMetadata(_, localPath: string) {
   } catch (error: any) {
     console.error(error);
 
-    if (error.code === 'ENOENT') return { error: 'File not found' };
+    if (error.code === 'ENOENT') return 'File not found';
     if (error.code === 'ERR_FS_FILE_TOO_LARGE')
-      return { error: 'File too large to read metadata' };
+      return 'No readable Metadata is available for this resource';
 
-    return { error: 'Error checking metadata' };
+    return { error: 'No readable Metadata is available for this resource' };
   }
 }
