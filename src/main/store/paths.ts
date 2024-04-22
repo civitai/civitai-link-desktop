@@ -1,5 +1,6 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
+import { checkModelsFolder } from '../check-models-folder';
 
 export enum Resources {
   CHECKPOINT = 'CHECKPOINT',
@@ -48,6 +49,9 @@ export function setRootResourcePath(path: string) {
 }
 
 export function setResourcePath(resource: string, path: string) {
+  // Rescan directory
+  checkModelsFolder({ directory: path });
+
   return store.set(`resourcePaths.${resource}`, path);
 }
 
@@ -105,4 +109,30 @@ export function getResourcePath(resourcePath: string) {
   }
 
   return resourcePaths[resource];
+}
+
+export function getAllPaths() {
+  const resourcePaths = store.get('resourcePaths') as {
+    [k: string]: string;
+  };
+  const rootResourcePath = getRootResourcePath();
+  const sdType = store.get('sdType') as string;
+
+  return Object.keys(resourcePaths).map((key) => {
+    const uppercaseKey = key.toUpperCase();
+    if (!resourcePaths[uppercaseKey] || resourcePaths[uppercaseKey] === '') {
+      const PATHS = {
+        ...SYMLINK,
+        ...(sdType === 'a1111'
+          ? A1111_PATHS
+          : sdType === 'comfyui'
+            ? COMFY_UI_PATHS
+            : {}),
+      };
+
+      return path.join(rootResourcePath, PATHS[uppercaseKey]);
+    }
+
+    return resourcePaths[uppercaseKey];
+  });
 }
