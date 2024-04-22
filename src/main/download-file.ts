@@ -7,7 +7,7 @@ import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
 import { getRootResourcePath } from './store/paths';
 import { filterResourcesList } from './commands/filter-reources-list';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
 type DownloadFileParams = {
   socket: Socket;
