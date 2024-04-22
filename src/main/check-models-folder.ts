@@ -18,9 +18,6 @@ import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
 
-  // Init load is null
-  const modelDirectory = getRootResourcePath();
-
   // Init load is empty []
   const files = listDirectory();
 
@@ -28,20 +25,18 @@ export async function checkModelsFolder() {
   // { modelVersionId: hash }
   let modelVersionIds: Record<number, string> = {};
 
-  const promises = files.map(async (file) => {
-    const filePath = path.join(modelDirectory, file);
-
+  const promises = files.map(async ({ pathname, filename }) => {
     // Short circuit if in not found store
-    const notFoundFile = searchNotFoundFile(file);
+    const notFoundFile = searchNotFoundFile(filename);
 
     if (notFoundFile) return;
 
     // See if file already exists by filename
-    const resource = findFileByFilename(path.basename(file));
+    const resource = findFileByFilename(path.basename(filename));
 
     // Update file path and any missing fields
     if (resource) {
-      checkMissingFields(resource, filePath);
+      checkMissingFields(resource, pathname);
     }
 
     if (resource?.modelVersionId && apiKey) {
@@ -54,15 +49,15 @@ export async function checkModelsFolder() {
     // If not, fetch from API and add to store
     if (!resource) {
       // Hash files
-      const modelHash = await hash(filePath);
-      console.log('Hashing...', 'File:', file, 'Hash:', modelHash);
+      const modelHash = await hash(pathname);
+      console.log('Hashing...', 'File:', filename, 'Hash:', modelHash);
 
       try {
         const model = await getModelByHash(modelHash);
-        addFile({ ...model, localPath: filePath });
+        addFile({ ...model, localPath: pathname });
       } catch {
-        addNotFoundFile(file, modelHash, filePath);
-        console.error('Error hash', modelHash, file);
+        addNotFoundFile(filename, modelHash, pathname);
+        console.error('Error hash', modelHash, filename);
       }
     }
   });
