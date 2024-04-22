@@ -51,7 +51,7 @@ export function FileActions({ file }: FileActionsProps) {
               <span className="sr-only">Open File in Folder</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Open File in Folder</TooltipContent>
+          <TooltipContent side="bottom">Open File in Folder</TooltipContent>
         </Tooltip>
         {file.civitaiUrl ? (
           <Tooltip>
@@ -63,7 +63,7 @@ export function FileActions({ file }: FileActionsProps) {
                 </a>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Open Model on Civitai</TooltipContent>
+            <TooltipContent side="bottom">Open Model on Civitai</TooltipContent>
           </Tooltip>
         ) : null}
         {file.localPath ? (
@@ -92,7 +92,9 @@ export function FileActions({ file }: FileActionsProps) {
                   <span className="sr-only">Copy All Trigger Words</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Copy All Trigger Words</TooltipContent>
+              <TooltipContent side="bottom">
+                Copy All Trigger Words
+              </TooltipContent>
             </Tooltip>
           </>
         ) : null}

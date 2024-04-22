@@ -47,7 +47,7 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
             </Button>
           </TooltipTrigger>
         </DialogTrigger>
-        <TooltipContent>View Model Metadata</TooltipContent>
+        <TooltipContent side="bottom">View Model Metadata</TooltipContent>
       </Tooltip>
 
       <DialogContent className="max-h-[500px] min-h-0 min-w-[800px] rounded p-4 overflow-hidden">
