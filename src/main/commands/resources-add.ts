@@ -16,8 +16,13 @@ export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const hashLowercase = payload.hash.toLowerCase();
   const resourcePath = getResourcePath(payload.type);
-  const { previewImageUrl, civitaiUrl, modelVersionId, baseModel } =
-    await getModelByHash(hashLowercase);
+  const {
+    previewImageUrl,
+    civitaiUrl,
+    modelVersionId,
+    baseModel,
+    trainedWords,
+  } = await getModelByHash(hashLowercase);
   const timestamp = new Date().toISOString();
 
   params.socket.emit('commandStatus', {
@@ -59,6 +64,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
       previewImageUrl,
       civitaiUrl,
       baseModel,
+      trainedWords,
     },
     downloadPath: resourcePath,
     socket: params.socket,

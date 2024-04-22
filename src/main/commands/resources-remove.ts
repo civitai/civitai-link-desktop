@@ -1,8 +1,8 @@
 import path from 'path';
+import fs from 'fs';
 import { getResourcePath } from '../store/paths';
 import { deleteFile, searchFile } from '../store/files';
 import { updateActivity } from '../store/activities';
-import fs from 'fs';
 import { filterResourcesList } from './filter-reources-list';
 
 export function resourcesRemove(hash: string) {
@@ -13,8 +13,17 @@ export function resourcesRemove(hash: string) {
     resource.localPath || path.join(defaultResourcePath, resource.name);
 
   try {
-    // Remove from disk
+    // Remove model from disk
     fs.unlinkSync(resourcePath);
+
+    // Remove thumbnail from disk
+    const previewPath =
+      resourcePath.split('.').slice(0, -1).join('.') + '.preview.png';
+    if (fs.existsSync(previewPath)) fs.unlinkSync(previewPath);
+
+    // Remove json data from disk
+    const jsonPath = resourcePath.split('.').slice(0, -1).join('.') + '.json';
+    if (fs.existsSync(jsonPath)) fs.unlinkSync(jsonPath);
   } catch (e) {
     console.error('Error removing resource from disk', e);
   }
