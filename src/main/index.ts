@@ -201,7 +201,7 @@ app.whenReady().then(async () => {
 
   // Only run on startup after we have a key
   if (getUpgradeKey()) {
-    checkModelsFolder();
+    checkModelsFolder({});
   }
   createWindow();
   socketIOConnect({ mainWindow, app });

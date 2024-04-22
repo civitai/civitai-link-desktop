@@ -4,8 +4,9 @@ import uniqBy from 'lodash/uniqBy';
 import { getAllPaths, getRootResourcePath } from './store/paths';
 
 const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
+const EXCLUDE_TYPES = ['/temp/', '.json', '.png'];
 
-export function listDirectory() {
+export function listDirectories() {
   const modelDirectory = getRootResourcePath();
   const modelDirectories = getAllPaths();
 
@@ -14,20 +15,36 @@ export function listDirectory() {
   }
 
   const filesInDirs = modelDirectories
-    .map((dir) => {
-      if (!fs.existsSync(dir)) return [];
+    .map((directory) => {
+      if (!fs.existsSync(directory)) return [];
 
       return fs
-        .readdirSync(dir)
-        .filter((file) => !file.includes('/temp/'))
-        .filter((file) => !file.includes('/.json/'))
-        .filter((file) => !file.includes('/.png/'))
-        .filter((file) => FILE_TYPES.some((x) => file.includes(x)))
-        .map((file) => {
-          return { pathname: path.join(dir, file), filename: file };
-        });
+        .readdirSync(directory)
+        .filter(filterFileTypes)
+        .map((file) => mapFiles(file, directory));
     })
     .flat();
 
   return uniqBy(filesInDirs, 'pathname');
+}
+
+export function listDirectory(directory: string) {
+  if (!fs.existsSync(directory)) return [];
+
+  return fs
+    .readdirSync(directory)
+    .filter(filterFileTypes)
+    .map((file) => mapFiles(file, directory));
+}
+
+function filterFileTypes(file: string) {
+  if (EXCLUDE_TYPES.some((x) => !file.includes(x))) {
+    return FILE_TYPES.some((x) => file.includes(x));
+  } else {
+    return true;
+  }
+}
+
+function mapFiles(file: string, directory: string) {
+  return { pathname: path.join(directory, file), filename: file };
 }

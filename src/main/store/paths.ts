@@ -1,5 +1,6 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
+import { checkModelsFolder } from '../check-models-folder';
 
 export enum Resources {
   CHECKPOINT = 'CHECKPOINT',
@@ -48,6 +49,9 @@ export function setRootResourcePath(path: string) {
 }
 
 export function setResourcePath(resource: string, path: string) {
+  // Rescan directory
+  checkModelsFolder({ directory: path });
+
   return store.set(`resourcePaths.${resource}`, path);
 }
 

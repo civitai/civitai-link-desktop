@@ -1,8 +1,7 @@
 import { fetchVaultModelsByVersion, getModelByHash } from './civitai-api';
 import { hash } from './hash';
-import { listDirectory } from './list-directory';
+import { listDirectories, listDirectory } from './list-directory';
 import { getApiKey } from './store/store';
-import { getRootResourcePath } from './store/paths';
 import {
   addFile,
   findFileByFilename,
@@ -15,11 +14,15 @@ import { filterResourcesList } from './commands/filter-reources-list';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 
-export async function checkModelsFolder() {
+type CheckModelFolderParams = {
+  directory?: string;
+};
+
+export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
   const apiKey = getApiKey();
 
   // Init load is empty []
-  const files = listDirectory();
+  const files = directory ? listDirectory(directory) : listDirectories();
 
   // ModelVersionId for vault
   // { modelVersionId: hash }
