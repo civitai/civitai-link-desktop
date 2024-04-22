@@ -25,7 +25,7 @@ import { RefreshCcw } from 'lucide-react';
 export function Settings() {
   const { clearSettings, settings, appVersion, updateAvailable } =
     useElectron();
-  const { setNSFW, restartApp } = useApi();
+  const { setNSFW, setAlwaysOnTop, restartApp } = useApi();
 
   return (
     <PanelWrapper>
@@ -58,6 +58,19 @@ export function Settings() {
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Add NSFW images to model preview
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="alwaysOnTop"
+                checked={settings.alwaysOnTop}
+                onCheckedChange={(checked: boolean) => setAlwaysOnTop(checked)}
+              />
+              <label
+                htmlFor="alwaysOnTop"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Window always on top
               </label>
             </div>
             <ApiKeyInput />

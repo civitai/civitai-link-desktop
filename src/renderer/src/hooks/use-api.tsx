@@ -67,5 +67,8 @@ export function useApi() {
     fetchMetadata: async (localPath: string) => {
       return await window.api.fetchMetadata(localPath);
     },
+    setAlwaysOnTop: async (alwaysOnTop: boolean) => {
+      return await window.api.setAlwaysOnTop(alwaysOnTop);
+    },
   };
 }

@@ -17,6 +17,7 @@ import { eventSetStableDiffusion } from './set-stable-diffusion';
 import { eventSearchFile } from './search-file';
 import { app } from 'electron';
 import { eventFetchMetadata } from './fetch-metadata';
+import { eventSetAlwaysOnTop } from './set-always-on-top';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
@@ -45,6 +46,11 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('set-root-path', eventSetRootPath);
   ipcMain.on('set-path', eventSetPath);
   ipcMain.on('set-nsfw', eventSetNSFW);
+  ipcMain.on('set-always-on-top', (_, alwaysOnTop) => {
+    mainWindow.setAlwaysOnTop(alwaysOnTop);
+
+    eventSetAlwaysOnTop(alwaysOnTop);
+  });
   ipcMain.on('set-api-key', eventSetApiKey);
   ipcMain.on('set-stable-diffusion', eventSetStableDiffusion);
 

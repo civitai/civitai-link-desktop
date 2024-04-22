@@ -44,6 +44,8 @@ const api = {
   fetchMetadata: (localPath: string) =>
     ipcRenderer.invoke('fetch-metadata', localPath),
   getRootPath: () => ipcRenderer.invoke('get-root-path'),
+  setAlwaysOnTop: (alwaysOnTop: boolean) =>
+    ipcRenderer.send('set-always-on-top', alwaysOnTop),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
