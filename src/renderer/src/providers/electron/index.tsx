@@ -10,7 +10,7 @@ type ElectronContextType = {
   activityList: ActivityItem[];
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
-  settings: { nsfw: boolean };
+  settings: { nsfw: boolean; alwaysOnTop: boolean };
   user?: object | null;
   appVersion: string;
   updateAvailable: boolean;
@@ -24,7 +24,7 @@ const defaultValue: ElectronContextType = {
   activityList: [],
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
-  settings: { nsfw: false },
+  settings: { nsfw: false, alwaysOnTop: false },
   user: null,
   appVersion: '',
   updateAvailable: false,
@@ -42,7 +42,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     ConnectionStatus.DISCONNECTED,
   );
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
-  const [settings, setSettings] = useState({ nsfw: false });
+  const [settings, setSettings] = useState({ nsfw: false, alwaysOnTop: false });
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [user, setUser] = useState<object | null>(null);
   const [appVersion, setAppVersion] = useState<string>('');

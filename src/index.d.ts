@@ -32,6 +32,7 @@ declare global {
       restartApp: () => void;
       fetchMetadata: (localPath: string) => JSON;
       getRootPath: () => string;
+      setAlwaysOnTop: (alwaysOnTop: boolean) => void;
     };
   }
 

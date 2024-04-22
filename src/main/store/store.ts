@@ -113,7 +113,8 @@ export function getConnectionStatus() {
 }
 
 type Settings = {
-  nsfw: boolean;
+  nsfw?: boolean;
+  alwaysOnTop?: boolean;
 };
 
 export function getSettings() {
@@ -121,7 +122,9 @@ export function getSettings() {
 }
 
 export function setSettings(settings: Settings) {
-  return store.set('settings', settings);
+  const currentSettings = getSettings();
+
+  return store.set('settings', { ...currentSettings, ...settings });
 }
 
 export function clearSettings() {
