@@ -48,12 +48,7 @@ export function setRootResourcePath(path: string) {
 }
 
 export function setResourcePath(resource: string, path: string) {
-  const resourcePaths = store.get('resourcePaths') as { [k: string]: string };
-
-  return store.set('resourcePaths', {
-    ...resourcePaths,
-    [resource]: path,
-  });
+  return store.set(`resourcePaths.${resource}`, path);
 }
 
 const SYMLINK: { [key in Resources]?: string } = {

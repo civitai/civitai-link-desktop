@@ -14,7 +14,6 @@ const schema: Schema<Record<string, unknown>> = {
 export const store = new Store({ schema });
 
 export async function addFile(file: Resource) {
-  const files = store.get('files') as ResourcesMap;
   const stats = await fileStats(file.localPath);
 
   const fileToAdd = { ...file, hash: file.hash.toLowerCase(), ...stats };
@@ -22,24 +21,15 @@ export async function addFile(file: Resource) {
   createModelJson(file);
   createPreviewImage(file);
 
-  return store.set('files', {
-    [fileToAdd.hash]: fileToAdd,
-    ...files,
-  });
+  return store.set(`files.${file.hash}`, fileToAdd);
 }
 
 export function deleteFile(hash: string) {
-  const files = store.get('files') as ResourcesMap;
-
-  delete files[hash.toLowerCase()];
-
-  return store.set('files', files);
+  return store.delete(`files.${hash.toLowerCase()}`);
 }
 
 export function searchFile(hash: string) {
-  const files = store.get('files') as ResourcesMap;
-
-  return files[hash.toLowerCase()];
+  return store.get(`files.${hash.toLowerCase()}`) as Resource;
 }
 
 export function findFileByFilename(filename: string) {
@@ -65,12 +55,7 @@ export function searchFileByModelVersionId(modelVersionId: number) {
 }
 
 export function updateFile(file: Resource) {
-  const files = store.get('files') as ResourcesMap;
-
-  return store.set('files', {
-    ...files,
-    [file.hash]: file,
-  });
+  return store.set(`files${file.hash}`, file);
 }
 
 export function getFiles() {

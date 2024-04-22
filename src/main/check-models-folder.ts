@@ -13,6 +13,7 @@ import path from 'path';
 import { socket } from './socket';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { checkMissingFields } from './utils/check-missing-fields';
+import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 
 export async function checkModelsFolder() {
   const apiKey = getApiKey();
@@ -29,6 +30,11 @@ export async function checkModelsFolder() {
 
   const promises = files.map(async (file) => {
     const filePath = path.join(modelDirectory, file);
+
+    // Short circuit if in not found store
+    const notFoundFile = searchNotFoundFile(file);
+
+    if (notFoundFile) return;
 
     // See if file already exists by filename
     const resource = findFileByFilename(path.basename(file));
@@ -55,6 +61,7 @@ export async function checkModelsFolder() {
         const model = await getModelByHash(modelHash);
         addFile({ ...model, localPath: filePath });
       } catch {
+        addNotFoundFile(file, modelHash, filePath);
         console.error('Error hash', modelHash, file);
       }
     }
