@@ -25,11 +25,8 @@ export function FileNotes({ file }: { file: Resource }) {
       setLoading(true);
       const data = await fetchFileNotes(file.hash);
 
-      if (data) {
-        setNote(data);
-        setUpdatedNote(data);
-      }
-
+      setNote(data);
+      setUpdatedNote(data);
       setLoading(false);
     };
 
