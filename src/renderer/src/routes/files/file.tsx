@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import classnames from 'classnames';
 import prettyBytes from 'pretty-bytes';
+import { FileNotes } from '@/components/files/file-notes';
 
 export function File() {
   const { hash } = useParams();
@@ -128,6 +129,7 @@ export function File() {
               ) : null}
             </tbody>
           </table>
+          <FileNotes file={file} />
         </div>
       </ScrollArea>
     </div>

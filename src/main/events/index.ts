@@ -18,11 +18,13 @@ import { eventSearchFile } from './search-file';
 import { app } from 'electron';
 import { eventFetchMetadata } from './fetch-metadata';
 import { eventSetAlwaysOnTop } from './set-always-on-top';
+import { eventFetchFileNotes, eventSaveFileNotes } from './notes';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
 };
 
+// TODO: Combine some of the event files
 export function eventsListeners({ mainWindow }: eventsListenersParams) {
   // App events
   ipcMain.on('init', () => {
@@ -53,6 +55,7 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   });
   ipcMain.on('set-api-key', eventSetApiKey);
   ipcMain.on('set-stable-diffusion', eventSetStableDiffusion);
+  ipcMain.on('save-file-notes', eventSaveFileNotes);
 
   // Misc
   ipcMain.on('resource-remove', (_, resource) =>
@@ -69,4 +72,5 @@ export function eventsListeners({ mainWindow }: eventsListenersParams) {
   ipcMain.on('fetch-vault-meta', eventFetchVaultMeta);
   ipcMain.on('fetch-vault-models', eventFetchVaultModels);
   ipcMain.handle('fetch-metadata', eventFetchMetadata);
+  ipcMain.handle('fetch-file-notes', eventFetchFileNotes);
 }

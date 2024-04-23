@@ -70,5 +70,11 @@ export function useApi() {
     setAlwaysOnTop: async (alwaysOnTop: boolean) => {
       return await window.api.setAlwaysOnTop(alwaysOnTop);
     },
+    fetchFileNotes: async (hash: string) => {
+      return await window.api.fetchFileNotes(hash);
+    },
+    saveFileNotes: async (hash: string, notes: string) => {
+      return await window.api.saveFileNotes(hash, notes);
+    },
   };
 }
