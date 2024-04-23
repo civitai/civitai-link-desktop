@@ -57,7 +57,10 @@ export function FileActions({ file }: FileActionsProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon">
-                <a href={file.civitaiUrl} target="_blank">
+                <a
+                  href={`${file.civitaiUrl}?modelVersionId=${file.modelVersionId}`}
+                  target="_blank"
+                >
                   <ExternalLink className="h-4 w-4" />
                   <span className="sr-only">Open Model on Civitai</span>
                 </a>
