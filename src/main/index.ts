@@ -123,7 +123,9 @@ function createWindow() {
   });
 
   mainWindow.on('close', function (event) {
-    if (!isQuiting) {
+    const platform = process.platform;
+
+    if (!isQuiting && (platform === 'darwin' || platform === 'win32')) {
       event.preventDefault();
       mainWindow.hide();
     } else {
