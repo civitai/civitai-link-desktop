@@ -69,8 +69,12 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
 
     return resource;
   } catch (error: any | AxiosError) {
-    console.error('Error fetching model by hash: ', error.response.data);
-    throw error.response.data;
+    if (error.response) {
+      console.error('Error fetching model by hash: ', error.response.data);
+      throw error.response.data;
+    } else {
+      throw new Error(`Error fetching model by hash: ${hash}`);
+    }
   }
 };
 
