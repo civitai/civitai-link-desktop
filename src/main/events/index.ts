@@ -1,24 +1,34 @@
 import { BrowserWindow, ipcMain } from 'electron';
-import { eventSetKey } from './set-key';
-import { eventOpenRootModelFolder } from './open-root-model-folder';
-import { eventCloseApp } from './close-app';
+import { app } from 'electron';
+
+// Settings Events
 import { eventClearSettings } from './clear-settings';
+import { eventSetKey } from './set-key';
 import { eventSetRootPath } from './set-root-path';
 import { eventSetPath } from './set-path';
-import { eventResourceRemove } from './resource-remove';
-import { eventInit } from './init';
 import { eventSetNSFW } from './set-nsfw';
-import { eventOpenModelFileFolder } from './open-model-file-folder';
 import { eventSetApiKey } from './set-api-key';
-import { eventFetchVaultMeta } from './fetch-vault-meta';
-import { eventToggleVaultItem } from './toggle-vault-item';
-import { eventFetchVaultModels } from './fetch-vault-models';
 import { eventSetStableDiffusion } from './set-stable-diffusion';
-import { eventSearchFile } from './search-file';
-import { app } from 'electron';
-import { eventFetchMetadata } from './fetch-metadata';
 import { eventSetAlwaysOnTop } from './set-always-on-top';
+
+// App Events
+import { eventInit } from './init';
+import { eventOpenRootModelFolder } from './open-root-model-folder';
+import { eventCloseApp } from './close-app';
+
+// File Events
+import { eventResourceRemove } from './resource-remove';
+import { eventOpenModelFileFolder } from './open-model-file-folder';
+import { eventSearchFile } from './search-file';
+import { eventFetchMetadata } from './fetch-metadata';
 import { eventFetchFileNotes, eventSaveFileNotes } from './notes';
+
+// Vault Events
+import {
+  eventFetchVaultModels,
+  eventToggleVaultItem,
+  eventFetchVaultMeta,
+} from './vault';
 
 type eventsListenersParams = {
   mainWindow: BrowserWindow;
