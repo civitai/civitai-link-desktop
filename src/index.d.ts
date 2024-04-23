@@ -33,6 +33,8 @@ declare global {
       fetchMetadata: (localPath: string) => JSON;
       getRootPath: () => string;
       setAlwaysOnTop: (alwaysOnTop: boolean) => void;
+      fetchFileNotes: (hash: string) => string;
+      saveFileNotes: (hash: string, notes: string) => void;
     };
   }
 
@@ -55,6 +57,7 @@ declare global {
     description?: string;
     baseModel?: string;
     fileSize?: number; // bytes
+    notes?: string;
   };
 
   enum ActivityType {

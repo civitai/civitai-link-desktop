@@ -7,6 +7,14 @@ import {
 } from '../store/files';
 import { setVault, setVaultMeta } from '../store/vault';
 
+export function eventFetchVaultModels() {
+  setVault();
+}
+
+export function eventFetchVaultMeta() {
+  setVaultMeta();
+}
+
 export async function eventToggleVaultItem(
   _,
   { hash, modelVersionId }: { hash?: string; modelVersionId: number },

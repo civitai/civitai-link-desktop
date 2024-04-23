@@ -46,6 +46,10 @@ const api = {
   getRootPath: () => ipcRenderer.invoke('get-root-path'),
   setAlwaysOnTop: (alwaysOnTop: boolean) =>
     ipcRenderer.send('set-always-on-top', alwaysOnTop),
+  fetchFileNotes: (hash: string) =>
+    ipcRenderer.invoke('fetch-file-notes', hash),
+  saveFileNotes: (hash: string, notes: string) =>
+    ipcRenderer.send('save-file-notes', { hash, notes }),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
