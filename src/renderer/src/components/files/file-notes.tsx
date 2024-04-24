@@ -54,26 +54,26 @@ export function FileNotes({ file }: { file: Resource }) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Update Notes</DialogTitle>
-          <DialogDescription>
-            <Textarea
-              className="min-h-48"
-              value={updatedNote}
-              onChange={(event) => setUpdatedNote(event.target.value)}
-            />
-          </DialogDescription>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                type="button"
-                variant="secondary"
-                className="p-2"
-                onClick={handleSaveFileNotes}
-              >
-                Save
-              </Button>
-            </DialogClose>
-          </DialogFooter>
         </DialogHeader>
+        <DialogDescription>
+          <Textarea
+            className="min-h-48 resize-none max-h-48 bg-black/20 border border-[#25262b] rounded-lg p-2 w-full"
+            value={updatedNote}
+            onChange={(event) => setUpdatedNote(event.target.value)}
+          />
+        </DialogDescription>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button
+              type="button"
+              variant="secondary"
+              className="p-2"
+              onClick={handleSaveFileNotes}
+            >
+              Save
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
