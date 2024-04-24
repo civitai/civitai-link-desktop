@@ -40,9 +40,6 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
     // Filter NSFW based on settings
     const nsfw = getSettings().nsfw;
     const previewImageUrl = data.images.find((image) => {
-      // Dont return images without meta
-      if (!image.meta) return false;
-
       // If NSFW is enabled, return the first image
       if (nsfw) return true;
 
