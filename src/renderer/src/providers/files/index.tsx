@@ -349,18 +349,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('files-update', function (_, files) {
       setFileList(files);
-
-      if (!searchTerm) {
-        setFilteredFileList(files);
-      } else {
-        searchFiles(searchTerm);
-      }
     });
 
     return () => {
       ipcRenderer.removeAllListeners('files-update');
     };
-  }, [searchTerm]);
+  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
 
   // Get initial store on load
   useEffect(() => {
