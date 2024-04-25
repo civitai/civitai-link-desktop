@@ -5,28 +5,14 @@ export function folderWatcher() {
   let watcher;
 
   const rootResourcePath = getRootResourcePath();
+  // TODO: Need to check all folders
 
   if (rootResourcePath && rootResourcePath !== '') {
-    // @ts-ignore
     watcher = chokidar
       .watch(rootResourcePath, { ignored: /(^|[\/\\])\../ })
-      .on('add, unlink', (event, path) => {
-        console.log('Watching model directory: ', rootResourcePath);
-        console.log(event, path);
-        // Generate hash from file
-
-        // event === 'add'
-        // Lookup hash in store
-        // Add if doesnt exist
-
-        // const resourceList = resourcesList();
-        // socketCommandStatus({ type: 'resources:list', resources: resourceList });
-        // resources.append({'type': type, 'name': name, 'hash': hash, 'path': filename, 'hasPreview': has_preview(filename), 'hasInfo': has_info(filename) })
-
-        // event === 'unlink'
-        // Remove hash from store
-        // TODO: This wont work because we need to read the file to get the hash
-      });
+      .on('add', (path) => console.log(`File ${path} has been added`)) // Could use this as the init for loading dir checks
+      // .on('change', (path) => console.log(`File ${path} has been changed`)) // Moving files adds and unlinks
+      .on('unlink', (path) => console.log(`File ${path} has been removed`));
   }
 
   // This is in case the directory changes

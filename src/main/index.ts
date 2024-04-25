@@ -22,6 +22,7 @@ import { getResourcePath, getRootResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
+import { folderWatcher } from './folder-watcher';
 
 // Colored Logo Assets
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
@@ -115,6 +116,7 @@ app.whenReady().then(async () => {
   setVault();
 
   // Watchers/Listeners
+  folderWatcher();
   eventsListeners();
   watcherActivities();
   watcherFiles();
