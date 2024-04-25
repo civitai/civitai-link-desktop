@@ -37,7 +37,7 @@ import {
 } from './store/vault';
 import unhandled from 'electron-unhandled';
 import electronDl from 'electron-dl';
-import { createWindow, getWindow } from './browser-window';
+import { createWindow, getWindow, setIsQuiting } from './browser-window';
 
 electronDl();
 
@@ -46,8 +46,6 @@ unhandled({
   showDialog: false,
 });
 
-const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
-
 log.info('Starting App...');
 
 autoUpdater.logger = log;
@@ -55,7 +53,6 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
 let tray;
-let isQuiting = DEBUG;
 
 function toggleWindow() {
   getWindow().isDestroyed() ? createWindow() : showWindow();
@@ -84,7 +81,7 @@ app.whenReady().then(async () => {
     {
       label: 'Quit',
       click: () => {
-        isQuiting = true;
+        setIsQuiting();
         app.quit();
       },
     },

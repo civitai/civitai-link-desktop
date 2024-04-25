@@ -107,6 +107,10 @@ export function createWindow() {
   }
 }
 
+export function setIsQuiting() {
+  isQuiting = true;
+}
+
 export function getWindow() {
   return mainWindow;
 }
