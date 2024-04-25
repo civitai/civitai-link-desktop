@@ -17,6 +17,7 @@ import {
 } from './commands';
 import { BrowserWindow } from 'electron';
 import { filterResourcesList } from './commands/filter-reources-list';
+import { getWindow } from './browser-window';
 
 export const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, {
   path: '/api/socketio',
@@ -46,11 +47,11 @@ export function leaveSocketRoom() {
 }
 
 type socketIOConnectParams = {
-  mainWindow: BrowserWindow;
   app: Electron.App;
 };
 
-export function socketIOConnect({ mainWindow, app }: socketIOConnectParams) {
+export function socketIOConnect({ app }: socketIOConnectParams) {
+  const mainWindow = getWindow();
   socket.connect();
   console.log('Socket connecting...');
   setConnectionStatus(ConnectionStatus.CONNECTING);

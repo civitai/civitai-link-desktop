@@ -1,5 +1,6 @@
 import Store, { Schema } from 'electron-store';
 import { fetchVaultMeta, fetchVaultModels } from '../civitai-api';
+import { getWindow } from '../browser-window';
 
 const schema: Schema<Record<string, unknown>> = {
   vaultMeta: {
@@ -47,18 +48,14 @@ export function clearVault() {
   store.clear();
 }
 
-type watcherVaultParams = {
-  mainWindow: Electron.BrowserWindow;
-};
-
-export function watchVaultMeta({ mainWindow }: watcherVaultParams) {
+export function watchVaultMeta() {
   store.onDidChange('vaultMeta', (newValue) => {
-    mainWindow.webContents.send('vault-meta-update', newValue);
+    getWindow().webContents.send('vault-meta-update', newValue);
   });
 }
 
-export function watchVault({ mainWindow }: watcherVaultParams) {
+export function watchVault() {
   store.onDidChange('vaultItems', (newValue) => {
-    mainWindow.webContents.send('vault-update', newValue);
+    getWindow().webContents.send('vault-update', newValue);
   });
 }

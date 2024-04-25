@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import axios from 'axios';
+import electronDl, { download } from 'electron-dl';
+import { getWindow } from '../browser-window';
 
 export async function createPreviewImage(file: Resource) {
   if (!file.previewImageUrl || !file.localPath) return;
@@ -12,9 +13,18 @@ export async function createPreviewImage(file: Resource) {
 
   if (fs.existsSync(previewPath)) return;
 
-  const response = await axios.get(file.previewImageUrl, {
-    responseType: 'arraybuffer',
-  });
-
-  return await fs.promises.writeFile(previewPath, response.data);
+  try {
+    await download(getWindow(), file.previewImageUrl, {
+      directory: path.dirname(previewPath),
+      filename: path.basename(previewPath),
+      showBadge: false,
+      showProgressBar: false,
+    });
+  } catch (error) {
+    if (error instanceof electronDl.CancelError) {
+      console.info('item.cancel() was called');
+    } else {
+      console.error(error);
+    }
+  }
 }

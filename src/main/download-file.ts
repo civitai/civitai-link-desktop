@@ -8,6 +8,7 @@ import { updateActivity } from './store/activities';
 import { getRootResourcePath } from './store/paths';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { v4 as uuid } from 'uuid';
+import { findOrCreateFolder } from './utils/find-or-create-folder';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -126,6 +127,8 @@ export async function downloadFile({
     };
 
     console.log("Move file to: '" + filePath + "'!");
+    findOrCreateFolder(path.dirname(filePath));
+
     fs.renameSync(tempFilePath, filePath);
 
     updateActivity(activity);

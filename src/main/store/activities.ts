@@ -1,4 +1,5 @@
 import Store, { Schema } from 'electron-store';
+import { getWindow } from '../browser-window';
 
 const schema: Schema<Record<string, unknown>> = {
   activities: {
@@ -27,13 +28,9 @@ export function getActivities() {
   return store.get('activities') as ActivityItem[];
 }
 
-type watcherActivitiesParams = {
-  mainWindow: Electron.BrowserWindow;
-};
-
-export function watcherActivities({ mainWindow }: watcherActivitiesParams) {
+export function watcherActivities() {
   store.onDidChange('activities', (newValue) => {
-    mainWindow.webContents.send('activity-update', newValue);
+    getWindow().webContents.send('activity-update', newValue);
   });
 }
 
