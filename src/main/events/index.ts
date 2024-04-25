@@ -1,5 +1,6 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 import { app } from 'electron';
+import { getWindow } from '../browser-window';
 
 // Settings Events
 import { eventClearSettings } from './clear-settings';
@@ -30,12 +31,9 @@ import {
   eventFetchVaultMeta,
 } from './vault';
 
-type eventsListenersParams = {
-  mainWindow: BrowserWindow;
-};
+export function eventsListeners() {
+  const mainWindow = getWindow();
 
-// TODO: Combine some of the event files
-export function eventsListeners({ mainWindow }: eventsListenersParams) {
   // App events
   ipcMain.on('init', () => {
     mainWindow.setMinimumSize(1060, 600);

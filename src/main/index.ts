@@ -1,20 +1,16 @@
 import { autoUpdater } from 'electron-updater';
-import { electronApp, is, optimizer } from '@electron-toolkit/utils';
+import { electronApp, optimizer } from '@electron-toolkit/utils';
 import log from 'electron-log';
 import {
   BrowserWindow,
   app,
   ipcMain,
-  shell,
   dialog,
   Tray,
   nativeImage,
   Menu,
-  nativeTheme,
 } from 'electron';
-import { join } from 'path';
 import {
-  getUIStore,
   getUpgradeKey,
   store,
   ConnectionStatus,
@@ -26,32 +22,29 @@ import { getResourcePath, getRootResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
 import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
-// import { folderWatcher } from './folder-watcher';
 
 // Colored Logo Assets
-import logo from '../../resources/favicon@2x.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
-import { getActivities, watcherActivities } from './store/activities';
-import { getFiles, watcherFiles } from './store/files';
+import { watcherActivities } from './store/activities';
+import { watcherFiles } from './store/files';
 import {
-  getVaultMeta,
   setVaultMeta,
   setVault,
-  getVault,
   watchVault,
   watchVaultMeta,
 } from './store/vault';
 import unhandled from 'electron-unhandled';
-import { clearTempFolders } from './utils/clear-temp-folders';
+import electronDl from 'electron-dl';
+import { createWindow, getWindow, setIsQuiting } from './browser-window';
+
+electronDl();
 
 unhandled({
   logger: log.error,
   showDialog: false,
 });
-
-const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 
 log.info('Starting App...');
 
@@ -59,108 +52,15 @@ autoUpdater.logger = log;
 // @ts-ignore
 autoUpdater.logger.transports.file.level = 'info';
 
-let mainWindow;
 let tray;
-let isQuiting = DEBUG;
-
-//defaults
-let width = getUpgradeKey() ? 1060 : 400;
-let height = 600;
-
-function createWindow() {
-  const upgradeKey = getUpgradeKey();
-
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: width,
-    height: height,
-    minHeight: 600,
-    minWidth: 1060,
-    show: true,
-    useContentSize: false,
-    resizable: true,
-    hasShadow: true,
-    darkTheme: true,
-    frame: true,
-    titleBarOverlay: {
-      color: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
-      symbolColor: nativeTheme.shouldUseDarkColors ? '#fff' : '#000',
-    },
-    ...(process.platform === 'linux' ? { logo } : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      backgroundThrottling: false,
-    },
-    icon: logo,
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
-    titleBarStyle: 'hidden',
-  });
-
-  // Prevents dock icon from appearing on macOS
-  mainWindow.setMenu(null);
-
-  mainWindow.on('ready-to-show', () => {
-    if (DEBUG) {
-      mainWindow.webContents.openDevTools();
-    }
-
-    // Pass upgradeKey to window
-    if (upgradeKey) {
-      mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
-    }
-
-    mainWindow.webContents.send('store-ready', {
-      ...getUIStore(),
-      vaultMeta: getVaultMeta(),
-      vault: getVault(),
-      files: getFiles(),
-      activities: getActivities(),
-      appVersion: app.getVersion(),
-    });
-
-    mainWindow.webContents.send('app-ready', true);
-  });
-
-  mainWindow.on('close', function (event) {
-    const platform = process.platform;
-
-    if (!isQuiting && (platform === 'darwin' || platform === 'win32')) {
-      event.preventDefault();
-      mainWindow.hide();
-    } else {
-      clearTempFolders();
-    }
-
-    return false;
-  });
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url);
-    return { action: 'deny' };
-  });
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
-    mainWindow.showInactive();
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'));
-  }
-
-  // Only run updater when not in debug mode
-  if (!DEBUG) {
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
 
 function toggleWindow() {
-  mainWindow.isDestroyed() ? createWindow() : showWindow();
+  getWindow().isDestroyed() ? createWindow() : showWindow();
 }
 
 function showWindow() {
-  mainWindow.isFocused() ? mainWindow.hide() : mainWindow.show();
+  const mainWindow = getWindow();
+  getWindow().isFocused() ? mainWindow.hide() : mainWindow.show();
 }
 
 Menu.setApplicationMenu(null);
@@ -169,6 +69,9 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  createWindow();
+  const mainWindow = getWindow();
+
   log.info('App ready');
   // Set logo to disconnected (red)
   const icon = nativeImage.createFromPath(logoDisconnected);
@@ -178,7 +81,7 @@ app.whenReady().then(async () => {
     {
       label: 'Quit',
       click: () => {
-        isQuiting = true;
+        setIsQuiting();
         app.quit();
       },
     },
@@ -205,21 +108,20 @@ app.whenReady().then(async () => {
   if (getUpgradeKey()) {
     checkModelsFolder({});
   }
-  createWindow();
-  socketIOConnect({ mainWindow, app });
-  // folderWatcher();
+
+  socketIOConnect({ app });
   setUser();
   setVaultMeta();
   setVault();
 
   // Watchers/Listeners
-  eventsListeners({ mainWindow });
-  watcherActivities({ mainWindow });
-  watcherFiles({ mainWindow });
+  eventsListeners();
+  watcherActivities();
+  watcherFiles();
   watcherUser({ mainWindow });
-  watchVault({ mainWindow });
+  watchVault();
   watchApiKey({ mainWindow });
-  watchVaultMeta({ mainWindow });
+  watchVaultMeta();
 
   ipcMain.handle('get-resource-path', (_, type: keyof typeof ResourceType) => {
     return getResourcePath(type);

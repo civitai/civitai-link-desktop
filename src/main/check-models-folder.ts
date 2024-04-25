@@ -66,7 +66,7 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
   });
 
   // We dont need to return results
-  await processPromisesBatch(promises, 10);
+  await processPromisesBatch(promises, 5);
 
   // Only check vault if API Key exists
   if (apiKey) {

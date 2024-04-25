@@ -1,8 +1,8 @@
-import { BrowserWindow } from 'electron';
 import Store, { Schema } from 'electron-store';
 import { createModelJson } from '../utils/create-model-json';
 import { createPreviewImage } from '../utils/create-preview-image';
 import { fileStats } from '../utils/file-stats';
+import { getWindow } from '../browser-window';
 
 const schema: Schema<Record<string, unknown>> = {
   files: {
@@ -93,12 +93,8 @@ export function clearFiles() {
   store.clear();
 }
 
-type watcherFilesParams = {
-  mainWindow: BrowserWindow;
-};
-
-export function watcherFiles({ mainWindow }: watcherFilesParams) {
+export function watcherFiles() {
   store.onDidChange('files', (newValue) => {
-    mainWindow.webContents.send('files-update', newValue);
+    getWindow().webContents.send('files-update', newValue);
   });
 }

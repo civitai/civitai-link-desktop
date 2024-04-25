@@ -1,18 +1,20 @@
 import fs from 'fs';
 
+const SD_VERSION = [
+  { baseModel: 'SD 1', version: 'SD1' },
+  { baseModel: 'SD 2', version: 'SD2' },
+  { baseModel: 'SDXL', version: 'SDXL' },
+  { baseModel: 'PONY', version: 'PONY' },
+];
+
 export function createModelJson(file: Resource) {
-  let sd_version = 'unknown';
-  if (file.baseModel?.includes('SD 1')) {
-    sd_version = 'SD1';
-  } else if (file.baseModel?.includes('SD 2')) {
-    sd_version = 'SD2';
-  } else if (file.baseModel?.includes('SDXL')) {
-    sd_version = 'SDXL';
-  }
+  const sdVersion = SD_VERSION.find((version) =>
+    file.baseModel?.includes(version.baseModel),
+  );
 
   const data = {
     description: file.description,
-    'sd version': sd_version,
+    'sd version': sdVersion?.version ? sdVersion.version : 'unknown',
     'activation text': file.trainedWords?.join(', '),
     'preferred weight': 0.8,
     notes: '',
