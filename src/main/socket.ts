@@ -15,7 +15,6 @@ import {
   resourcesAdd,
   resourcesRemove,
 } from './commands';
-import { BrowserWindow } from 'electron';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { getWindow } from './browser-window';
 
