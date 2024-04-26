@@ -7,23 +7,20 @@ import {
 } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useApi } from '@/hooks/use-api';
+import {
+  SortType,
+  SortDirection,
+  reduceFileMap,
+  sortModelName,
+  sortDownloadDate,
+  sortFileSize,
+} from '@/lib/search-filter';
 
 type RemoveActivityParams = {
   hash: string;
   title: string;
   description: string;
 };
-
-export enum SortType {
-  MODEL_NAME = 'modelName',
-  DOWNLOAD_DATE = 'downloadDate',
-  FILE_SIZE = 'fileSize',
-}
-
-export enum SortDirection {
-  ASC = 'asc',
-  DESC = 'desc',
-}
 
 export enum FileListFilters {
   TYPE = 'type',
@@ -56,11 +53,11 @@ export enum BaseModels {
 type FileContextType = {
   fileList: ResourcesMap;
   removeActivity: (param: RemoveActivityParams) => void;
+  fileListCount: number;
   filteredFileList: ResourcesMap;
   searchFiles: (search: string) => void;
   searchTerm: string;
   setSearchTerm: (search: string) => void;
-  fileListCount: number;
   sortFiles: (type: SortType) => void;
   sortDirection?: SortDirection;
   sortType: SortType | null;
@@ -93,82 +90,6 @@ const defaultValue: FileContextType = {
 
 const FileContext = createContext<FileContextType>(defaultValue);
 export const useFile = () => useContext(FileContext);
-
-const reduceFileMap = (
-  acc: Record<string, Resource>,
-  file: Resource,
-): Record<string, Resource> => {
-  return {
-    ...acc,
-    [file.hash]: file,
-  };
-};
-
-const sortModelName = (
-  a: Resource,
-  b: Resource,
-  type: keyof Resource,
-  direction: SortDirection,
-) => {
-  const sortType = type as keyof Resource;
-  const filteredFileListA = a[sortType] as string;
-  const filteredFileListB = b[sortType] as string;
-
-  if (!filteredFileListA) return 1;
-  if (!filteredFileListB) return -1;
-
-  if (direction === SortDirection.DESC) {
-    return filteredFileListB.localeCompare(filteredFileListA);
-  } else {
-    return filteredFileListA.localeCompare(filteredFileListB);
-  }
-};
-
-const sortDownloadDate = (
-  a: Resource,
-  b: Resource,
-  type: keyof Resource,
-  direction: SortDirection,
-) => {
-  const sortType = type as keyof Resource;
-  const filteredFileListA = a[sortType] as string;
-  const filteredFileListB = b[sortType] as string;
-
-  if (!filteredFileListA) return 1;
-  if (!filteredFileListB) return -1;
-
-  if (direction === SortDirection.DESC) {
-    return (
-      new Date(filteredFileListB).getTime() -
-      new Date(filteredFileListA).getTime()
-    );
-  } else {
-    return (
-      new Date(filteredFileListA).getTime() -
-      new Date(filteredFileListB).getTime()
-    );
-  }
-};
-
-const sortFileSize = (
-  a: Resource,
-  b: Resource,
-  type: keyof Resource,
-  direction: SortDirection,
-) => {
-  const sortType = type as keyof Resource;
-  const filteredFileListA = a[sortType] as number;
-  const filteredFileListB = b[sortType] as number;
-
-  if (!filteredFileListA) return 1;
-  if (!filteredFileListB) return -1;
-
-  if (direction === SortDirection.DESC) {
-    return filteredFileListA - filteredFileListB;
-  } else {
-    return filteredFileListB - filteredFileListA;
-  }
-};
 
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;

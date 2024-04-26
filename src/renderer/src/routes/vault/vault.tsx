@@ -6,15 +6,25 @@ import { Progress } from '@/components/ui/progress';
 import { VaultItem } from '@/components/vault/vault-item';
 import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { Vault as VaultIcon } from 'lucide-react';
+import { Vault as VaultIcon, XCircle } from 'lucide-react';
 import { formatKBytes } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Separator } from '@/components/ui/separator';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/hooks/use-debounce';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
-  const { vaultMeta, vault } = useVault();
+  const {
+    vaultMeta,
+    vault,
+    setSearchTerm,
+    searchFiles,
+    searchTerm,
+    filteredVault,
+  } = useVault();
   const { fetchVaultMeta } = useApi();
   const percentUsed = vaultMeta
     ? (
@@ -28,6 +38,17 @@ export function Vault() {
       fetchVaultMeta();
     }
   }, [apiKey]);
+
+  const clearFilter = () => {
+    setSearchTerm('');
+    searchFiles('');
+  };
+
+  const search = () => {
+    searchFiles(searchTerm);
+  };
+
+  const debouncedOnChange = useDebounce(search);
 
   if (!apiKey) {
     return (
@@ -70,15 +91,38 @@ export function Vault() {
           </div>
         </div>
         <Separator />
+        <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <form>
+            <div className="relative">
+              <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search"
+                className="pl-8"
+                onChange={(e) => {
+                  debouncedOnChange();
+                  setSearchTerm(e.target.value);
+                }}
+                value={searchTerm}
+              />
+              {searchTerm ? (
+                <XCircle
+                  className="cursor-pointer absolute right-2 top-3 text-muted-foreground"
+                  onClick={clearFilter}
+                  size={18}
+                />
+              ) : null}
+            </div>
+          </form>
+        </div>
         <ScrollArea className="h-full">
           <div className="flex flex-col gap-2 bg-background px-4 pt-4 pb-[145px]">
-            {vault.length === 0 ? (
+            {filteredVault.length === 0 ? (
               <div className="flex flex-col items-center justify-center">
                 <VaultIcon />
                 <p className="text-center text-sm">No Vault Items</p>
               </div>
             ) : null}
-            {vault.map((item) => (
+            {filteredVault.map((item) => (
               <VaultItem {...item} key={item.modelVersionId} />
             ))}
           </div>

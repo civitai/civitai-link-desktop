@@ -12,7 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { SortType, SortDirection } from '@/providers/files';
+import { SortType, SortDirection } from '@/lib/search-filter';
 
 export function FilesSort() {
   const { sortFiles, sortType: type, sortDirection } = useFile();
