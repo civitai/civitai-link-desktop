@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { VaultSort } from '@/components/vault/vault-sort';
+import { VaultFilter } from '@/components/vault/vault-filter';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
@@ -114,7 +115,7 @@ export function Vault() {
               <TooltipContent side="bottom">
                 {canRefresh
                   ? 'Re-fetch vault items'
-                  : "Can't refresh for 1 minute"}
+                  : `Can't refresh for 1 minute`}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -148,7 +149,10 @@ export function Vault() {
               ) : null}
             </div>
           </form>
-          <VaultSort />
+          <div className="flex">
+            <VaultFilter />
+            <VaultSort />
+          </div>
         </div>
         <ScrollArea className="h-full">
           <div className="flex flex-col gap-2 bg-background px-4 pt-4 pb-[145px]">

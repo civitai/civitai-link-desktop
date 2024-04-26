@@ -13,6 +13,11 @@ type VaultMeta = {
   storageKb: number;
 };
 
+export enum VaultFilters {
+  TYPE = 'type',
+  BASE_MODEL = 'baseModel',
+}
+
 export type VaultItem = {
   id: number;
   modelName: string;
@@ -30,6 +35,7 @@ export type VaultItem = {
 type VaultContextType = {
   refetchVault: () => void;
   canRefresh: boolean;
+  refetchDate?: Date | null;
   vaultMeta: VaultMeta | null;
   vault: VaultItem[];
   filteredVault: VaultItem[];
@@ -39,11 +45,18 @@ type VaultContextType = {
   sortVault: (type: VaultSortType) => void;
   sortDirection?: SortDirection;
   sortType: VaultSortType | null;
+  clearFilters: () => void;
+  filterVault: (type: string, filterType: VaultFilters) => void;
+  appliedFilters: {
+    modelType: string[];
+    baseModelType: string[];
+  };
 };
 
 const defaultValue: VaultContextType = {
   refetchVault: () => {},
   canRefresh: true,
+  refetchDate: null,
   vaultMeta: null,
   vault: [],
   filteredVault: [],
@@ -53,6 +66,12 @@ const defaultValue: VaultContextType = {
   sortVault: () => {},
   sortDirection: SortDirection.DESC,
   sortType: null,
+  clearFilters: () => {},
+  filterVault: () => {},
+  appliedFilters: {
+    modelType: [],
+    baseModelType: [],
+  },
 };
 
 const VaultContext = createContext<VaultContextType>(defaultValue);
@@ -74,8 +93,15 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     VaultSortType.ADDED_DATE,
   );
 
+  // Filter types
+  const [modelTypeArray, setModelTypeArray] = useState<string[]>([]);
+  const [baseModelArray, setBaseModelArray] = useState<string[]>([]);
+
   const searchVault = useCallback(
     (search: string) => {
+      const modelLength = modelTypeArray.length > 0;
+      const baseModelLength = baseModelArray.length > 0;
+
       const filtered = vault
         .filter((file) => {
           if (search === '') {
@@ -83,6 +109,24 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
           }
 
           return file.modelName?.toLowerCase().includes(search.toLowerCase());
+        })
+        .filter((file) => {
+          if (!file.type) return false;
+
+          if (!modelLength) {
+            return true;
+          }
+
+          return modelTypeArray.includes(file.type.toLowerCase());
+        })
+        .filter((file) => {
+          if (!file.baseModel) return false;
+
+          if (!baseModelLength) {
+            return true;
+          }
+
+          return baseModelArray.includes(file.baseModel?.toLowerCase());
         })
         .sort((a, b) => {
           if (sortDirection === SortDirection.DESC) {
@@ -117,7 +161,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
       setFilteredVault(filtered);
     },
-    [vault, sortType, sortDirection],
+    [vault, sortType, sortDirection, modelTypeArray, baseModelArray],
   );
 
   const sortVault = (type: VaultSortType) => {
@@ -127,6 +171,51 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
         ? SortDirection.DESC
         : SortDirection.ASC,
     );
+
+    searchVault(searchTerm);
+  };
+
+  const filterVault = (type: string, filterType: VaultFilters) => {
+    const typeLowerCase = type.toLowerCase();
+    let modelType: string[] = [...modelTypeArray];
+    let baseModelType: string[] = [...baseModelArray];
+
+    if (filterType === VaultFilters.BASE_MODEL) {
+      if (baseModelArray.includes(typeLowerCase)) {
+        const newBaseModelArray = baseModelArray.filter(
+          (baseModelType) => baseModelType !== typeLowerCase,
+        );
+        setBaseModelArray(newBaseModelArray);
+
+        baseModelType = newBaseModelArray;
+      } else {
+        setBaseModelArray([...baseModelArray, typeLowerCase]);
+        baseModelType = [...baseModelArray, typeLowerCase];
+      }
+    }
+
+    if (filterType === VaultFilters.TYPE) {
+      if (modelTypeArray.includes(typeLowerCase)) {
+        const newModelTypeArray = modelTypeArray.filter(
+          (modelType) => modelType !== typeLowerCase,
+        );
+        setModelTypeArray(newModelTypeArray);
+
+        modelType = newModelTypeArray;
+      } else {
+        setModelTypeArray([...modelTypeArray, typeLowerCase]);
+        modelType = [...modelTypeArray, typeLowerCase];
+      }
+    }
+
+    setBaseModelArray(baseModelType);
+    setModelTypeArray(modelType);
+    searchVault(searchTerm);
+  };
+
+  const clearFilters = () => {
+    setModelTypeArray([]);
+    setBaseModelArray([]);
 
     searchVault(searchTerm);
   };
@@ -151,7 +240,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     searchVault(searchTerm);
-  }, [searchTerm, sortDirection, sortType]);
+  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
 
   useEffect(() => {
     ipcRenderer.on('vault-meta-update', function (_, message) {
@@ -192,6 +281,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
       value={{
         refetchVault,
         canRefresh,
+        refetchDate,
         vaultMeta,
         vault,
         filteredVault,
@@ -201,6 +291,12 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
         sortVault,
         sortDirection,
         sortType,
+        clearFilters,
+        filterVault,
+        appliedFilters: {
+          modelType: modelTypeArray,
+          baseModelType: baseModelArray,
+        },
       }}
     >
       {children}

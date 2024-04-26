@@ -26,29 +26,6 @@ export enum FileListFilters {
   BASE_MODEL = 'baseModel',
 }
 
-export enum ModelTypes {
-  CHECKPOINT = 'Checkpoint',
-  EMBEDDING = 'Embedding',
-  HYPERNETWORK = 'Hypernetwork',
-  AESTHETIC_GRADIENT = 'Aesthetic Gradient',
-  LORA = 'LoRA',
-  LYCORIS = 'LyCORIS',
-  DORA = 'DoRA',
-  CONTROLNET = 'ControlNet',
-  UPSCALER = 'Upscaler',
-  MOTION = 'Motion',
-  VAE = 'VAE',
-  POSES = 'Poses',
-  WILDCARDS = 'Wildcards',
-  WORKFLOWS = 'Workflows',
-}
-
-export enum BaseModels {
-  SD_1_5 = 'SD 1.5',
-  SDXL_1_0 = 'SDXL 1.0',
-  PONY = 'Pony',
-}
-
 type FileContextType = {
   fileList: ResourcesMap;
   removeActivity: (param: RemoveActivityParams) => void;
