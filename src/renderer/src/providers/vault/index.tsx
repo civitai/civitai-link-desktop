@@ -22,6 +22,9 @@ export type VaultItem = {
   modelVersionId: number;
   coverImageUrl: string;
   files: { url: string }[];
+  baseModel: string;
+  modelSizeKb: number;
+  addedAt: string;
 };
 
 type VaultContextType = {
@@ -57,7 +60,7 @@ export const useVault = () => useContext(VaultContext);
 
 export function VaultProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
-  const { fetchVaultMeta } = useApi();
+  const { fetchVaultMeta, fetchVaultModels } = useApi();
   const [vaultMeta, setVaultMeta] = useState<VaultMeta | null>(null);
   const [vault, setVault] = useState<VaultItem[]>([]);
   const [filteredVault, setFilteredVault] = useState<VaultItem[]>([]);
@@ -68,7 +71,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     SortDirection.DESC,
   );
   const [sortType, setSortType] = useState<VaultSortType>(
-    VaultSortType.MODEL_NAME,
+    VaultSortType.ADDED_DATE,
   );
 
   const searchVault = useCallback(
@@ -86,9 +89,25 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
             if (sortType === VaultSortType.MODEL_NAME) {
               return a.modelName.localeCompare(b.modelName);
             }
+            if (sortType === VaultSortType.ADDED_DATE) {
+              return (
+                new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+              );
+            }
+            if (sortType === VaultSortType.FILE_SIZE) {
+              return a.modelSizeKb - b.modelSizeKb;
+            }
           } else {
             if (sortType === VaultSortType.MODEL_NAME) {
               return b.modelName.localeCompare(a.modelName);
+            }
+            if (sortType === VaultSortType.ADDED_DATE) {
+              return (
+                new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime()
+              );
+            }
+            if (sortType === VaultSortType.FILE_SIZE) {
+              return b.modelSizeKb - a.modelSizeKb;
             }
           }
 
@@ -120,6 +139,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     ) {
       setRefetchDate(new Date());
       fetchVaultMeta();
+      fetchVaultModels();
       setCanRefresh(false);
 
       // Set timer to allow refresh

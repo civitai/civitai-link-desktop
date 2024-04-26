@@ -6,6 +6,8 @@ export enum SortType {
 
 export enum VaultSortType {
   MODEL_NAME = 'modelName',
+  ADDED_DATE = 'addedAt',
+  FILE_SIZE = 'modelSizeKb',
 }
 
 export enum SortDirection {

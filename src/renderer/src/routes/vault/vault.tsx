@@ -39,7 +39,7 @@ export function Vault() {
     searchTerm,
     filteredVault,
   } = useVault();
-  const { fetchVaultMeta } = useApi();
+  const { fetchVaultMeta, fetchVaultModels } = useApi();
   const percentUsed = vaultMeta
     ? (
         ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
@@ -50,6 +50,7 @@ export function Vault() {
   useEffect(() => {
     if (apiKey) {
       fetchVaultMeta();
+      fetchVaultModels();
     }
   }, [apiKey]);
 
