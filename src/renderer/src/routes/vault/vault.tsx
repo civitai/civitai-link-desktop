@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { VaultSort } from '@/components/vault/vault-sort';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
@@ -34,7 +35,7 @@ export function Vault() {
     vaultMeta,
     vault,
     setSearchTerm,
-    searchFiles,
+    searchVault,
     searchTerm,
     filteredVault,
   } = useVault();
@@ -54,11 +55,11 @@ export function Vault() {
 
   const clearFilter = () => {
     setSearchTerm('');
-    searchFiles('');
+    searchVault('');
   };
 
   const search = () => {
-    searchFiles(searchTerm);
+    searchVault(searchTerm);
   };
 
   const debouncedOnChange = useDebounce(search);
@@ -121,7 +122,7 @@ export function Vault() {
           </div>
         </div>
         <Separator />
-        <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex">
           <form>
             <div className="relative">
               <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
@@ -143,6 +144,7 @@ export function Vault() {
               ) : null}
             </div>
           </form>
+          <VaultSort />
         </div>
         <ScrollArea className="h-full">
           <div className="flex flex-col gap-2 bg-background px-4 pt-4 pb-[145px]">

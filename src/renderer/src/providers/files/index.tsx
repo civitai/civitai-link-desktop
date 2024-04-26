@@ -11,9 +11,8 @@ import {
   SortType,
   SortDirection,
   reduceFileMap,
-  sortModelName,
-  sortDownloadDate,
   sortFileSize,
+  sortResource,
 } from '@/lib/search-filter';
 
 type RemoveActivityParams = {
@@ -165,18 +164,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
           return baseModelArray.includes(file.baseModel?.toLowerCase());
         })
         .sort((a, b) => {
-          if (sortType === SortType.MODEL_NAME) {
-            return sortModelName(a, b, sortType, sortDirection);
-          }
-          if (sortType === SortType.DOWNLOAD_DATE) {
-            return sortDownloadDate(a, b, sortType, sortDirection);
-          }
           if (sortType === SortType.FILE_SIZE) {
             return sortFileSize(a, b, sortType, sortDirection);
           }
 
-          // Default to sorting by modelName
-          return 1;
+          return sortResource(a, b, sortType, sortDirection);
         })
         .reduce(reduceFileMap, {});
 

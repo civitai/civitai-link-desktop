@@ -6,15 +6,7 @@ import {
   useState,
 } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { set } from 'lodash';
-// import {
-//   SortType,
-//   SortDirection,
-//   reduceFileMap,
-//   sortModelName,
-//   sortDownloadDate,
-//   sortFileSize,
-// } from '@/lib/search-filter';
+import { SortType, SortDirection } from '@/lib/search-filter';
 
 type VaultMeta = {
   usedStorageKb: number;
@@ -39,8 +31,11 @@ type VaultContextType = {
   vault: VaultItem[];
   filteredVault: VaultItem[];
   setSearchTerm: (search: string) => void;
-  searchFiles: (search: string) => void;
+  searchVault: (search: string) => void;
   searchTerm: string;
+  sortVault: (type: SortType) => void;
+  sortDirection?: SortDirection;
+  sortType: SortType | null;
 };
 
 const defaultValue: VaultContextType = {
@@ -50,8 +45,11 @@ const defaultValue: VaultContextType = {
   vault: [],
   filteredVault: [],
   setSearchTerm: () => {},
-  searchFiles: () => {},
+  searchVault: () => {},
   searchTerm: '',
+  sortVault: () => {},
+  sortDirection: SortDirection.DESC,
+  sortType: null,
 };
 
 const VaultContext = createContext<VaultContextType>(defaultValue);
@@ -66,25 +64,51 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [refetchDate, setRefetchDate] = useState<Date | null>(null);
   const [canRefresh, setCanRefresh] = useState(true);
-  // const [sortDirection, setSortDirection] = useState<SortDirection>(
-  //   SortDirection.DESC,
-  // );
-  // const [sortType, setSortType] = useState<SortType>(SortType.DOWNLOAD_DATE);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    SortDirection.DESC,
+  );
+  const [sortType, setSortType] = useState<SortType>(SortType.DOWNLOAD_DATE);
 
-  const searchFiles = useCallback(
+  const searchVault = useCallback(
     (search: string) => {
-      const filtered = vault.filter((file) => {
-        if (search === '') {
-          return true;
-        }
+      const filtered = vault
+        .filter((file) => {
+          if (search === '') {
+            return true;
+          }
 
-        return file.modelName?.toLowerCase().includes(search.toLowerCase());
-      });
+          return file.modelName?.toLowerCase().includes(search.toLowerCase());
+        })
+        .sort((a, b) => {
+          if (sortDirection === SortDirection.DESC) {
+            if (sortType === SortType.MODEL_NAME) {
+              return a.modelName.localeCompare(b.modelName);
+            }
+          } else {
+            if (sortType === SortType.MODEL_NAME) {
+              return b.modelName.localeCompare(a.modelName);
+            }
+          }
+
+          // Default
+          return 1;
+        });
 
       setFilteredVault(filtered);
     },
-    [vault],
+    [vault, sortType, sortDirection],
   );
+
+  const sortVault = (type: SortType) => {
+    setSortType(type);
+    setSortDirection(
+      sortDirection === SortDirection.ASC
+        ? SortDirection.DESC
+        : SortDirection.ASC,
+    );
+
+    searchVault(searchTerm);
+  };
 
   const refetchVault = useCallback(() => {
     // Refetch if havent recently or over 5 minutes
@@ -102,6 +126,10 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
       }, 60_000);
     }
   }, [refetchDate]);
+
+  useEffect(() => {
+    searchVault(searchTerm);
+  }, [searchTerm, sortDirection, sortType]);
 
   useEffect(() => {
     ipcRenderer.on('vault-meta-update', function (_, message) {
@@ -146,8 +174,11 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
         vault,
         filteredVault,
         setSearchTerm,
-        searchFiles,
+        searchVault,
         searchTerm,
+        sortVault,
+        sortDirection,
+        sortType,
       }}
     >
       {children}

@@ -19,7 +19,7 @@ export const reduceFileMap = (
   };
 };
 
-export const sortModelName = (
+export const sortResource = (
   a: Resource,
   b: Resource,
   type: keyof Resource,
@@ -33,36 +33,29 @@ export const sortModelName = (
   if (!filteredFileListB) return -1;
 
   if (direction === SortDirection.DESC) {
-    return filteredFileListB.localeCompare(filteredFileListA);
+    if (sortType === SortType.MODEL_NAME) {
+      return filteredFileListB.localeCompare(filteredFileListA);
+    }
+    if (sortType === SortType.DOWNLOAD_DATE) {
+      return (
+        new Date(filteredFileListB).getTime() -
+        new Date(filteredFileListA).getTime()
+      );
+    }
   } else {
-    return filteredFileListA.localeCompare(filteredFileListB);
+    if (sortType === SortType.MODEL_NAME) {
+      return filteredFileListA.localeCompare(filteredFileListB);
+    }
+    if (sortType === SortType.DOWNLOAD_DATE) {
+      return (
+        new Date(filteredFileListA).getTime() -
+        new Date(filteredFileListB).getTime()
+      );
+    }
   }
-};
 
-export const sortDownloadDate = (
-  a: Resource,
-  b: Resource,
-  type: keyof Resource,
-  direction: SortDirection,
-) => {
-  const sortType = type as keyof Resource;
-  const filteredFileListA = a[sortType] as string;
-  const filteredFileListB = b[sortType] as string;
-
-  if (!filteredFileListA) return 1;
-  if (!filteredFileListB) return -1;
-
-  if (direction === SortDirection.DESC) {
-    return (
-      new Date(filteredFileListB).getTime() -
-      new Date(filteredFileListA).getTime()
-    );
-  } else {
-    return (
-      new Date(filteredFileListA).getTime() -
-      new Date(filteredFileListB).getTime()
-    );
-  }
+  // Default
+  return 1;
 };
 
 export const sortFileSize = (
