@@ -6,7 +6,12 @@ import { Progress } from '@/components/ui/progress';
 import { VaultItem } from '@/components/vault/vault-item';
 import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { Vault as VaultIcon, XCircle } from 'lucide-react';
+import {
+  RefreshCcw,
+  RefreshCwOff,
+  Vault as VaultIcon,
+  XCircle,
+} from 'lucide-react';
 import { formatKBytes } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PanelWrapper } from '@/layout/panel-wrapper';
@@ -14,10 +19,18 @@ import { Separator } from '@/components/ui/separator';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
   const {
+    refetchVault,
+    canRefresh,
     vaultMeta,
     vault,
     setSearchTerm,
@@ -82,7 +95,24 @@ export function Vault() {
   return (
     <PanelWrapper>
       <>
-        <div className="flex justify-end w-full items-center px-4 min-h-14">
+        <div className="flex justify-between w-full items-center px-4 min-h-14">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={refetchVault}>
+                {canRefresh ? (
+                  <RefreshCcw className="h-4 w-4" />
+                ) : (
+                  <RefreshCwOff className="h-4 w-4" color="#F15252" />
+                )}
+                <span className="sr-only">Re-fetch vault items</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {canRefresh
+                ? 'Re-fetch vault items'
+                : "Can't refresh for 1 minute"}
+            </TooltipContent>
+          </Tooltip>
           <div className="flex flex-col text-right gap-2">
             <Progress value={parseFloat(percentUsed)} />
             <p className="text-sm text-[#909296]">
