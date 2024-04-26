@@ -21,7 +21,7 @@ export async function addFile(file: Resource) {
   createModelJson(file);
   createPreviewImage(file);
 
-  return store.set(`files.${file.hash}`, fileToAdd);
+  return store.set(`files.${file.hash.toLowerCase()}`, fileToAdd);
 }
 
 export function deleteFile(hash: string) {
@@ -55,7 +55,7 @@ export function searchFileByModelVersionId(modelVersionId: number) {
 }
 
 export function updateFile(file: Resource) {
-  return store.set(`files${file.hash}`, file);
+  return store.set(`files.${file.hash.toLowerCase()}`, file);
 }
 
 export function getFiles() {
