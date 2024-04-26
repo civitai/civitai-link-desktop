@@ -98,23 +98,26 @@ export function Vault() {
     <PanelWrapper>
       <>
         <div className="flex justify-between w-full items-center px-4 min-h-14">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={refetchVault}>
-                {canRefresh ? (
-                  <RefreshCcw className="h-4 w-4" />
-                ) : (
-                  <RefreshCwOff className="h-4 w-4" color="#F15252" />
-                )}
-                <span className="sr-only">Re-fetch vault items</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              {canRefresh
-                ? 'Re-fetch vault items'
-                : "Can't refresh for 1 minute"}
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex items-center">
+            <h1 className="text-xl font-bold">Vault</h1>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={refetchVault}>
+                  {canRefresh ? (
+                    <RefreshCcw className="h-4 w-4" />
+                  ) : (
+                    <RefreshCwOff className="h-4 w-4" color="#F15252" />
+                  )}
+                  <span className="sr-only">Re-fetch vault items</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {canRefresh
+                  ? 'Re-fetch vault items'
+                  : "Can't refresh for 1 minute"}
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <div className="flex flex-col text-right gap-2">
             <Progress value={parseFloat(percentUsed)} />
             <p className="text-sm text-[#909296]">
