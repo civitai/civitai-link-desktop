@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { SortType, SortDirection } from '@/lib/search-filter';
+import { VaultSortType, SortDirection } from '@/lib/search-filter';
 
 type VaultMeta = {
   usedStorageKb: number;
@@ -33,9 +33,9 @@ type VaultContextType = {
   setSearchTerm: (search: string) => void;
   searchVault: (search: string) => void;
   searchTerm: string;
-  sortVault: (type: SortType) => void;
+  sortVault: (type: VaultSortType) => void;
   sortDirection?: SortDirection;
-  sortType: SortType | null;
+  sortType: VaultSortType | null;
 };
 
 const defaultValue: VaultContextType = {
@@ -67,7 +67,9 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(
     SortDirection.DESC,
   );
-  const [sortType, setSortType] = useState<SortType>(SortType.DOWNLOAD_DATE);
+  const [sortType, setSortType] = useState<VaultSortType>(
+    VaultSortType.MODEL_NAME,
+  );
 
   const searchVault = useCallback(
     (search: string) => {
@@ -81,11 +83,11 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
         })
         .sort((a, b) => {
           if (sortDirection === SortDirection.DESC) {
-            if (sortType === SortType.MODEL_NAME) {
+            if (sortType === VaultSortType.MODEL_NAME) {
               return a.modelName.localeCompare(b.modelName);
             }
           } else {
-            if (sortType === SortType.MODEL_NAME) {
+            if (sortType === VaultSortType.MODEL_NAME) {
               return b.modelName.localeCompare(a.modelName);
             }
           }
@@ -99,7 +101,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     [vault, sortType, sortDirection],
   );
 
-  const sortVault = (type: SortType) => {
+  const sortVault = (type: VaultSortType) => {
     setSortType(type);
     setSortDirection(
       sortDirection === SortDirection.ASC

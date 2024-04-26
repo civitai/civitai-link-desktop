@@ -4,6 +4,10 @@ export enum SortType {
   FILE_SIZE = 'fileSize',
 }
 
+export enum VaultSortType {
+  MODEL_NAME = 'modelName',
+}
+
 export enum SortDirection {
   ASC = 'asc',
   DESC = 'desc',

@@ -12,10 +12,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { SortType, SortDirection } from '@/lib/search-filter';
+import { VaultSortType, SortDirection } from '@/lib/search-filter';
 
-// TODO: Add additional sort fields
-// (Object.keys(SortType) as Array<keyof typeof SortType>).map(
 export function VaultSort() {
   const { sortVault, sortType: type, sortDirection } = useVault();
 
@@ -35,11 +33,13 @@ export function VaultSort() {
           </Tooltip>
         </MenubarTrigger>
         <MenubarContent>
-          {(['MODEL_NAME'] as Array<keyof typeof SortType>).map((sortType) => (
+          {(
+            Object.keys(VaultSortType) as Array<keyof typeof VaultSortType>
+          ).map((sortType) => (
             <MenubarCheckboxItem
               key={sortType}
-              checked={type === SortType[sortType]}
-              onClick={() => sortVault(SortType[sortType])}
+              checked={type === VaultSortType[sortType]}
+              onClick={() => sortVault(VaultSortType[sortType])}
               className="capitalize"
             >
               {sortType.split('_').join(' ').toLowerCase()}
