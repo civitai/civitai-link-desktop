@@ -6,16 +6,41 @@ import { Progress } from '@/components/ui/progress';
 import { VaultItem } from '@/components/vault/vault-item';
 import { useEffect } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { Vault as VaultIcon } from 'lucide-react';
+import {
+  RefreshCcw,
+  RefreshCwOff,
+  Vault as VaultIcon,
+  XCircle,
+} from 'lucide-react';
 import { formatKBytes } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Separator } from '@/components/ui/separator';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/hooks/use-debounce';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { VaultSort } from '@/components/vault/vault-sort';
+import { VaultFilter } from '@/components/vault/vault-filter';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
-  const { vaultMeta, vault } = useVault();
-  const { fetchVaultMeta } = useApi();
+  const {
+    refetchVault,
+    canRefresh,
+    vaultMeta,
+    vault,
+    setSearchTerm,
+    searchVault,
+    searchTerm,
+    filteredVault,
+  } = useVault();
+  const { fetchVaultMeta, fetchVaultModels } = useApi();
   const percentUsed = vaultMeta
     ? (
         ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
@@ -26,8 +51,20 @@ export function Vault() {
   useEffect(() => {
     if (apiKey) {
       fetchVaultMeta();
+      fetchVaultModels();
     }
   }, [apiKey]);
+
+  const clearFilter = () => {
+    setSearchTerm('');
+    searchVault('');
+  };
+
+  const search = () => {
+    searchVault(searchTerm);
+  };
+
+  const debouncedOnChange = useDebounce(search);
 
   if (!apiKey) {
     return (
@@ -61,7 +98,27 @@ export function Vault() {
   return (
     <PanelWrapper>
       <>
-        <div className="flex justify-end w-full items-center px-4 min-h-14">
+        <div className="flex justify-between w-full items-center px-4 min-h-14">
+          <div className="flex items-center">
+            <h1 className="text-xl font-bold">Vault</h1>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={refetchVault}>
+                  {canRefresh ? (
+                    <RefreshCcw className="h-4 w-4" />
+                  ) : (
+                    <RefreshCwOff className="h-4 w-4" color="#F15252" />
+                  )}
+                  <span className="sr-only">Re-fetch vault items</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                {canRefresh
+                  ? 'Re-fetch vault items'
+                  : `Can't refresh for 1 minute`}
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <div className="flex flex-col text-right gap-2">
             <Progress value={parseFloat(percentUsed)} />
             <p className="text-sm text-[#909296]">
@@ -70,15 +127,42 @@ export function Vault() {
           </div>
         </div>
         <Separator />
+        <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex">
+          <form>
+            <div className="relative">
+              <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search"
+                className="pl-8"
+                onChange={(e) => {
+                  debouncedOnChange();
+                  setSearchTerm(e.target.value);
+                }}
+                value={searchTerm}
+              />
+              {searchTerm ? (
+                <XCircle
+                  className="cursor-pointer absolute right-2 top-3 text-muted-foreground"
+                  onClick={clearFilter}
+                  size={18}
+                />
+              ) : null}
+            </div>
+          </form>
+          <div className="flex">
+            <VaultFilter />
+            <VaultSort />
+          </div>
+        </div>
         <ScrollArea className="h-full">
           <div className="flex flex-col gap-2 bg-background px-4 pt-4 pb-[145px]">
-            {vault.length === 0 ? (
+            {filteredVault.length === 0 ? (
               <div className="flex flex-col items-center justify-center">
                 <VaultIcon />
                 <p className="text-center text-sm">No Vault Items</p>
               </div>
             ) : null}
-            {vault.map((item) => (
+            {filteredVault.map((item) => (
               <VaultItem {...item} key={item.modelVersionId} />
             ))}
           </div>

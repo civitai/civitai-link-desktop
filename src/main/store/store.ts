@@ -160,7 +160,7 @@ export function getUIStore() {
   return {
     rootResourcePath: store.get('rootResourcePath'),
     connectionStatus: store.get('connectionStatus'),
-    settings: store.get('settings'),
+    settings: store.get('settings') as { nsfw: boolean; alwaysOnTop?: boolean },
     apiKey: store.get('apiKey'),
     user: store.get('user'),
   };

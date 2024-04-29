@@ -36,6 +36,7 @@ export async function eventToggleVaultItem(
     }
 
     const vaultStatus = await fetchVaultModelsByVersion([modelVersionId]);
+
     const file = searchFile(hash);
     updateFile({
       ...file,
