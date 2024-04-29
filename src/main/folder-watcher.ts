@@ -44,3 +44,7 @@ export function folderWatcher() {
 }
 
 // TODO: Move on functions to own
+
+// Keep track of file names and paths to know at startup if deleted
+// If file added then run addFile function
+// If file removed run removeFile function
