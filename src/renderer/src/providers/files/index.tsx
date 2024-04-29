@@ -239,6 +239,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     ipcRenderer.on('files-update', function (_, files) {
       setFileList(files);
+      setFilteredFileList(files);
     });
 
     return () => {

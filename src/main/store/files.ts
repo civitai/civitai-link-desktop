@@ -60,6 +60,23 @@ export function updateFile(file: Resource) {
 
 export function getFiles() {
   const files = store.get('files') as ResourcesMap;
+  return sortFiles(files);
+}
+
+export function clearFiles() {
+  store.clear();
+}
+
+export function watcherFiles() {
+  store.onDidChange('files', (newValue) => {
+    getWindow().webContents.send(
+      'files-update',
+      sortFiles(newValue as ResourcesMap),
+    );
+  });
+}
+
+function sortFiles(files: ResourcesMap) {
   const sortedFiles = Object.values(files)
     .sort((a, b) => {
       const filteredFileListA = a.downloadDate;
@@ -87,14 +104,4 @@ export function getFiles() {
     );
 
   return sortedFiles;
-}
-
-export function clearFiles() {
-  store.clear();
-}
-
-export function watcherFiles() {
-  store.onDidChange('files', (newValue) => {
-    getWindow().webContents.send('files-update', newValue);
-  });
 }
