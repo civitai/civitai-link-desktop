@@ -24,21 +24,23 @@ export function folderWatcher() {
 
   // This is in case the directory changes
   // We want to stop watching the current directory and start watching the new one
-  store.onDidChange('resourcePaths', async (newValue: unknown) => {
-    // need to watch all paths not just newValue
-    const path = newValue as string;
+  store.onDidChange('resourcePaths', async () => {
+    // Fetch the updated paths
+    const updatedResourcePaths = getAllPaths();
 
-    if (path && path !== '') {
+    if (updatedResourcePaths) {
       await watcher.close();
 
       watcher = chokidar
-        .watch(path, watchConfig)
-        .on('add, unlink', (event, path) => {
-          console.log(event, path);
-
-          // @ts-ignore
-          console.log('Model directory changed to: ', newValue.model);
+        .watch(updatedResourcePaths, watchConfig)
+        .on('add', (path) => {
+          console.log(path);
+        })
+        .on('unlink', (path) => {
+          console.log(`File ${path} has been removed`);
         });
     }
   });
 }
+
+// TODO: Move on functions to own
