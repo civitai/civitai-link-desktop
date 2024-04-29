@@ -21,6 +21,7 @@ let height = 600;
 
 export function createWindow() {
   const upgradeKey = getUpgradeKey();
+  const { settings } = getUIStore();
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -47,6 +48,7 @@ export function createWindow() {
     icon: logo,
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1a1b1e' : '#fff',
     titleBarStyle: 'hidden',
+    alwaysOnTop: settings.alwaysOnTop,
   });
 
   // Prevents dock icon from appearing on macOS

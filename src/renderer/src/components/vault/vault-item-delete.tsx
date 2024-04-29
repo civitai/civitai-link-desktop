@@ -28,10 +28,11 @@ export function VaultItemDelete({
   hidden,
   className,
 }: VaultItemDeleteProps) {
-  const { toggleVaultItem } = useApi();
+  const { toggleVaultItem, fetchVaultModels } = useApi();
 
   const removeFromVault = () => {
     toggleVaultItem({ modelVersionId, hash });
+    setTimeout(() => fetchVaultModels(), 1000);
   };
 
   return (

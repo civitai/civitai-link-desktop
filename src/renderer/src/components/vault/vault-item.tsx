@@ -10,20 +10,12 @@ import {
 } from '@/components/ui/tooltip';
 import { VaultItemDelete } from './vault-item-delete';
 import { Download, Image } from 'lucide-react';
+import { type VaultItem } from '@/providers/vault';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
-type VaultItemProps = {
-  id: number;
-  modelName: string;
-  versionName: string;
-  type: string;
-  modelId: number;
-  modelVersionId: number;
-  coverImageUrl: string;
-  files: { url: string }[];
-};
+type VaultItemProps = VaultItem;
 
 export function VaultItem({
   id,

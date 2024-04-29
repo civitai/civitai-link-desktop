@@ -5,17 +5,17 @@ import {
   MenubarTrigger,
   MenubarCheckboxItem,
 } from '@/components/ui/menubar';
-import { useFile } from '@/providers/files';
+import { useVault } from '@/providers/vault';
 import { ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { SortType, SortDirection } from '@/lib/search-filter';
+import { VaultSortType, SortDirection } from '@/lib/search-filter';
 
-export function FilesSort() {
-  const { sortFiles, sortType: type, sortDirection } = useFile();
+export function VaultSort() {
+  const { sortVault, sortType: type, sortDirection } = useVault();
 
   return (
     <Menubar>
@@ -33,18 +33,18 @@ export function FilesSort() {
           </Tooltip>
         </MenubarTrigger>
         <MenubarContent>
-          {(Object.keys(SortType) as Array<keyof typeof SortType>).map(
-            (sortType) => (
-              <MenubarCheckboxItem
-                key={sortType}
-                checked={type === SortType[sortType]}
-                onClick={() => sortFiles(SortType[sortType])}
-                className="capitalize"
-              >
-                {sortType.split('_').join(' ').toLowerCase()}
-              </MenubarCheckboxItem>
-            ),
-          )}
+          {(
+            Object.keys(VaultSortType) as Array<keyof typeof VaultSortType>
+          ).map((sortType) => (
+            <MenubarCheckboxItem
+              key={sortType}
+              checked={type === VaultSortType[sortType]}
+              onClick={() => sortVault(VaultSortType[sortType])}
+              className="capitalize"
+            >
+              {sortType.split('_').join(' ').toLowerCase()}
+            </MenubarCheckboxItem>
+          ))}
         </MenubarContent>
       </MenubarMenu>
     </Menubar>

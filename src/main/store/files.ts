@@ -21,7 +21,7 @@ export async function addFile(file: Resource) {
   createModelJson(file);
   createPreviewImage(file);
 
-  return store.set(`files.${file.hash}`, fileToAdd);
+  return store.set(`files.${file.hash.toLowerCase()}`, fileToAdd);
 }
 
 export function deleteFile(hash: string) {
@@ -55,11 +55,28 @@ export function searchFileByModelVersionId(modelVersionId: number) {
 }
 
 export function updateFile(file: Resource) {
-  return store.set(`files${file.hash}`, file);
+  return store.set(`files.${file.hash.toLowerCase()}`, file);
 }
 
 export function getFiles() {
   const files = store.get('files') as ResourcesMap;
+  return sortFiles(files);
+}
+
+export function clearFiles() {
+  store.clear();
+}
+
+export function watcherFiles() {
+  store.onDidChange('files', (newValue) => {
+    getWindow().webContents.send(
+      'files-update',
+      sortFiles(newValue as ResourcesMap),
+    );
+  });
+}
+
+function sortFiles(files: ResourcesMap) {
   const sortedFiles = Object.values(files)
     .sort((a, b) => {
       const filteredFileListA = a.downloadDate;
@@ -87,14 +104,4 @@ export function getFiles() {
     );
 
   return sortedFiles;
-}
-
-export function clearFiles() {
-  store.clear();
-}
-
-export function watcherFiles() {
-  store.onDidChange('files', (newValue) => {
-    getWindow().webContents.send('files-update', newValue);
-  });
 }

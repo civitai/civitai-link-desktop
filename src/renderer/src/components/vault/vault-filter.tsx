@@ -16,11 +16,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { FileListFilters, useFile } from '@/providers/files';
 import { ModelTypes, BaseModels } from '@/lib/search-filter';
+import { useVault, VaultFilters } from '@/providers/vault';
 
-export function FilesFilter() {
-  const { appliedFilters, clearFilters, filterFiles } = useFile();
+export function VaultFilter() {
+  const { appliedFilters, clearFilters, filterVault } = useVault();
 
   return (
     <Menubar>
@@ -41,7 +41,7 @@ export function FilesFilter() {
                 (type) => (
                   <MenubarCheckboxItem
                     key={type}
-                    onClick={() => filterFiles(type, FileListFilters.TYPE)}
+                    onClick={() => filterVault(type, VaultFilters.TYPE)}
                     checked={appliedFilters.modelType.includes(
                       type.toLowerCase(),
                     )}
@@ -60,7 +60,7 @@ export function FilesFilter() {
                   <MenubarCheckboxItem
                     key={type}
                     onClick={() =>
-                      filterFiles(BaseModels[type], FileListFilters.BASE_MODEL)
+                      filterVault(BaseModels[type], VaultFilters.BASE_MODEL)
                     }
                     checked={appliedFilters.baseModelType.includes(
                       BaseModels[type].toLowerCase(),
