@@ -14,7 +14,7 @@ export function resourcesRemove(hash: string) {
 
   try {
     // Remove model from disk
-    fs.unlinkSync(resourcePath);
+    if (fs.existsSync(resourcePath)) fs.unlinkSync(resourcePath);
 
     // Remove thumbnail from disk
     const previewPath =
