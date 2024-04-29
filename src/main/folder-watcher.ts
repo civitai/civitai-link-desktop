@@ -1,10 +1,14 @@
 import chokidar from 'chokidar';
 import { getAllPaths, getRootResourcePath, store } from './store/paths';
-import { findFileByFilename } from './store/files';
+import { addFile, findFileByFilename } from './store/files';
 import path from 'path';
 import { resourcesRemove } from './commands';
 import { socketCommandStatus } from './socket';
 import { getWindow } from './browser-window';
+import { getModelByHash } from './civitai-api';
+import { hash } from './hash';
+import { checkMissingFields } from './utils/check-missing-fields';
+import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 
 const watchConfig = {
   ignored: /(^|[\/\\])\../,
@@ -21,7 +25,7 @@ export function folderWatcher() {
   if (rootResourcePath && rootResourcePath !== '') {
     watcher = chokidar
       .watch(resourcePaths, watchConfig)
-      .on('add', (filePath) => console.log(`File ${filePath} has been added`))
+      .on('add', onAdd)
       // .on('ready', () => console.log('Initial scan complete. Ready for changes')
       // .on('change', (path) => console.log(`File ${path} has been changed`)) // Moving files adds and unlinks
       .on('unlink', onUnlink);
@@ -38,9 +42,7 @@ export function folderWatcher() {
 
       watcher = chokidar
         .watch(updatedResourcePaths, watchConfig)
-        .on('add', (filePath) => {
-          console.log(filePath);
-        })
+        .on('add', onAdd)
         .on('unlink', onUnlink);
     }
   });
@@ -72,9 +74,35 @@ function onUnlink(filePath: string) {
   });
 }
 
-function onAdd() {}
+async function onAdd(filePath: string) {
+  const filename = path.basename(filePath);
+  const pathname = filePath;
 
-// TODO: Move on functions to own
+  // Short circuit if in not found store
+  const notFoundFile = searchNotFoundFile(filename);
 
-// Keep track of file names and paths to know at startup if deleted
-// If file added then run addFile function
+  if (notFoundFile) return;
+
+  // See if file already exists by filename
+  const resource = findFileByFilename(path.basename(filename));
+
+  // Update file path and any missing fields
+  if (resource) {
+    checkMissingFields(resource, pathname);
+  }
+
+  // If not, fetch from API and add to store
+  if (!resource) {
+    // Hash files
+    const modelHash = await hash(pathname);
+    console.log('Hashing...', 'File:', filename, 'Hash:', modelHash);
+
+    try {
+      const model = await getModelByHash(modelHash);
+      addFile({ ...model, localPath: pathname });
+    } catch {
+      addNotFoundFile(filename, modelHash, pathname);
+      console.error('Error hash', modelHash, filename);
+    }
+  }
+}
