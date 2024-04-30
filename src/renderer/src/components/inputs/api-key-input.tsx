@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useElectron } from '@/providers/electron';
 import { useApi } from '@/hooks/use-api';
 import { Input } from '@/components/ui/input';
-import { Save } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, Save } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 
@@ -10,6 +10,7 @@ export function ApiKeyInput() {
   const { apiKey } = useElectron();
   const { setApiKey } = useApi();
   const [key, setKey] = useState<string>(apiKey || '');
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const onClickSaveApiKey = () => {
     setApiKey(key);
@@ -35,12 +36,25 @@ export function ApiKeyInput() {
         )
       </label>
       <div className="flex items-center w-full space-x-2">
-        <Input
-          placeholder="API Key"
-          onChange={(e) => setKey(e.target.value)}
-          onPaste={(e) => setApiKey(e.clipboardData.getData('text/plain'))}
-          value={key}
-        />
+        <div className="relative w-full">
+          <Input
+            type={isVisible ? 'text' : 'password'}
+            placeholder="API Key"
+            onChange={(e) => setKey(e.target.value)}
+            onPaste={(e) => setApiKey(e.clipboardData.getData('text/plain'))}
+            value={key}
+          />
+          <div
+            className="cursor-pointer absolute right-2 top-3 text-muted-foreground"
+            onClick={() => setIsVisible(!isVisible)}
+          >
+            {isVisible ? (
+              <EyeIcon className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
+            )}
+          </div>
+        </div>
         <Button onClick={onClickSaveApiKey} className="p-3">
           <Save size={18} />
         </Button>
