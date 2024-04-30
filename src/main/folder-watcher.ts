@@ -11,7 +11,7 @@ import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 
 const watchConfig = {
-  ignored: /(^|[\/\\])\../,
+  ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
   ignoreInitial: true,
 };
 

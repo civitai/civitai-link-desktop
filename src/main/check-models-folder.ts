@@ -13,6 +13,8 @@ import { socket } from './socket';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
+import { diffDirectories } from './store/startup-files';
+import { resourcesRemove } from './commands';
 
 type CheckModelFolderParams = {
   directory?: string;
@@ -23,6 +25,14 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
 
   // Init load is empty []
   const files = directory ? listDirectory(directory) : listDirectories();
+  const filesToRemove = diffDirectories(files.map((file) => file.pathname));
+  filesToRemove.forEach((pathname) => {
+    const file = findFileByFilename(path.basename(pathname));
+
+    if (file) {
+      resourcesRemove(file.hash);
+    }
+  });
 
   // ModelVersionId for vault
   // { modelVersionId: hash }

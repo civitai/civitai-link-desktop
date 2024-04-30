@@ -10,7 +10,8 @@
     "url": "https://github.com/civitai/civitai-link-desktop.git"
   },
   "engines": {
-    "node": "20.5.1"
+    "node": "20.12.2",
+    "npm": "10.5.0"
   },
   "scripts": {
     "format": "prettier --write .",
