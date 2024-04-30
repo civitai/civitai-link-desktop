@@ -14,6 +14,7 @@ import { Activities } from './routes/activities';
 import { Settings } from './routes/settings';
 import { FileNotSelected } from './routes/files/file-not-selected';
 import { TooltipProvider } from '@/components/ui/tooltip';
+// import { ModelLoadingProvider } from './providers/model-loading';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <ThemeProvider defaultTheme="system" storageKey="civitai-theme">

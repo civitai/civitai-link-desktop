@@ -95,6 +95,21 @@ export function Nav({ links, isCollapsed }: NavProps) {
           ),
         )}
       </nav>
+      {/* {isLoading ? (
+        <div className="px-4">
+          <Progress value={(100 * loadedModels) / totalModels} />
+          <div className="flex-row flex justify-between w-full mt-2">
+            <div>
+              <p className="text-xs text-[#909296] leading-none">
+                Loading Models
+              </p>
+            </div>
+            <p className="text-xs text-[#909296] leading-none">
+              {loadedModels}/{totalModels}
+            </p>
+          </div>
+        </div>
+      ) : null} */}
     </div>
   );
 }
