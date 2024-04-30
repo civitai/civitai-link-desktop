@@ -26,8 +26,6 @@ export function folderWatcher() {
     watcher = chokidar
       .watch(resourcePaths, watchConfig)
       .on('add', onAdd)
-      // .on('ready', () => console.log('Initial scan complete. Ready for changes')
-      // .on('change', (path) => console.log(`File ${path} has been changed`)) // Moving files adds and unlinks
       .on('unlink', onUnlink);
   }
 
