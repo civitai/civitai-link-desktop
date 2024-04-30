@@ -87,6 +87,7 @@ export function setSDType(sdType: string) {
 }
 
 export function getResourcePath(resourcePath: string) {
+  console.log('resourcePath', resourcePath);
   const resource = resourcePath.toUpperCase();
   const resourcePaths = store.get('resourcePaths') as {
     [k: string]: string;

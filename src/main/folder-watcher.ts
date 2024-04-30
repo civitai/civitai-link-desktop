@@ -19,10 +19,10 @@ export function folderWatcher() {
   let watcher;
 
   const rootResourcePath = getRootResourcePath();
-  const resourcePaths = getAllPaths();
 
   // Makes sure a root path is set
   if (rootResourcePath && rootResourcePath !== '') {
+    const resourcePaths = getAllPaths();
     watcher = chokidar
       .watch(resourcePaths, watchConfig)
       .on('add', onAdd)
@@ -32,6 +32,21 @@ export function folderWatcher() {
   // This is in case the directory changes
   // We want to stop watching the current directory and start watching the new one
   store.onDidChange('resourcePaths', async () => {
+    // Fetch the updated paths
+    const updatedResourcePaths = getAllPaths();
+
+    if (updatedResourcePaths) {
+      await watcher.close();
+
+      watcher = chokidar
+        .watch(updatedResourcePaths, watchConfig)
+        .on('add', onAdd)
+        .on('unlink', onUnlink);
+    }
+  });
+
+  // This is in case the root directory changes
+  store.onDidChange('rootResourcePath', async () => {
     // Fetch the updated paths
     const updatedResourcePaths = getAllPaths();
 
