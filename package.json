@@ -51,7 +51,6 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
-    "electron-dl": "^3.5.2",
     "electron-log": "^5.1.2",
     "electron-store": "^8.1.0",
     "electron-unhandled": "^4.0.1",

@@ -37,10 +37,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 import unhandled from 'electron-unhandled';
-import electronDl from 'electron-dl';
 import { createWindow, getWindow, setIsQuiting } from './browser-window';
-
-electronDl();
 
 unhandled({
   logger: log.error,
