@@ -6,7 +6,7 @@ import { updateActivity } from '../store/activities';
 import { filterResourcesList } from './filter-reources-list';
 
 export function resourcesRemove(hash: string) {
-  const resource = searchFile(hash);
+  const resource = searchFile(hash.toLowerCase());
   const defaultResourcePath = getResourcePath(resource.type);
   const timestamp = new Date().toISOString();
   const resourcePath =

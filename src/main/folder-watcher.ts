@@ -23,6 +23,8 @@ export function folderWatcher() {
   // Makes sure a root path is set
   if (rootResourcePath && rootResourcePath !== '') {
     const resourcePaths = getAllPaths();
+    console.log('paths:', resourcePaths);
+
     watcher = chokidar
       .watch(resourcePaths, watchConfig)
       .on('add', onAdd)
@@ -62,6 +64,7 @@ export function folderWatcher() {
 }
 
 function onUnlink(filePath: string) {
+  console.log(filePath, 'has been removed');
   // Remove file from store
   const resource = findFileByFilename(path.basename(filePath));
 

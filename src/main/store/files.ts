@@ -33,11 +33,17 @@ export function searchFile(hash: string) {
 }
 
 export function findFileByFilename(filename: string) {
+  console.log('filename:', filename);
   const files = store.get('files') as ResourcesMap;
 
-  const hash = Object.keys(files).find((hash) => files[hash].name === filename);
+  const hash = Object.keys(files).find(
+    (hash) => files[hash.toLowerCase()].name === filename,
+  );
+
+  console.log(hash);
 
   if (!hash) return;
+  console.log(files[hash]);
 
   return files[hash];
 }
