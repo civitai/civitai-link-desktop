@@ -64,7 +64,6 @@ export function folderWatcher() {
 }
 
 function onUnlink(filePath: string) {
-  console.log(filePath, 'has been removed');
   // Remove file from store
   const resource = findFileByFilename(path.basename(filePath));
 
