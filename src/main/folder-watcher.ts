@@ -23,7 +23,6 @@ export function folderWatcher() {
   // Makes sure a root path is set
   if (rootResourcePath && rootResourcePath !== '') {
     const resourcePaths = getAllPaths();
-    console.log('paths:', resourcePaths);
 
     watcher = chokidar
       .watch(resourcePaths, watchConfig)

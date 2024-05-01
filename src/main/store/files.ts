@@ -48,7 +48,7 @@ export function searchFileByModelVersionId(modelVersionId: number) {
   const files = store.get('files') as ResourcesMap;
 
   const hash = Object.keys(files).find(
-    (hash) => files[hash].modelVersionId === modelVersionId,
+    (hash) => files[hash.toLowerCase()].modelVersionId === modelVersionId,
   );
 
   if (!hash) return;
