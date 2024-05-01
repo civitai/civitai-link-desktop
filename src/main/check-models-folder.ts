@@ -15,13 +15,12 @@ import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 import { diffDirectories } from './store/startup-files';
 import { resourcesRemove } from './commands';
-// import { getWindow } from './browser-window';
+import { getWindow } from './browser-window';
 
 type CheckModelFolderParams = {
   directory?: string;
 };
 
-// TODO: model-loading to show progress
 export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
   const apiKey = getApiKey();
 
@@ -39,13 +38,15 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
   // ModelVersionId for vault
   // { modelVersionId: hash }
   let modelVersionIds: Record<number, string> = {};
+  const totalModels = files.length;
 
   // Set initial loading state
-  // getWindow().webContents.send('model-loading', {
-  //   totalModels: files.length,
-  //   loadedModels: 0,
-  //   isLoading: true,
-  // });
+  getWindow().webContents.send('model-loading', {
+    totalModels,
+    loadedModels: 0,
+    isLoading: true,
+  });
+  let loadedModels = 0;
 
   const promises = files.map(async ({ pathname, filename }) => {
     // Short circuit if in not found store
@@ -77,6 +78,11 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
       try {
         const model = await getModelByHash(modelHash);
         addFile({ ...model, localPath: pathname });
+        getWindow().webContents.send('model-loading', {
+          totalModels,
+          loadedModels: loadedModels++,
+          isLoading: true,
+        });
       } catch {
         addNotFoundFile(filename, modelHash, pathname);
         console.error('Error hash', modelHash, filename);
@@ -109,11 +115,11 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
     }
   }
 
-  // getWindow().webContents.send('model-loading', {
-  //   totalModels: files.length,
-  //   loadedModels: files.length,
-  //   isLoading: false,
-  // });
+  getWindow().webContents.send('model-loading', {
+    totalModels,
+    loadedModels: files.length,
+    isLoading: false,
+  });
 
   return;
 }
@@ -133,12 +139,6 @@ export async function processPromisesBatch(
       type: 'resources:list',
       resources: newPayload,
     });
-
-    // getWindow().webContents.send('model-loading', {
-    //   totalModels: items.length,
-    //   loadedModels: start,
-    //   isLoading: true,
-    // });
   }
 
   return;

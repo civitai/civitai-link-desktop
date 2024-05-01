@@ -30,11 +30,11 @@ export function ModelLoadingProvider({
     ipcRenderer.on(
       'model-loading',
       function (_, { totalModels, loadedModels, isLoading }) {
-        setData((prev) => ({
-          totalModels: totalModels || prev.totalModels,
-          loadedModels: loadedModels || prev.loadedModels,
-          isLoading: isLoading || prev.isLoading,
-        }));
+        setData({
+          totalModels: totalModels,
+          loadedModels: loadedModels,
+          isLoading: isLoading,
+        });
       },
     );
 
