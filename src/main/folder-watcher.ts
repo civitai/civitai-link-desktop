@@ -9,6 +9,7 @@ import { getModelByHash } from './civitai-api';
 import { hash } from './hash';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
+import delay from 'lodash/delay';
 
 const watchConfig = {
   ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
@@ -26,7 +27,7 @@ export function folderWatcher() {
 
     watcher = chokidar
       .watch(resourcePaths, watchConfig)
-      .on('add', onAdd)
+      .on('add', (filePath) => delay(() => onAdd(filePath), 500))
       .on('unlink', onUnlink);
   }
 
@@ -41,7 +42,7 @@ export function folderWatcher() {
 
       watcher = chokidar
         .watch(updatedResourcePaths, watchConfig)
-        .on('add', onAdd)
+        .on('add', (filePath) => delay(() => onAdd(filePath), 500))
         .on('unlink', onUnlink);
     }
   });
@@ -56,7 +57,7 @@ export function folderWatcher() {
 
       watcher = chokidar
         .watch(updatedResourcePaths, watchConfig)
-        .on('add', onAdd)
+        .on('add', (filePath) => delay(() => onAdd(filePath), 500))
         .on('unlink', onUnlink);
     }
   });
