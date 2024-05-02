@@ -52,8 +52,6 @@ export function FilesItem({ resource }: FilesItemProps) {
     cancelDownload(resource.id || '');
     removeActivity({
       hash: resource.hash,
-      title: 'Download canceled',
-      description: `The download for ${resource.modelName} has been canceled.`,
     });
   };
 

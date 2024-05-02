@@ -272,8 +272,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       if (fileToRemove) {
         removeActivity({
           hash: fileList[fileToRemove].hash,
-          title: 'Download canceled',
-          description: `The download for ${fileList[fileToRemove].modelName} has been canceled.`,
         });
       }
     });
