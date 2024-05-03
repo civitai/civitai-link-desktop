@@ -2,7 +2,6 @@ import chokidar from 'chokidar';
 import { getAllPaths, getRootResourcePath, store } from './store/paths';
 import { addFile, deleteFile, findFileByFilename } from './store/files';
 import path from 'path';
-import { resourcesRemove } from './commands';
 import { socketCommandStatus } from './socket';
 import { getWindow } from './browser-window';
 import { getModelByHash } from './civitai-api';
