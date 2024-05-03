@@ -4,6 +4,7 @@ import { listDirectories, listDirectory } from './list-directory';
 import { getApiKey } from './store/store';
 import {
   addFile,
+  deleteFile,
   findFileByFilename,
   searchFile,
   updateFile,
@@ -14,7 +15,6 @@ import { filterResourcesList } from './commands/filter-reources-list';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 import { diffDirectories } from './store/startup-files';
-import { resourcesRemove } from './commands';
 import { getWindow } from './browser-window';
 
 type CheckModelFolderParams = {
@@ -26,12 +26,15 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
 
   // Init load is empty []
   const files = directory ? listDirectory(directory) : listDirectories();
-  const filesToRemove = diffDirectories(files.map((file) => file.pathname));
-  filesToRemove.forEach((pathname) => {
+  const filesToRemoveFromStore = diffDirectories(
+    files.map((file) => file.pathname),
+  );
+  filesToRemoveFromStore.forEach((pathname) => {
     const file = findFileByFilename(path.basename(pathname));
 
     if (file) {
-      resourcesRemove(file.hash);
+      // Remove file from store
+      deleteFile(file.hash);
     }
   });
 
