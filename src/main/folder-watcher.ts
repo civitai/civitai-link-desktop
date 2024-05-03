@@ -1,6 +1,6 @@
 import chokidar from 'chokidar';
 import { getAllPaths, getRootResourcePath, store } from './store/paths';
-import { addFile, findFileByFilename } from './store/files';
+import { addFile, deleteFile, findFileByFilename } from './store/files';
 import path from 'path';
 import { resourcesRemove } from './commands';
 import { socketCommandStatus } from './socket';
@@ -71,13 +71,7 @@ function onUnlink(filePath: string) {
     return;
   }
 
-  const updatedResources = resourcesRemove(resource.hash);
-
-  socketCommandStatus({
-    type: 'resources:remove',
-    status: 'success',
-    resource,
-  });
+  const updatedResources = deleteFile(resource.hash);
 
   socketCommandStatus({
     type: 'resources:list',
