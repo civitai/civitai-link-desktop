@@ -236,7 +236,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     return () => {
       ipcRenderer.removeAllListeners('files-update');
     };
-  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
+  }, [searchTerm]);
 
   // Get initial store on load
   useEffect(() => {
