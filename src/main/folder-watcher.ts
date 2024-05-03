@@ -8,13 +8,15 @@ import { getModelByHash } from './civitai-api';
 import { hash } from './hash';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
-import delay from 'lodash/delay';
 
 const watchConfig = {
   ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
   ignoreInitial: true,
 };
 
+// TODO: https://github.com/civitai/data-packer/blob/main/src/index.ts
+// Get worker_thread running for hashing in background
+// TODO: Merge with check-models-folder.ts
 export function folderWatcher() {
   let watcher;
 
@@ -23,43 +25,50 @@ export function folderWatcher() {
   // Makes sure a root path is set
   if (rootResourcePath && rootResourcePath !== '') {
     const resourcePaths = getAllPaths();
-
-    watcher = chokidar
-      .watch(resourcePaths, watchConfig)
-      .on('add', (filePath) => delay(() => onAdd(filePath), 500))
-      .on('unlink', onUnlink);
+    watcher = createWatcher(resourcePaths);
   }
 
   // This is in case the directory changes
   // We want to stop watching the current directory and start watching the new one
-  store.onDidChange('resourcePaths', async () => {
+  const handlePathUpdate = async () => {
     // Fetch the updated paths
     const updatedResourcePaths = getAllPaths();
 
     if (updatedResourcePaths) {
       await watcher.close();
-
-      watcher = chokidar
-        .watch(updatedResourcePaths, watchConfig)
-        .on('add', (filePath) => delay(() => onAdd(filePath), 500))
-        .on('unlink', onUnlink);
+      watcher = createWatcher(updatedResourcePaths);
     }
-  });
+  };
+  store.onDidChange('resourcePaths', handlePathUpdate);
+  store.onDidChange('rootResourcePath', handlePathUpdate);
+}
 
-  // This is in case the root directory changes
-  store.onDidChange('rootResourcePath', async () => {
-    // Fetch the updated paths
-    const updatedResourcePaths = getAllPaths();
+function createWatcher(paths: string | string[]) {
+  return chokidar
+    .watch(paths, watchConfig)
+    .on('add', (path) => process(path, 'add'))
+    .on('unlink', (path) => process(path, 'unlink'));
+}
 
-    if (updatedResourcePaths) {
-      await watcher.close();
+const UNLINK_DELAY = 1000;
+const processing: Record<
+  string,
+  { event: 'add' | 'unlink'; timeout?: NodeJS.Timeout }
+> = {};
+function process(filepath: string, event: 'add' | 'unlink') {
+  const key = path.basename(filepath);
 
-      watcher = chokidar
-        .watch(updatedResourcePaths, watchConfig)
-        .on('add', (filePath) => delay(() => onAdd(filePath), 500))
-        .on('unlink', onUnlink);
-    }
-  });
+  if (event === 'add') {
+    if (processing[key]?.event === 'unlink')
+      clearTimeout(processing[key].timeout);
+    const timeout = setTimeout(() => delete processing[key], UNLINK_DELAY);
+    processing[key] = { event, timeout };
+    onAdd(filepath);
+  } else if (event === 'unlink') {
+    if (processing[key]?.event === 'add') return;
+    const timeout = setTimeout(() => onUnlink(filepath), UNLINK_DELAY);
+    processing[key] = { event, timeout };
+  }
 }
 
 function onUnlink(filePath: string) {
@@ -70,7 +79,8 @@ function onUnlink(filePath: string) {
     return;
   }
 
-  const updatedResources = deleteFile(resource.hash);
+  deleteFile(resource.hash);
+  const updatedResources = getAllPaths();
 
   socketCommandStatus({
     type: 'resources:list',
@@ -97,10 +107,7 @@ async function onAdd(filePath: string) {
   // Update file path and any missing fields
   if (resource) {
     checkMissingFields(resource, pathname);
-  }
-
-  // If not, fetch from API and add to store
-  if (!resource) {
+  } else {
     // Hash files
     const modelHash = await hash(pathname);
     console.log('Hashing...', 'File:', filename, 'Hash:', modelHash);
