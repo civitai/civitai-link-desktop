@@ -11,18 +11,17 @@ import {
   Menu,
 } from 'electron';
 import {
-  getUpgradeKey,
   store,
   ConnectionStatus,
   setUser,
   watcherUser,
   watchApiKey,
+  getUpgradeKey,
 } from './store/store';
 import { getResourcePath, getRootResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
-import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
-import { folderWatcher } from './folder-watcher';
+import { folderWatcher, initFolderCheck } from './folder-watcher';
 
 // Colored Logo Assets
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
@@ -102,9 +101,8 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
 
-  // Only run on startup after we have a key
   if (getUpgradeKey()) {
-    checkModelsFolder({});
+    initFolderCheck();
   }
 
   socketIOConnect({ app });

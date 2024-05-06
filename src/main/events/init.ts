@@ -1,5 +1,5 @@
-import { checkModelsFolder } from '../check-models-folder';
+import { initFolderCheck } from '../folder-watcher';
 
 export function eventInit() {
-  checkModelsFolder({});
+  initFolderCheck();
 }

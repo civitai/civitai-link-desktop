@@ -1,18 +1,27 @@
 import chokidar from 'chokidar';
 import { getAllPaths, getRootResourcePath, store } from './store/paths';
-import { addFile, deleteFile, findFileByFilename } from './store/files';
+import {
+  addFile,
+  deleteFile,
+  findFileByFilename,
+  searchFile,
+  updateFile,
+} from './store/files';
 import path from 'path';
-import { socketCommandStatus } from './socket';
+import { socket, socketCommandStatus } from './socket';
 import { getWindow } from './browser-window';
 import { getModelByHash } from './civitai-api';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 import workerpool from 'workerpool';
 import os from 'os';
+import { getApiKey } from './store/store';
+import { listDirectories } from './list-directory';
+import { filterResourcesList } from './commands/filter-reources-list';
+import { fetchVaultModelsByVersion } from './civitai-api';
+
 const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
 const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
-
-console.log('workers', maxWorkers);
 
 const watchConfig = {
   ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
@@ -38,7 +47,7 @@ export function folderWatcher() {
     const updatedResourcePaths = getAllPaths();
 
     if (updatedResourcePaths) {
-      await watcher.close();
+      if (watcher) await watcher.close();
       watcher = createWatcher(updatedResourcePaths);
     }
   };
@@ -127,4 +136,96 @@ async function onAdd(filePath: string) {
         console.error('Error hashing', err);
       });
   }
+}
+
+export async function initFolderCheck() {
+  // Init load is empty []
+  const files = listDirectories();
+  const apiKey = getApiKey();
+  const totalModels = files.length;
+  let loadedModels = 0;
+
+  // ModelVersionId for vault
+  // { modelVersionId: hash }
+  let modelVersionIds: Record<number, string> = {};
+
+  // Set initial loading state
+  getWindow().webContents.send('model-loading', {
+    totalModels,
+    loadedModels: 0,
+    isLoading: true,
+  });
+
+  const promises = files.map(async ({ pathname, filename }) => {
+    onAdd(pathname);
+
+    if (apiKey) {
+      const resource = findFileByFilename(filename);
+      if (resource?.modelVersionId && apiKey) {
+        modelVersionIds = {
+          ...modelVersionIds,
+          [resource.modelVersionId]: resource.hash,
+        };
+      }
+    }
+
+    getWindow().webContents.send('model-loading', {
+      totalModels,
+      loadedModels: loadedModels++,
+      isLoading: true,
+    });
+  });
+
+  // We dont need to return results
+  await processPromisesBatch(promises, 5);
+
+  if (apiKey) {
+    // Build array of modelVersionIds
+    const modelVersionIdsArray = Object.keys(modelVersionIds).map((key) =>
+      Number(key),
+    );
+
+    if (modelVersionIdsArray.length !== 0) {
+      const vault = await fetchVaultModelsByVersion(modelVersionIdsArray);
+
+      vault.forEach((model) => {
+        const hash = modelVersionIds[model.modelVersionId];
+        const file = searchFile(hash);
+        updateFile({
+          ...file,
+          modelVersionId: model.modelVersionId,
+          vaultId: model.vaultItem?.vaultId,
+        });
+      });
+    }
+  }
+
+  getWindow().webContents.send('model-loading', {
+    totalModels,
+    loadedModels: files.length,
+    isLoading: false,
+  });
+
+  return;
+}
+
+export async function processPromisesBatch(
+  items: Array<any>,
+  limit: number,
+): Promise<any> {
+  const itemsLength = items.length;
+  for (let start = 0; start < itemsLength; start += limit) {
+    const end = start + limit > itemsLength ? itemsLength : start + limit;
+
+    await Promise.allSettled(items.slice(start, end));
+
+    // Update Civitai website with added files
+    const newPayload = filterResourcesList();
+    socket.emit('commandStatus', {
+      type: 'resources:list',
+      resources: newPayload,
+    });
+  }
+
+  return;
 }

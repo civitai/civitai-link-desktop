@@ -1,6 +1,6 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
-import { checkModelsFolder } from '../check-models-folder';
+// import { checkModelsFolder } from '../check-models-folder';
 import { app } from 'electron';
 
 export enum Resources {
@@ -51,7 +51,7 @@ export function setRootResourcePath(path: string) {
 
 export function setResourcePath(resource: string, path: string) {
   // Rescan directory
-  checkModelsFolder({ directory: path });
+  // checkModelsFolder({ directory: path });
 
   return store.set(`resourcePaths.${resource}`, path);
 }
