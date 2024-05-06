@@ -5,17 +5,20 @@ import path from 'path';
 import { socketCommandStatus } from './socket';
 import { getWindow } from './browser-window';
 import { getModelByHash } from './civitai-api';
-import { hash } from './hash';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
+import workerpool from 'workerpool';
+import os from 'os';
+const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
+const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
+
+console.log('workers', maxWorkers);
 
 const watchConfig = {
   ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
   ignoreInitial: true,
 };
 
-// TODO: https://github.com/civitai/data-packer/blob/main/src/index.ts
-// Get worker_thread running for hashing in background
 // TODO: Merge with check-models-folder.ts
 export function folderWatcher() {
   let watcher;
@@ -109,15 +112,19 @@ async function onAdd(filePath: string) {
     checkMissingFields(resource, pathname);
   } else {
     // Hash files
-    const modelHash = await hash(pathname);
-    console.log('Hashing...', 'File:', filename, 'Hash:', modelHash);
-
-    try {
-      const model = await getModelByHash(modelHash);
-      addFile({ ...model, localPath: pathname });
-    } catch {
-      addNotFoundFile(filename, modelHash, pathname);
-      console.error('Error hash', modelHash, filename);
-    }
+    pool
+      .exec('processTask', [pathname, filename])
+      .then(async (modelHash: string) => {
+        try {
+          const model = await getModelByHash(modelHash);
+          addFile({ ...model, localPath: pathname });
+        } catch {
+          addNotFoundFile(filename, modelHash, pathname);
+          console.error('Error hash', modelHash, filename);
+        }
+      })
+      .catch((err) => {
+        console.error('Error hashing', err);
+      });
   }
 }

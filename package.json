@@ -70,6 +70,7 @@
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
     "uuid": "^9.0.1",
+    "workerpool": "^9.1.1",
     "yaml": "^2.4.1"
   },
   "devDependencies": {
