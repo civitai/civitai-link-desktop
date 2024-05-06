@@ -25,19 +25,21 @@ export async function checkModelsFolder({ directory }: CheckModelFolderParams) {
   const apiKey = getApiKey();
 
   // Init load is empty []
+  // TODO: Figure out how to do this better when folder changing
   const files = directory ? listDirectory(directory) : listDirectories();
-  const filesToRemoveFromStore = diffDirectories(
-    files.map((file) => file.pathname),
-  );
-  filesToRemoveFromStore.forEach((pathname) => {
-    const file = findFileByFilename(path.basename(pathname));
+  if (!directory) {
+    const filesToRemoveFromStore = diffDirectories(
+      files.map((file) => file.pathname),
+    );
+    filesToRemoveFromStore.forEach((pathname) => {
+      const file = findFileByFilename(path.basename(pathname));
 
-    if (file) {
-      // Remove file from store
-      deleteFile(file.hash);
-    }
-  });
-
+      if (file) {
+        // Remove file from store
+        deleteFile(file.hash);
+      }
+    });
+  }
   // ModelVersionId for vault
   // { modelVersionId: hash }
   let modelVersionIds: Record<number, string> = {};
