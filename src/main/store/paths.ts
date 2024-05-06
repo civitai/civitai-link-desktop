@@ -1,7 +1,7 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
-// import { checkModelsFolder } from '../check-models-folder';
 import { app } from 'electron';
+import { initFolderCheck } from '../folder-watcher';
 
 export enum Resources {
   CHECKPOINT = 'CHECKPOINT',
@@ -50,10 +50,10 @@ export function setRootResourcePath(path: string) {
 }
 
 export function setResourcePath(resource: string, path: string) {
-  // Rescan directory
-  // checkModelsFolder({ directory: path });
+  store.set(`resourcePaths.${resource}`, path);
+  initFolderCheck();
 
-  return store.set(`resourcePaths.${resource}`, path);
+  return;
 }
 
 const SYMLINK: { [key in Resources]?: string } = {

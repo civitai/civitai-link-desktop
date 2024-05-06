@@ -19,6 +19,7 @@ import { getApiKey } from './store/store';
 import { listDirectories } from './list-directory';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { fetchVaultModelsByVersion } from './civitai-api';
+import { diffDirectories } from './store/startup-files';
 
 const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
 const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
@@ -28,7 +29,6 @@ const watchConfig = {
   ignoreInitial: true,
 };
 
-// TODO: Merge with check-models-folder.ts
 export function folderWatcher() {
   let watcher;
 
@@ -144,6 +144,18 @@ export async function initFolderCheck() {
   const apiKey = getApiKey();
   const totalModels = files.length;
   let loadedModels = 0;
+
+  const filesToRemoveFromStore = diffDirectories(
+    files.map((file) => file.pathname),
+  );
+  filesToRemoveFromStore.forEach((pathname) => {
+    const file = findFileByFilename(path.basename(pathname));
+
+    if (file) {
+      // Remove file from store
+      deleteFile(file.hash);
+    }
+  });
 
   // ModelVersionId for vault
   // { modelVersionId: hash }

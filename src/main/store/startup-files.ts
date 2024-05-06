@@ -38,3 +38,10 @@ export function diffDirectories(filesInDirs: string[]): string[] {
   // File no longer on file system
   return diff;
 }
+
+export function removeFilesFromStore(files: string[]) {
+  const oldFiles = store.get('startupFiles') as string[];
+  const newFiles = oldFiles.filter((file) => !files.includes(file));
+
+  store.set('startupFiles', newFiles);
+}
