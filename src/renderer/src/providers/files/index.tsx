@@ -225,7 +225,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       fuse.add(message);
       setFileHashMap((prev) => {
         const newFileHashMap = { ...prev };
-        newFileHashMap[message.hash] = message;
+        newFileHashMap[message.hash.toLowerCase()] = message;
         return newFileHashMap;
       });
 
@@ -253,7 +253,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
       fuse.setCollection(fuseFiles);
 
-      setFileHashMap(files);
+      setFileHashMap((prev) => {
+        return {
+          ...prev,
+          ...files,
+        };
+      });
 
       searchFiles(searchTerm);
     });
