@@ -7,8 +7,7 @@ import {
 } from 'react';
 import { useApi } from '@/hooks/use-api';
 import { SortType, SortDirection } from '@/lib/search-filter';
-import Fuse, { type FuseResult } from 'fuse.js';
-import { set } from 'lodash';
+import Fuse, { type FuseResult, type Expression } from 'fuse.js';
 
 type RemoveActivityParams = {
   hash: string;
@@ -62,7 +61,7 @@ export const useFile = () => useContext(FileContext);
 
 const models: Resource[] = [];
 const fuse = new Fuse(models, {
-  keys: ['modelName'],
+  keys: ['modelName', 'name', 'baseModel', 'type'],
 });
 
 function mapHashToFuse(files: Record<string, Resource>) {
@@ -74,6 +73,7 @@ function mapHashToFuse(files: Record<string, Resource>) {
   }));
 }
 
+// TODO: Navigating causes reset
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   // Keep track of Fuse search results
@@ -109,22 +109,30 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   const searchFiles = useCallback(
     (search: string) => {
-      const searchResults: any[] = search.length
-        ? fuse.search(search)
-        : mapHashToFuse(fileHashMap);
+      let filters: Expression = {
+        $and: [],
+      };
 
-      // const result = fuse.search({
-      //   $and: [
-      //     { title: 'old war' }, // Fuzzy "old war"
-      //     { color: "'blue" }, // Exact match for blue
-      //     {
-      //       $or: [
-      //         { title: '^lock' }, // Starts with "lock"
-      //         { title: '!arts' } // Does not have "arts"
-      //       ]
-      //     }
-      //   ]
-      // })
+      if (search.length) {
+        filters.$and?.push({ $or: [{ modelName: search }, { name: search }] });
+      }
+
+      if (modelTypeArray.length) {
+        filters.$and?.push({
+          $or: modelTypeArray.map((type) => ({ type: `'${type}` })),
+        });
+      }
+
+      if (baseModelArray.length) {
+        filters.$and?.push({
+          $or: baseModelArray.map((base) => ({ baseModel: `'${base}` })),
+        });
+      }
+
+      const searchResults: any[] =
+        search.length || modelTypeArray.length || baseModelArray.length
+          ? fuse.search(filters)
+          : mapHashToFuse(fileHashMap);
 
       setFuseList(searchResults);
     },
