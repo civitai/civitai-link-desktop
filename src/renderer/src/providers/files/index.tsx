@@ -6,7 +6,12 @@ import {
   useState,
 } from 'react';
 import { useApi } from '@/hooks/use-api';
-import { SortType, SortDirection } from '@/lib/search-filter';
+import {
+  SortType,
+  SortDirection,
+  sortFileSize,
+  sortResource,
+} from '@/lib/search-filter';
 import Fuse, { type FuseResult, type Expression } from 'fuse.js';
 
 type RemoveActivityParams = {
@@ -134,7 +139,15 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
           ? fuse.search(filters)
           : mapHashToFuse(fileHashMap);
 
-      setFuseList(searchResults);
+      setFuseList(
+        searchResults.sort((a, b) => {
+          if (sortType === SortType.FILE_SIZE) {
+            return sortFileSize(a.item, b.item, sortType, sortDirection);
+          }
+
+          return sortResource(a.item, b.item, sortType, sortDirection);
+        }),
+      );
     },
     [sortType, sortDirection, modelTypeArray, baseModelArray, fileHashMap],
   );
