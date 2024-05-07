@@ -67,6 +67,7 @@ export const useFile = () => useContext(FileContext);
 const models: Resource[] = [];
 const fuse = new Fuse(models, {
   keys: ['modelName', 'name', 'baseModel', 'type'],
+  threshold: 0.3,
 });
 
 function mapHashToFuse(files: Record<string, Resource>) {
@@ -78,7 +79,6 @@ function mapHashToFuse(files: Record<string, Resource>) {
   }));
 }
 
-// TODO: Navigating causes reset
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
   // Keep track of Fuse search results
