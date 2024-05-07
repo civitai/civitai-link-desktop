@@ -71,10 +71,7 @@ export function clearFiles() {
 
 export function watcherFiles() {
   store.onDidChange('files', (newValue) => {
-    getWindow().webContents.send(
-      'files-update',
-      sortFiles(newValue as ResourcesMap),
-    );
+    getWindow().webContents.send('files-update', newValue);
   });
 }
 

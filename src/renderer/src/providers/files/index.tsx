@@ -242,10 +242,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   // Update when download finishes
   useEffect(() => {
     ipcRenderer.on('files-update', function (_, files) {
-      const list: any[] = mapHashToFuse(files);
       fuse.setCollection(Object.values(files));
-      setFuseList(list);
       setFileHashMap(files);
+      searchFiles(searchTerm);
     });
 
     return () => {
