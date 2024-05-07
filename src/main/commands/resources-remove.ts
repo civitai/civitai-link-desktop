@@ -4,9 +4,10 @@ import { getResourcePath } from '../store/paths';
 import { deleteFile, searchFile } from '../store/files';
 import { updateActivity } from '../store/activities';
 import { filterResourcesList } from './filter-reources-list';
+import { getUrlExtension } from '../utils/get-url-extension';
 
 export function resourcesRemove(hash: string) {
-  const resource = searchFile(hash);
+  const resource = searchFile(hash.toLowerCase());
   const defaultResourcePath = getResourcePath(resource.type);
   const timestamp = new Date().toISOString();
   const resourcePath =
@@ -14,12 +15,17 @@ export function resourcesRemove(hash: string) {
 
   try {
     // Remove model from disk
-    fs.unlinkSync(resourcePath);
+    if (fs.existsSync(resourcePath)) fs.unlinkSync(resourcePath);
 
-    // Remove thumbnail from disk
-    const previewPath =
-      resourcePath.split('.').slice(0, -1).join('.') + '.preview.png';
-    if (fs.existsSync(previewPath)) fs.unlinkSync(previewPath);
+    if (resource.previewImageUrl) {
+      // Remove thumbnail from disk
+      const extension = getUrlExtension(resource.previewImageUrl);
+      const previewPath =
+        resourcePath.split('.').slice(0, -1).join('.') +
+        '.preview.' +
+        extension;
+      if (fs.existsSync(previewPath)) fs.unlinkSync(previewPath);
+    }
 
     // Remove json data from disk
     const jsonPath = resourcePath.split('.').slice(0, -1).join('.') + '.json';

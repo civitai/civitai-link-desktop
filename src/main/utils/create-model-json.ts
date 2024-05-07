@@ -30,7 +30,6 @@ export function createModelJson(file: Resource) {
 
     fs.writeFile(jsonFile, JSON.stringify(data), (err) => {
       if (err) return console.error(err);
-      console.log(JSON.stringify(data));
       console.log(`Writing to: ${jsonFile}`);
     });
   }

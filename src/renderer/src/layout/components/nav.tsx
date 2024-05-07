@@ -7,6 +7,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { buttonVariants } from '@/components/ui/button';
+import { useModelLoading } from '@/providers/model-loading';
+import { Progress } from '@/components/ui/progress';
 
 interface NavProps {
   isCollapsed: boolean;
@@ -21,6 +23,7 @@ interface NavProps {
 }
 
 export function Nav({ links, isCollapsed }: NavProps) {
+  const { isLoading, loadedModels, totalModels } = useModelLoading();
   const collapsedNavClass = ({ isActive }: { isActive: boolean }) =>
     cn(
       buttonVariants({
@@ -95,6 +98,21 @@ export function Nav({ links, isCollapsed }: NavProps) {
           ),
         )}
       </nav>
+      {isLoading ? (
+        <div className="px-4">
+          <Progress value={(100 * loadedModels) / totalModels} />
+          <div className="flex-row flex justify-between w-full mt-2">
+            <div>
+              <p className="text-xs text-[#909296] leading-none">
+                Loading Models
+              </p>
+            </div>
+            <p className="text-xs text-[#909296] leading-none">
+              {loadedModels}/{totalModels}
+            </p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -35,7 +35,9 @@ export function searchFile(hash: string) {
 export function findFileByFilename(filename: string) {
   const files = store.get('files') as ResourcesMap;
 
-  const hash = Object.keys(files).find((hash) => files[hash].name === filename);
+  const hash = Object.keys(files).find(
+    (hash) => files[hash.toLowerCase()].name === filename,
+  );
 
   if (!hash) return;
 
@@ -46,7 +48,7 @@ export function searchFileByModelVersionId(modelVersionId: number) {
   const files = store.get('files') as ResourcesMap;
 
   const hash = Object.keys(files).find(
-    (hash) => files[hash].modelVersionId === modelVersionId,
+    (hash) => files[hash.toLowerCase()].modelVersionId === modelVersionId,
   );
 
   if (!hash) return;

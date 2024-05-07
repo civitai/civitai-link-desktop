@@ -5,7 +5,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useToast } from '@/components/ui/use-toast';
 import { useApi } from '@/hooks/use-api';
 import {
   SortType,
@@ -17,8 +16,6 @@ import {
 
 type RemoveActivityParams = {
   hash: string;
-  title: string;
-  description: string;
 };
 
 export enum FileListFilters {
@@ -83,17 +80,11 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   const [modelTypeArray, setModelTypeArray] = useState<string[]>([]);
   const [baseModelArray, setBaseModelArray] = useState<string[]>([]);
 
-  const { toast } = useToast();
   const { cancelDownload } = useApi();
 
   // Remove activity from list
   const removeActivity = useCallback(
-    ({ hash, title, description }: RemoveActivityParams) => {
-      toast({
-        title,
-        description,
-      });
-
+    ({ hash }: RemoveActivityParams) => {
       setFilteredFileList((state) => {
         const { [hash]: rm, ...rest } = state;
 
@@ -245,7 +236,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     return () => {
       ipcRenderer.removeAllListeners('files-update');
     };
-  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
+  }, [searchTerm]);
 
   // Get initial store on load
   useEffect(() => {
@@ -263,8 +254,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     ipcRenderer.on('resource-remove', function (_, { resource }) {
       removeActivity({
         hash: resource.hash,
-        title: 'Resource removed',
-        description: `${resource.modelName} has been removed.`,
       });
     });
 
@@ -283,8 +272,6 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       if (fileToRemove) {
         removeActivity({
           hash: fileList[fileToRemove].hash,
-          title: 'Download canceled',
-          description: `The download for ${fileList[fileToRemove].modelName} has been canceled.`,
         });
       }
     });

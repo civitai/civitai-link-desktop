@@ -1,6 +1,7 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
-import { checkModelsFolder } from '../check-models-folder';
+import { app } from 'electron';
+import { initFolderCheck } from '../folder-watcher';
 
 export enum Resources {
   CHECKPOINT = 'CHECKPOINT',
@@ -49,10 +50,10 @@ export function setRootResourcePath(path: string) {
 }
 
 export function setResourcePath(resource: string, path: string) {
-  // Rescan directory
-  checkModelsFolder({ directory: path });
+  store.set(`resourcePaths.${resource}`, path);
+  initFolderCheck();
 
-  return store.set(`resourcePaths.${resource}`, path);
+  return;
 }
 
 const SYMLINK: { [key in Resources]?: string } = {
@@ -105,7 +106,7 @@ export function getResourcePath(resourcePath: string) {
           : {}),
     };
 
-    return path.join(rootResourcePath, PATHS[resource]);
+    return path.join(rootResourcePath || app.getPath('home'), PATHS[resource]);
   }
 
   return resourcePaths[resource];
@@ -130,7 +131,10 @@ export function getAllPaths() {
             : {}),
       };
 
-      return path.join(rootResourcePath, PATHS[uppercaseKey]);
+      return path.join(
+        rootResourcePath || app.getPath('home'),
+        PATHS[uppercaseKey],
+      );
     }
 
     return resourcePaths[uppercaseKey];

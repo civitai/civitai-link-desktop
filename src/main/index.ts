@@ -11,17 +11,17 @@ import {
   Menu,
 } from 'electron';
 import {
-  getUpgradeKey,
   store,
   ConnectionStatus,
   setUser,
   watcherUser,
   watchApiKey,
+  getUpgradeKey,
 } from './store/store';
 import { getResourcePath, getRootResourcePath } from './store/paths';
 import { socketIOConnect } from './socket';
-import { checkModelsFolder } from './check-models-folder';
 import { eventsListeners } from './events';
+import { folderWatcher, initFolderCheck } from './folder-watcher';
 
 // Colored Logo Assets
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
@@ -36,10 +36,7 @@ import {
   watchVaultMeta,
 } from './store/vault';
 import unhandled from 'electron-unhandled';
-import electronDl from 'electron-dl';
 import { createWindow, getWindow, setIsQuiting } from './browser-window';
-
-electronDl();
 
 unhandled({
   logger: log.error,
@@ -104,9 +101,8 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
 
-  // Only run on startup after we have a key
   if (getUpgradeKey()) {
-    checkModelsFolder({});
+    initFolderCheck();
   }
 
   socketIOConnect({ app });
@@ -115,6 +111,7 @@ app.whenReady().then(async () => {
   setVault();
 
   // Watchers/Listeners
+  folderWatcher();
   eventsListeners();
   watcherActivities();
   watcherFiles();

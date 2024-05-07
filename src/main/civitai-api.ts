@@ -21,6 +21,7 @@ type ResponsePayload = {
     files: {
       id: number;
       name: string;
+      metadata: { format: string };
     }[];
     images: {
       id: number;
@@ -53,7 +54,8 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       hash,
       url: data.downloadUrl,
       type: data.model.type,
-      name: data.files[0].name, // Filename
+      name:
+        data.files.find((file) => file.metadata.format !== 'Other')?.name || '', // Filename
       modelName: data.model.name,
       modelVersionName: data.name,
       modelVersionId: data.id,
