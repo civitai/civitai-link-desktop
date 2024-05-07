@@ -6,13 +6,8 @@ import {
   useState,
 } from 'react';
 import { useApi } from '@/hooks/use-api';
-import {
-  SortType,
-  SortDirection,
-  reduceFileMap,
-  sortFileSize,
-  sortResource,
-} from '@/lib/search-filter';
+import { SortType, SortDirection } from '@/lib/search-filter';
+import Fuse, { type FuseResult } from 'fuse.js';
 
 type RemoveActivityParams = {
   hash: string;
@@ -24,10 +19,8 @@ export enum FileListFilters {
 }
 
 type FileContextType = {
-  fileList: ResourcesMap;
   removeActivity: (param: RemoveActivityParams) => void;
   fileListCount: number;
-  filteredFileList: ResourcesMap;
   searchFiles: (search: string) => void;
   searchTerm: string;
   setSearchTerm: (search: string) => void;
@@ -40,12 +33,13 @@ type FileContextType = {
     modelType: string[];
     baseModelType: string[];
   };
+
+  fileHashMap: Record<string, Resource>;
+  fuseList: { item: Resource }[];
 };
 
 const defaultValue: FileContextType = {
-  fileList: {},
   removeActivity: () => {},
-  filteredFileList: {},
   searchFiles: () => {},
   searchTerm: '',
   setSearchTerm: () => {},
@@ -59,17 +53,34 @@ const defaultValue: FileContextType = {
     modelType: [],
     baseModelType: [],
   },
+  fuseList: [],
+  fileHashMap: {},
 };
 
 const FileContext = createContext<FileContextType>(defaultValue);
 export const useFile = () => useContext(FileContext);
 
+const fuse = new Fuse([], {
+  keys: ['modelName'],
+});
+
+function mapFiles(files: Record<string, Resource>) {
+  const filesToMap: Resource[] = Object.values(files);
+  return filesToMap.map((doc, idx) => ({
+    item: doc,
+    score: 1,
+    refIndex: idx,
+  }));
+}
+
 export function FileProvider({ children }: { children: React.ReactNode }) {
   const ipcRenderer = window.electron.ipcRenderer;
-  // Full source of files
-  const [fileList, setFileList] = useState<ResourcesMap>({});
+  // Keep track of Fuse search results
+  const [fuseList, setFuseList] = useState<FuseResult<never>[]>([]);
+  // Keep track of all files by hash
+  const [fileHashMap, setFileHashMap] = useState<Record<string, Resource>>({});
+
   // Filtered source of files (whats displayed)
-  const [filteredFileList, setFilteredFileList] = useState<ResourcesMap>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [sortDirection, setSortDirection] = useState<SortDirection>(
     SortDirection.DESC,
@@ -84,65 +95,19 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   // Remove activity from list
   const removeActivity = useCallback(
-    ({ hash }: RemoveActivityParams) => {
-      setFilteredFileList((state) => {
-        const { [hash]: rm, ...rest } = state;
-
-        return rest;
-      });
-
-      setFileList((state) => {
-        const { [hash]: rm, ...rest } = state;
-
-        return rest;
-      });
-    },
-    [fileList, filteredFileList],
+    ({ hash }: RemoveActivityParams) => {},
+    [],
   );
 
   const searchFiles = useCallback(
     (search: string) => {
-      const modelLength = modelTypeArray.length > 0;
-      const baseModelLength = baseModelArray.length > 0;
+      const searchResults: any[] = search.length
+        ? fuse.search(search)
+        : mapFiles(fileHashMap);
 
-      const filtered = Object.values(fileList)
-        .filter((file) => {
-          if (search === '') {
-            return true;
-          }
-
-          return file.modelName?.toLowerCase().includes(search.toLowerCase());
-        })
-        .filter((file) => {
-          if (!file.type) return false;
-
-          if (!modelLength) {
-            return true;
-          }
-
-          return modelTypeArray.includes(file.type.toLowerCase());
-        })
-        .filter((file) => {
-          if (!file.baseModel) return false;
-
-          if (!baseModelLength) {
-            return true;
-          }
-
-          return baseModelArray.includes(file.baseModel?.toLowerCase());
-        })
-        .sort((a, b) => {
-          if (sortType === SortType.FILE_SIZE) {
-            return sortFileSize(a, b, sortType, sortDirection);
-          }
-
-          return sortResource(a, b, sortType, sortDirection);
-        })
-        .reduce(reduceFileMap, {});
-
-      setFilteredFileList(filtered);
+      setFuseList(searchResults);
     },
-    [fileList, sortType, sortDirection, modelTypeArray, baseModelArray],
+    [sortType, sortDirection, modelTypeArray, baseModelArray, fileHashMap],
   );
 
   const sortFiles = (type: SortType) => {
@@ -207,31 +172,16 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   // Update when download starts
   useEffect(() => {
-    ipcRenderer.on('activity-add', function (_, message) {
-      setFileList((files) => ({
-        [message.hash]: message,
-        ...files,
-      }));
-
-      if (!searchTerm || message.modelName.toLowerCase().includes(searchTerm)) {
-        setFilteredFileList((files) => ({
-          [message.hash]: message,
-          ...files,
-        }));
-      }
-    });
+    ipcRenderer.on('activity-add', function (_, message) {});
 
     return () => {
       ipcRenderer.removeAllListeners('activity-add');
     };
-  }, [searchTerm, filteredFileList]);
+  }, [searchTerm]);
 
   // Update when download finishes
   useEffect(() => {
-    ipcRenderer.on('files-update', function (_, files) {
-      setFileList(files);
-      setFilteredFileList(files);
-    });
+    ipcRenderer.on('files-update', function (_, files) {});
 
     return () => {
       ipcRenderer.removeAllListeners('files-update');
@@ -241,8 +191,14 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   // Get initial store on load
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
-      setFileList(message.files);
-      setFilteredFileList(message.files);
+      const fuseFiles: never[] = Object.values(message.files);
+
+      fuse.setCollection(fuseFiles);
+
+      // Hack to show initial list
+      const list: any[] = mapFiles(message.files);
+      setFuseList(list);
+      setFileHashMap(message.files);
     });
 
     return () => {
@@ -265,15 +221,14 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   // This is a super hacky way to cancel downloads
   useEffect(() => {
     ipcRenderer.on('activity-cancel', function (_, { id }) {
-      const fileKeys = Object.keys(fileList);
-      const fileToRemove = fileKeys.find((file) => fileList[file].id === id);
-      cancelDownload(id);
-
-      if (fileToRemove) {
-        removeActivity({
-          hash: fileList[fileToRemove].hash,
-        });
-      }
+      // const fileKeys = Object.keys(fileList);
+      // const fileToRemove = fileKeys.find((file) => fileList[file].id === id);
+      // cancelDownload(id);
+      // if (fileToRemove) {
+      //   removeActivity({
+      //     hash: fileList[fileToRemove].hash,
+      //   });
+      // }
     });
 
     return () => {
@@ -284,13 +239,10 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   return (
     <FileContext.Provider
       value={{
-        fileList,
         removeActivity,
-        filteredFileList,
         searchFiles,
         searchTerm,
         setSearchTerm,
-        fileListCount: Object.keys(fileList).length,
         sortFiles,
         sortDirection,
         sortType,
@@ -300,6 +252,9 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
           modelType: modelTypeArray,
           baseModelType: baseModelArray,
         },
+        fuseList,
+        fileHashMap,
+        fileListCount: Object.keys(fileHashMap).length,
       }}
     >
       {children}
