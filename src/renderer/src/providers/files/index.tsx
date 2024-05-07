@@ -210,7 +210,14 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     searchFiles(searchTerm);
-  }, [searchTerm, sortDirection, sortType, modelTypeArray, baseModelArray]);
+  }, [
+    searchTerm,
+    sortDirection,
+    sortType,
+    modelTypeArray,
+    baseModelArray,
+    fileHashMap,
+  ]);
 
   // Update when download starts
   useEffect(() => {
@@ -242,8 +249,12 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
   // Update when download finishes
   useEffect(() => {
     ipcRenderer.on('files-update', function (_, files) {
-      fuse.setCollection(Object.values(files));
+      const fuseFiles: never[] = Object.values(files);
+
+      fuse.setCollection(fuseFiles);
+
       setFileHashMap(files);
+
       searchFiles(searchTerm);
     });
 
