@@ -214,7 +214,7 @@ export async function initFolderCheck() {
 
   getWindow().webContents.send('model-loading', {
     totalModels,
-    loadedModels: files.length,
+    loadedModels: totalModels,
     isLoading: false,
   });
 
