@@ -308,7 +308,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
     return () => {
       ipcRenderer.removeAllListeners('activity-cancel');
     };
-  });
+  }, []);
 
   return (
     <FileContext.Provider

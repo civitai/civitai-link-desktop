@@ -10,9 +10,11 @@ import { PanelWrapper } from '@/layout/panel-wrapper';
 import { Virtuoso } from 'react-virtuoso';
 import { FilesSort } from '@/components/files/files-sort';
 import { FilesFilter } from '@/components/files/files-filter';
+import { useMemo } from 'react';
 
 export function Files() {
   const { searchFiles, searchTerm, setSearchTerm, fuseList } = useFile();
+  const fuseListCount = useMemo(() => fuseList?.length || 0, [fuseList]);
 
   const clearFilter = () => {
     setSearchTerm('');
@@ -59,7 +61,7 @@ export function Files() {
             </div>
           </form>
         </div>
-        {fuseList?.length === 0 ? (
+        {fuseListCount === 0 ? (
           <div className="flex items-center justify-center py-4">
             <FilesIcon />
             <p className="ml-2 text-center text-sm">No Files</p>
@@ -67,7 +69,7 @@ export function Files() {
         ) : (
           <div className="h-full pb-[130px]">
             <Virtuoso
-              totalCount={fuseList?.length || 0}
+              totalCount={fuseListCount || 0}
               itemContent={(index) => (
                 <div className="mx-4 py-1" key={fuseList[index]?.item.hash}>
                   <FilesItem resource={fuseList[index]?.item} />
