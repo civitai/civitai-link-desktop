@@ -32,10 +32,13 @@ export async function resourcesAdd(params: ResourcesAddParams) {
     type: 'resources:add',
   });
 
+  // TODO: Maybe just add to the store and update the store after
+  // Clean up on start?
   params.mainWindow.webContents.send('activity-add', {
     id: params.id,
     downloadDate: timestamp,
     ...payload,
+    hash: hashLowercase,
     previewImageUrl,
     civitaiUrl,
     downloading: true,

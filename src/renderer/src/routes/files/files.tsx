@@ -1,5 +1,4 @@
 import { FilesItem } from '@/components/files/files-item';
-import { useMemo } from 'react';
 import { Files as FilesIcon, XCircle } from 'lucide-react';
 import { useFile } from '@/providers/files';
 import { Separator } from '@/components/ui/separator';
@@ -8,17 +7,15 @@ import { Search } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
 import { PanelWrapper } from '@/layout/panel-wrapper';
-import { Virtuoso } from 'react-virtuoso';
 import { FilesSort } from '@/components/files/files-sort';
 import { FilesFilter } from '@/components/files/files-filter';
+import { useMemo } from 'react';
+import { Virtualizer } from 'virtua';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function Files() {
-  const { searchFiles, filteredFileList, searchTerm, setSearchTerm } =
-    useFile();
-  const fileKeys = useMemo(
-    () => Object.keys(filteredFileList),
-    [filteredFileList],
-  );
+  const { searchFiles, searchTerm, setSearchTerm, fuseList } = useFile();
+  const fuseListCount = useMemo(() => fuseList?.length || 0, [fuseList]);
 
   const clearFilter = () => {
     setSearchTerm('');
@@ -30,6 +27,16 @@ export function Files() {
   };
 
   const debouncedOnChange = useDebounce(search);
+
+  const elements = useMemo(
+    () =>
+      fuseList.map(({ item }) => (
+        <div className="mx-4 py-1" key={item.hash}>
+          <FilesItem resource={item} />
+        </div>
+      )),
+    [fuseList],
+  );
 
   return (
     <PanelWrapper>
@@ -65,25 +72,15 @@ export function Files() {
             </div>
           </form>
         </div>
-        {fileKeys.length === 0 ? (
+        {fuseListCount === 0 ? (
           <div className="flex items-center justify-center py-4">
             <FilesIcon />
             <p className="ml-2 text-center text-sm">No Files</p>
           </div>
         ) : (
-          <div className="h-full pb-[130px]">
-            <Virtuoso
-              totalCount={fileKeys?.length || 0}
-              itemContent={(index) => (
-                <div
-                  className="mx-4 py-1"
-                  key={filteredFileList[fileKeys[index]].hash}
-                >
-                  <FilesItem resource={filteredFileList[fileKeys[index]]} />
-                </div>
-              )}
-            />
-          </div>
+          <ScrollArea className="h-full pb-[130px]">
+            <Virtualizer>{elements}</Virtualizer>
+          </ScrollArea>
         )}
       </>
       <Outlet />

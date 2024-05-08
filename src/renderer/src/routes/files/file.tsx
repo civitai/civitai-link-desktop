@@ -13,10 +13,10 @@ import { FileNotes } from '@/components/files/file-notes';
 
 export function File() {
   const { hash } = useParams();
-  const { fileList } = useFile();
+  const { fileHashMap } = useFile();
   const file = useMemo(
-    () => fileList[hash?.toLowerCase() || ''],
-    [fileList, hash],
+    () => fileHashMap[hash?.toLowerCase() || ''],
+    [fileHashMap, hash],
   );
   const [isCopied, setIsCopied] = useState<number | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
