@@ -10,7 +10,8 @@ import { PanelWrapper } from '@/layout/panel-wrapper';
 import { FilesSort } from '@/components/files/files-sort';
 import { FilesFilter } from '@/components/files/files-filter';
 import { useMemo } from 'react';
-import { VList } from 'virtua';
+import { Virtualizer } from 'virtua';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function Files() {
   const { searchFiles, searchTerm, setSearchTerm, fuseList } = useFile();
@@ -77,9 +78,9 @@ export function Files() {
             <p className="ml-2 text-center text-sm">No Files</p>
           </div>
         ) : (
-          <div className="h-full pb-[130px]">
-            <VList>{elements}</VList>
-          </div>
+          <ScrollArea className="h-full pb-[130px]">
+            <Virtualizer>{elements}</Virtualizer>
+          </ScrollArea>
         )}
       </>
       <Outlet />
