@@ -21,7 +21,13 @@ export async function addFile(file: Resource) {
   createModelJson(file);
   createPreviewImage(file);
 
-  return store.set(`files.${file.hash.toLowerCase()}`, fileToAdd);
+  store.set(`files.${file.hash.toLowerCase()}`, fileToAdd);
+
+  const files = store.get('files') as ResourcesMap;
+
+  getWindow().webContents.send('files-update', files);
+
+  return;
 }
 
 export function deleteFile(hash: string) {
@@ -67,12 +73,6 @@ export function getFiles() {
 
 export function clearFiles() {
   store.clear();
-}
-
-export function watcherFiles() {
-  store.onDidChange('files', (newValue) => {
-    getWindow().webContents.send('files-update', newValue);
-  });
 }
 
 function sortFiles(files: ResourcesMap) {

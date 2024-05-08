@@ -28,7 +28,6 @@ import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import { watcherActivities } from './store/activities';
-import { watcherFiles } from './store/files';
 import {
   setVaultMeta,
   setVault,
@@ -114,7 +113,6 @@ app.whenReady().then(async () => {
   folderWatcher();
   eventsListeners();
   watcherActivities();
-  watcherFiles();
   watcherUser({ mainWindow });
   watchVault();
   watchApiKey({ mainWindow });
