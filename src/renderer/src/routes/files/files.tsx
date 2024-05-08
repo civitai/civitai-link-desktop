@@ -7,10 +7,10 @@ import { Search } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 import { useDebounce } from '@/hooks/use-debounce';
 import { PanelWrapper } from '@/layout/panel-wrapper';
-import { Virtuoso } from 'react-virtuoso';
 import { FilesSort } from '@/components/files/files-sort';
 import { FilesFilter } from '@/components/files/files-filter';
 import { useMemo } from 'react';
+import { VList } from 'virtua';
 
 export function Files() {
   const { searchFiles, searchTerm, setSearchTerm, fuseList } = useFile();
@@ -26,6 +26,16 @@ export function Files() {
   };
 
   const debouncedOnChange = useDebounce(search);
+
+  const elements = useMemo(
+    () =>
+      fuseList.map(({ item }) => (
+        <div className="mx-4 py-1" key={item.hash}>
+          <FilesItem resource={item} />
+        </div>
+      )),
+    [fuseList],
+  );
 
   return (
     <PanelWrapper>
@@ -68,14 +78,7 @@ export function Files() {
           </div>
         ) : (
           <div className="h-full pb-[130px]">
-            <Virtuoso
-              totalCount={fuseListCount || 0}
-              itemContent={(index) => (
-                <div className="mx-4 py-1" key={fuseList[index]?.item.hash}>
-                  <FilesItem resource={fuseList[index]?.item} />
-                </div>
-              )}
-            />
+            <VList>{elements}</VList>
           </div>
         )}
       </>
