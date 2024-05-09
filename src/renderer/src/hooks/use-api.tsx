@@ -90,5 +90,8 @@ export function useApi() {
     cancelVaultDownload: async (id: number) => {
       return await window.api.cancelVaultDownload(id);
     },
+    getFileByHash: async (hash: string): Promise<Resource> => {
+      return await window.api.getFileByHash(hash);
+    },
   };
 }

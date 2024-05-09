@@ -25,8 +25,8 @@ export function VaultItemDownload({
   const { downloadVaultItem, cancelVaultDownload } = useApi();
   const [isDownloading, setIsDownloading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [speed, setSpeed] = useState(0);
-  const [remainingTime, setRemainingTime] = useState(0);
+  const [_, setSpeed] = useState(0);
+  const [__, setRemainingTime] = useState(0);
 
   // Watch for events from download process
   useEffect(() => {

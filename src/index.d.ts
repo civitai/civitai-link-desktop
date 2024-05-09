@@ -42,6 +42,7 @@ declare global {
         type: string;
       }) => void;
       cancelVaultDownload: (id: number) => void;
+      getFileByHash: (hash: string) => Resource;
     };
   }
 

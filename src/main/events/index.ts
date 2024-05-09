@@ -31,6 +31,7 @@ import {
   eventFetchVaultMeta,
 } from './vault';
 import { eventDownloadVaultItem } from './download-vault-item';
+import { eventGetFileByHash } from './files';
 
 export function eventsListeners() {
   const mainWindow = getWindow();
@@ -83,4 +84,5 @@ export function eventsListeners() {
   ipcMain.handle('fetch-metadata', eventFetchMetadata);
   ipcMain.handle('fetch-file-notes', eventFetchFileNotes);
   ipcMain.on('download-vault-item', eventDownloadVaultItem);
+  ipcMain.handle('get-file-by-hash', eventGetFileByHash);
 }

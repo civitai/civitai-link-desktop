@@ -58,6 +58,7 @@ const api = {
   }) => ipcRenderer.send('download-vault-item', resource),
   cancelVaultDownload: (id: number) =>
     ipcRenderer.send('cancel-vault-download', id),
+  getFileByHash: (hash: string) => ipcRenderer.invoke('get-file-by-hash', hash),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
