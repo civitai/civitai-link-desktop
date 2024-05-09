@@ -75,7 +75,7 @@ export function eventsListeners() {
   ipcMain.on('open-model-file-folder', (_, filePath) =>
     eventOpenModelFileFolder(filePath),
   );
-  ipcMain.on('toggle-vault-item', eventToggleVaultItem);
+  ipcMain.handle('toggle-vault-item', eventToggleVaultItem);
   ipcMain.on('search-file', eventSearchFile);
 
   // Fetch data

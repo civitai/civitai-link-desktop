@@ -35,7 +35,7 @@ const api = {
   }: {
     hash?: string;
     modelVersionId: number;
-  }) => ipcRenderer.send('toggle-vault-item', { hash, modelVersionId }),
+  }) => ipcRenderer.invoke('toggle-vault-item', { hash, modelVersionId }),
   fetchVaultModels: () => ipcRenderer.send('fetch-vault-models'),
   setStableDiffusion: (type: string) =>
     ipcRenderer.send('set-stable-diffusion', type),

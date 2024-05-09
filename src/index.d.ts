@@ -26,7 +26,7 @@ declare global {
       }: {
         hash?: string;
         modelVersionId: number;
-      }) => void;
+      }) => Promise<number | null>;
       setStableDiffusion: (type: string) => void;
       searchFile: (hash: string) => Resource;
       restartApp: () => void;

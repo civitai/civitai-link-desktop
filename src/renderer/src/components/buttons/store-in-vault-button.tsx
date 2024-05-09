@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useEffect, useState } from 'react';
 
 type StoreInVaultButtonProps = {
   file: Resource;
@@ -27,13 +28,23 @@ type StoreInVaultButtonProps = {
 export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
   const { toggleVaultItem, resourceRemove } = useApi();
   const { apiKey } = useElectron();
+  const [vaultId, setVaultId] = useState<number | undefined>(file.vaultId);
+
+  // Hack to get around some weird rendering
+  useEffect(() => {
+    setVaultId(file.vaultId);
+  }, [file]);
 
   const toggleInVault = async ({ removeFile }: { removeFile?: boolean }) => {
     if (file.modelVersionId) {
-      await toggleVaultItem({
+      const newVaultId = await toggleVaultItem({
         hash: file.hash,
         modelVersionId: file.modelVersionId,
       });
+
+      if (newVaultId) {
+        setVaultId(newVaultId);
+      }
 
       if (removeFile) {
         setTimeout(() => {
@@ -47,7 +58,7 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button variant="ghost" size="icon">
-          {file.vaultId ? (
+          {vaultId ? (
             <VaultItemDelete
               hidden
               hash={file.hash}
@@ -91,14 +102,12 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
             </AlertDialog>
           )}
           <span className="sr-only">
-            {file.vaultId
-              ? 'Remove from Vault'
-              : 'Store resource in your Vault'}
+            {vaultId ? 'Remove from Vault' : 'Store resource in your Vault'}
           </span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        {file.vaultId ? 'Remove from Vault' : 'Store resource in your Vault'}
+        {vaultId ? 'Remove from Vault' : 'Store resource in your Vault'}
       </TooltipContent>
     </Tooltip>
   ) : null;

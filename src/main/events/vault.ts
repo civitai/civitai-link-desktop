@@ -37,7 +37,7 @@ export async function eventToggleVaultItem(
 
     const vaultStatus = await fetchVaultModelsByVersion([modelVersionId]);
 
-    const file = searchFile(hash);
+    const file = searchFile(hash.toLowerCase());
     updateFile({
       ...file,
       vaultId: vaultStatus[0].vaultItem?.vaultId,
@@ -52,5 +52,9 @@ export async function eventToggleVaultItem(
         : ('removed vault' as ActivityType),
       date: new Date().toISOString(),
     });
+
+    return vaultStatus[0].vaultItem?.vaultId;
   }
+
+  return null;
 }
