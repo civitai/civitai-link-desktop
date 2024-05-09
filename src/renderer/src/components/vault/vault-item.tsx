@@ -9,8 +9,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { VaultItemDelete } from './vault-item-delete';
-import { Download, Image } from 'lucide-react';
+import { Image } from 'lucide-react';
 import { type VaultItem } from '@/providers/vault';
+import { VaultItemDownload } from './vault-item-download';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -55,19 +56,12 @@ export function VaultItem({
               <Badge variant="outline">{versionName}</Badge>
             </div>
           </div>
-          <Tooltip>
-            <TooltipTrigger>
-              <a
-                href={`https://civitai.com/api/download/vault/${id}?type=model`}
-                target="_blank"
-              >
-                <Download className="absolute w-6 h-6 cursor-pointer top-1/2 right-14 transform -translate-y-1/2" />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[360px] bg-background/90 rounded mr-2 p-1 border z-50">
-              <p className="text-xs">Download to disk</p>
-            </TooltipContent>
-          </Tooltip>
+          <VaultItemDownload
+            id={id}
+            url={`https://civitai.com/api/download/vault/${id}?type=model`}
+            name={modelName}
+            type={type}
+          />
           <Tooltip>
             <TooltipTrigger>
               <VaultItemDelete modelVersionId={modelVersionId} align="right" />

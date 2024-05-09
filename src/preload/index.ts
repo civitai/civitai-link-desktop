@@ -50,6 +50,14 @@ const api = {
     ipcRenderer.invoke('fetch-file-notes', hash),
   saveFileNotes: (hash: string, notes: string) =>
     ipcRenderer.send('save-file-notes', { hash, notes }),
+  downloadVaultItem: (resource: {
+    url: string;
+    name: string;
+    id: number;
+    type: string;
+  }) => ipcRenderer.send('download-vault-item', resource),
+  cancelVaultDownload: (id: number) =>
+    ipcRenderer.send('cancel-vault-download', id),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

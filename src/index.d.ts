@@ -35,6 +35,13 @@ declare global {
       setAlwaysOnTop: (alwaysOnTop: boolean) => void;
       fetchFileNotes: (hash: string) => string;
       saveFileNotes: (hash: string, notes: string) => void;
+      downloadVaultItem: (resource: {
+        url: string;
+        name: string;
+        id: number;
+        type: string;
+      }) => void;
+      cancelVaultDownload: (id: number) => void;
     };
   }
 

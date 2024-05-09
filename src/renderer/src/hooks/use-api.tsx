@@ -79,5 +79,16 @@ export function useApi() {
     saveFileNotes: async (hash: string, notes: string) => {
       return await window.api.saveFileNotes(hash, notes);
     },
+    downloadVaultItem: async (resource: {
+      url: string;
+      name: string;
+      id: number;
+      type: string;
+    }) => {
+      return await window.api.downloadVaultItem(resource);
+    },
+    cancelVaultDownload: async (id: number) => {
+      return await window.api.cancelVaultDownload(id);
+    },
   };
 }

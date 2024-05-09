@@ -30,6 +30,7 @@ import {
   eventToggleVaultItem,
   eventFetchVaultMeta,
 } from './vault';
+import { eventDownloadVaultItem } from './download-vault-item';
 
 export function eventsListeners() {
   const mainWindow = getWindow();
@@ -81,4 +82,5 @@ export function eventsListeners() {
   ipcMain.on('fetch-vault-models', eventFetchVaultModels);
   ipcMain.handle('fetch-metadata', eventFetchMetadata);
   ipcMain.handle('fetch-file-notes', eventFetchFileNotes);
+  ipcMain.on('download-vault-item', eventDownloadVaultItem);
 }
