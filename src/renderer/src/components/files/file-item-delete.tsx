@@ -16,14 +16,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useNavigate } from 'react-router-dom';
 
 type FileItemDeleteProps = { resource: Resource };
 
 export function FileItemDelete({ resource }: FileItemDeleteProps) {
   const { resourceRemove } = useApi();
+  const navigate = useNavigate();
 
   const removeResource = () => {
     resourceRemove(resource);
+    navigate('/files');
   };
 
   return (
