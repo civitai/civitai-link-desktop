@@ -65,8 +65,7 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  createWindow();
-  const mainWindow = getWindow();
+  const mainWindow = createWindow();
 
   log.info('App ready');
   // Set logo to disconnected (red)

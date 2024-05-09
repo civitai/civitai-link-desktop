@@ -30,7 +30,7 @@ export function VaultItemDownload({
 
   // Watch for events from download process
   useEffect(() => {
-    if (id && isDownloading) {
+    if (id) {
       window.electron.ipcRenderer.on(
         `vault-download:${id}`,
         function (_, message) {
@@ -38,8 +38,6 @@ export function VaultItemDownload({
           setSpeed(message.speed);
           setRemainingTime(message.remainingTime);
           setIsDownloading(message.downloading);
-
-          console.log('message', message);
         },
       );
     }
@@ -50,23 +48,25 @@ export function VaultItemDownload({
 
   const cancel = () => {
     cancelVaultDownload(id);
+    setIsDownloading(false);
   };
 
   const download = () => {
-    console.log(id);
-
     downloadVaultItem({ id, url, name, type });
+    setIsDownloading(true);
   };
 
   if (isDownloading) {
     return (
       <Tooltip>
         <TooltipTrigger>
-          <AiOutlineCloseCircle
-            className="absolute w-6 h-6 cursor-pointer top-1/2 right-14 transform -translate-y-1/2"
-            onClick={cancel}
-          />
-          <Progress value={progress} />
+          <div className="absolute top-1/2 right-14 transform -translate-y-1/2">
+            <AiOutlineCloseCircle
+              className="w-6 h-6 cursor-pointer mb-2"
+              onClick={cancel}
+            />
+            <Progress value={progress} />
+          </div>
         </TooltipTrigger>
         <TooltipContent className="max-w-[360px] bg-background/90 rounded mr-2 p-1 border z-50">
           <p className="text-xs">Cancel download</p>
