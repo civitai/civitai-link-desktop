@@ -181,6 +181,7 @@ export async function initFolderCheck() {
       }
     }
 
+    // TODO: This fires too fast because it now doesnt wait for hashing with that getting offloaded
     getWindow().webContents.send('model-loading', {
       totalModels,
       loadedModels: loadedModels++,
@@ -188,6 +189,7 @@ export async function initFolderCheck() {
     });
   });
 
+  // TODO: This
   // We dont need to return results
   await processPromisesBatch(promises, 5);
 

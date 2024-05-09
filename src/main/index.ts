@@ -99,16 +99,16 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
 
-  if (getUpgradeKey()) {
-    initFolderCheck();
-  }
-
   socketIOConnect({ app });
   setUser();
   setVaultMeta();
   setVault();
 
   // Watchers/Listeners
+  if (getUpgradeKey()) {
+    initFolderCheck();
+  }
+
   folderWatcher();
   eventsListeners();
   watcherActivities();
