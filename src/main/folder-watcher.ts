@@ -189,7 +189,7 @@ export async function initFolderCheck() {
     });
   });
 
-  // TODO: This
+  // TODO: This doesnt really await the hashing since its offloaded
   // We dont need to return results
   await processPromisesBatch(promises, 5);
 

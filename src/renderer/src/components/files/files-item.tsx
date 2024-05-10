@@ -59,7 +59,7 @@ export function FilesItem({ resource }: FilesItemProps) {
   return (
     <Card className="bg-transparent group">
       {!isNotDone ? (
-        <NavLink to={`/files/${resource.hash}`}>
+        <NavLink to={`/files/${resource.hash}`} reloadDocument>
           {({ isActive }) => (
             <CardContent
               className={classnames('group-hover:bg-muted', {
