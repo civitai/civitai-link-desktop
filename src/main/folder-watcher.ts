@@ -142,8 +142,8 @@ export async function initFolderCheck() {
   // Init load is empty []
   const files = listDirectories();
   const apiKey = getApiKey();
-  const totalModels = files.length;
-  let loadedModels = 0;
+  // const totalModels = files.length;
+  // let loadedModels = 0;
 
   const filesToRemoveFromStore = diffDirectories(
     files.map((file) => file.pathname),
@@ -162,11 +162,11 @@ export async function initFolderCheck() {
   let modelVersionIds: Record<number, string> = {};
 
   // Set initial loading state
-  getWindow().webContents.send('model-loading', {
-    totalModels,
-    loadedModels: 0,
-    isLoading: true,
-  });
+  // getWindow().webContents.send('model-loading', {
+  //   totalModels,
+  //   loadedModels: 0,
+  //   isLoading: true,
+  // });
 
   const promises = files.map(async ({ pathname, filename }) => {
     onAdd(pathname);
@@ -180,13 +180,6 @@ export async function initFolderCheck() {
         };
       }
     }
-
-    // TODO: This fires too fast because it now doesnt wait for hashing with that getting offloaded
-    getWindow().webContents.send('model-loading', {
-      totalModels,
-      loadedModels: loadedModels++,
-      isLoading: true,
-    });
   });
 
   // TODO: This doesnt really await the hashing since its offloaded
@@ -214,11 +207,11 @@ export async function initFolderCheck() {
     }
   }
 
-  getWindow().webContents.send('model-loading', {
-    totalModels,
-    loadedModels: totalModels,
-    isLoading: false,
-  });
+  // getWindow().webContents.send('model-loading', {
+  //   totalModels,
+  //   loadedModels: totalModels,
+  //   isLoading: false,
+  // });
 
   return;
 }

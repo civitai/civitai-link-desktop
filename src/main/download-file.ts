@@ -8,6 +8,7 @@ import { updateActivity } from './store/activities';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { v4 as uuid } from 'uuid';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
+import { getRootResourcePath } from './store/paths';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -42,7 +43,7 @@ export async function downloadFile({
   let progress = (current / totalLength) * 100;
   let downloaded = 0;
   const dirPath = path.resolve(__dirname, '', downloadPath);
-  const tempDirPath = path.resolve(app.getPath('userData'), 'tmp');
+  const tempDirPath = path.resolve(getRootResourcePath(), 'tmp');
   const tempFileName = uuid();
   const tempFilePath = path.resolve(tempDirPath, tempFileName);
   const filePath = path.resolve(dirPath, resource.name);
