@@ -132,7 +132,7 @@ export async function downloadFile({
     fs.renameSync(tempFilePath, filePath);
 
     updateActivity(activity);
-    addFile(fileData);
+    await addFile(fileData);
 
     new Notification({
       title: 'Download Complete',
