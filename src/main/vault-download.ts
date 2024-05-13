@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
-import { Notification, app, ipcMain } from 'electron';
+import { Notification, ipcMain } from 'electron';
 import { v4 as uuid } from 'uuid';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
 import { getWindow } from './browser-window';

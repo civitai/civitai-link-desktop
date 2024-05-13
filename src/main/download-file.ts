@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { Socket } from 'socket.io-client';
-import { BrowserWindow, Notification, app, ipcMain } from 'electron';
+import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
 import { filterResourcesList } from './commands/filter-reources-list';
