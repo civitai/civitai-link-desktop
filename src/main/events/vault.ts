@@ -1,4 +1,4 @@
-import { fetchVaultModelsByVersion, toggleVaultModel } from '../civitai-api';
+import { toggleVaultModel } from '../civitai-api';
 import { updateActivity } from '../store/activities';
 import {
   searchFile,
