@@ -137,6 +137,7 @@ async function hashFile(pathname: string) {
       console.error('Model not found', err);
     } finally {
       toHash[pathname].status = 'complete';
+      updateLoader();
       setTimeout(() => {
         delete toHash[pathname];
         updateLoader();
@@ -149,10 +150,11 @@ async function hashFile(pathname: string) {
 function updateLoader() {
   const toScan = Object.values(toHash).reduce((a, b) => a + b.fileSize, 0);
   const scanned = Object.values(toHash).filter((v) => v.status === 'complete').reduce((a, b) => a + b.fileSize, 0);
+  const remaining = toScan - scanned;
   getWindow().webContents.send('model-loading', {
     toScan,
     scanned,
-    isScanning: toScan > 0,
+    isScanning: remaining > 0,
   });
 }
 
