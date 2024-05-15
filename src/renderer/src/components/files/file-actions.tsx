@@ -56,7 +56,7 @@ export function FileActions({ file }: FileActionsProps) {
         {file.civitaiUrl ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" asChild>
                 <a
                   href={`${file.civitaiUrl}?modelVersionId=${file.modelVersionId}`}
                   target="_blank"
