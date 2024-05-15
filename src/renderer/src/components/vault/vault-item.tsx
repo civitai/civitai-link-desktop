@@ -26,6 +26,7 @@ export function VaultItem({
   modelVersionId,
   coverImageUrl,
   status,
+  files
 }: VaultItemProps) {
   return (
     <Card className="bg-transparent group">
@@ -62,7 +63,7 @@ export function VaultItem({
             <VaultItemDownload
               id={id}
               url={`https://civitai.com/api/download/vault/${id}?type=model`}
-              name={modelName}
+              name={files[0].url.split('/').pop() || ''}
               type={type}
             />
           )}

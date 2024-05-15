@@ -1,9 +1,3 @@
-import {
-  ClipboardCopy,
-  FolderOpenDot,
-  ExternalLink,
-  Check,
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -12,10 +6,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useApi } from '@/hooks/use-api';
-import { FileItemDelete } from './file-item-delete';
+import {
+  Check,
+  ClipboardCopy,
+  ExternalLink,
+  FolderOpenDot,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { StoreInVaultButton } from '../buttons/store-in-vault-button';
 import { FileFetchMetadata } from './file-fetch-metadata';
+import { FileItemDelete } from './file-item-delete';
 
 type FileActionsProps = {
   file: Resource;
