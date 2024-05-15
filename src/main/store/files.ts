@@ -1,9 +1,11 @@
 import Store, { Schema } from 'electron-store';
+import path from 'path';
+import { getWindow } from '../browser-window';
 import { createModelJson } from '../utils/create-model-json';
 import { createPreviewImage } from '../utils/create-preview-image';
 import { fileStats } from '../utils/file-stats';
-import { getWindow } from '../browser-window';
-import path from 'path';
+import { getApiKey } from './store';
+import { getVaultByModelVersionId } from './vault';
 
 const schema: Schema<Record<string, unknown>> = {
   files: {
@@ -16,10 +18,17 @@ export const store = new Store({ schema });
 
 export async function addFile(file: Resource) {
   const stats = await fileStats(file.localPath);
+  const apiKey = getApiKey();
 
   const fileToAdd = { ...file, hash: file.hash.toLowerCase(), ...stats };
   if (file.localPath) {
     fileToAdd.name = path.basename(file.localPath);
+  }
+
+  if (apiKey && file.modelVersionId) {
+    const vaultItem = getVaultByModelVersionId(file.modelVersionId);
+
+    fileToAdd.vaultId = vaultItem?.id;
   }
 
   createModelJson(file);
@@ -46,9 +55,7 @@ export function findFileByFilename(filename: string) {
   filename = path.basename(filename);
   const files = store.get('files') as ResourcesMap;
 
-  const file = Object.values(files).find(
-    (file) => file.name == filename,
-  );
+  const file = Object.values(files).find((file) => file.name == filename);
 
   if (!file) return;
 

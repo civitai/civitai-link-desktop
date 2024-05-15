@@ -68,6 +68,21 @@ declare global {
     notes?: string;
   };
 
+  type VaultItem = {
+    id: number;
+    status: 'Pending' | 'Stored';
+    modelName: string;
+    versionName: string;
+    type: string;
+    modelId: number;
+    modelVersionId: number;
+    coverImageUrl: string;
+    files: { url: string }[];
+    baseModel: string;
+    modelSizeKb: number;
+    addedAt: string;
+  };
+
   enum ActivityType {
     Downloaded = 'downloaded',
     Deleted = 'deleted',
