@@ -57,7 +57,7 @@ export function FilesItem({ resource }: FilesItemProps) {
 
   // TODO: Fix modelName wrapping and ellipsis
   return (
-    <Card className="bg-transparent group">
+    <Card className="bg-transparent group overflow-hidden">
       {!isNotDone ? (
         <NavLink to={`/files/${resource.hash}`} reloadDocument>
           {({ isActive }) => (
