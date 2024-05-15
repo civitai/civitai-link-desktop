@@ -39,6 +39,17 @@ function ActivityItemIcon({ type }: { type: ActivityType }) {
   }
 }
 
+function DisplayText({type}: {type: ActivityType}) {
+  switch (type) {
+    case ActivityType.ADDED_VAULT:
+      return 'added to vault';
+    case ActivityType.REMOVED_VAULT:
+      return 'removed from vault';
+    default:
+      return type;
+  }
+}
+
 export function ActivitiesItem({
   name,
   type,
@@ -52,7 +63,7 @@ export function ActivitiesItem({
         <div>
           <a href={civitaiUrl} target="_blank">
             <p className="text-sm capitalize">
-              {type} <b>{name}</b>
+              {DisplayText({type})} <b>{name}</b>
             </p>
           </a>
           <p className="text-xs text-[#909296]">{dayjs(date).fromNow()}</p>

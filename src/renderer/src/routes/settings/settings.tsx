@@ -79,10 +79,10 @@ export function Settings() {
               Object.keys(ResourceType) as Array<keyof typeof ResourceType>
             ).map((key) => (
               <div className="flex flex-col gap-y-4 overflow-hidden" key={key}>
-                <Label className="text-primary capitalize">
+                <Label className="text-primary">
                   {ResourceType[key] === ResourceType.DEFAULT
                     ? 'Root Model'
-                    : ResourceType[key].toLowerCase()}{' '}
+                    : ResourceType[key]}{' '}
                   Folder
                 </Label>
                 <PathInput type={key} />

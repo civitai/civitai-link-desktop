@@ -1,6 +1,6 @@
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Badge, TypeBadge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';
@@ -86,7 +86,8 @@ export function FilesItem({ resource }: FilesItemProps) {
                     {resource.modelName}
                   </p>
                   <div className="flex items-center space-x-2">
-                    <Badge variant="modelTag">{resource.type}</Badge>
+                    <TypeBadge type={resource.type} />
+                    {resource.baseModel && <Badge variant="outline">{resource.baseModel}</Badge>}
                     <Badge variant="outline">{resource.modelVersionName}</Badge>
                   </div>
                 </div>

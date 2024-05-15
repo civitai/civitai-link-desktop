@@ -1,7 +1,7 @@
 import { FileActions } from '@/components/files/file-actions';
 import { Separator } from '@/components/ui/separator';
 import { useParams } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
+import { Badge, TypeBadge } from '@/components/ui/badge';
 import { DownloadCloud, Copy, Check, Image } from 'lucide-react';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -70,7 +70,7 @@ export function File() {
               <tr>
                 <td>Type</td>
                 <td>
-                  <Badge variant="modelTag">{file.type}</Badge>
+                  <TypeBadge type={file?.type} />
                 </td>
               </tr>
               <tr>

@@ -48,6 +48,7 @@ export function IntroSd(props: IntroSdProps) {
       <div className="flex flex-1 flex-col justify-center space-y-4">
         <RadioGroup
           defaultValue={props.sdType}
+          onValueChange={(value) => props.setSdType(value)}
           className="flex flex-col space-y-4"
         >
           <div className="flex space-x-2">
