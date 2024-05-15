@@ -20,6 +20,7 @@ export enum VaultFilters {
 
 export type VaultItem = {
   id: number;
+  status: 'Pending' | 'Stored';
   modelName: string;
   versionName: string;
   type: string;

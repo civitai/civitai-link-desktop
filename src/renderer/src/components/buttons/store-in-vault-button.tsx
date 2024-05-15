@@ -63,6 +63,7 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
               hidden
               hash={file.hash}
               modelVersionId={file.modelVersionId}
+              onDelete={() => setVaultId(undefined)}
               className="h-4 w-4"
             />
           ) : (

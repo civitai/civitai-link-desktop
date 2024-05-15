@@ -25,6 +25,7 @@ export function VaultItem({
   type,
   modelVersionId,
   coverImageUrl,
+  status,
 }: VaultItemProps) {
   return (
     <Card className="bg-transparent group">
@@ -54,14 +55,17 @@ export function VaultItem({
             <div className="flex items-center space-x-2">
               <Badge variant="modelTag">{type}</Badge>
               <Badge variant="outline">{versionName}</Badge>
+              {status === 'Pending' && (<Badge variant="default">Processing</Badge>)}
             </div>
           </div>
-          <VaultItemDownload
-            id={id}
-            url={`https://civitai.com/api/download/vault/${id}?type=model`}
-            name={modelName}
-            type={type}
-          />
+          {status === 'Stored' && (
+            <VaultItemDownload
+              id={id}
+              url={`https://civitai.com/api/download/vault/${id}?type=model`}
+              name={modelName}
+              type={type}
+            />
+          )}
           <Tooltip>
             <TooltipTrigger>
               <VaultItemDelete modelVersionId={modelVersionId} align="right" />

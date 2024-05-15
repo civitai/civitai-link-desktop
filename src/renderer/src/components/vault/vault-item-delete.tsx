@@ -19,6 +19,7 @@ type VaultItemDeleteProps = {
   align?: 'left' | 'right';
   hidden?: boolean;
   className?: string;
+  onDelete?: () => void;
 };
 
 export function VaultItemDelete({
@@ -27,11 +28,13 @@ export function VaultItemDelete({
   align = 'left',
   hidden,
   className,
+  onDelete,
 }: VaultItemDeleteProps) {
   const { toggleVaultItem, fetchVaultModels } = useApi();
 
-  const removeFromVault = () => {
-    toggleVaultItem({ modelVersionId, hash });
+  const removeFromVault = async () => {
+    await toggleVaultItem({ modelVersionId, hash });
+    onDelete?.();
     setTimeout(() => fetchVaultModels(), 1000);
   };
 
