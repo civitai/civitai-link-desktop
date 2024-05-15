@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { useApi } from '@/hooks/use-api';
 import classNames from 'classnames';
 import { CloudOff } from 'lucide-react';
