@@ -1,15 +1,15 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type ModelLoadingContextType = {
-  totalModels: number;
-  loadedModels: number;
-  isLoading: boolean;
+  toScan: number;
+  scanned: number;
+  isScanning: boolean;
 };
 
 const defaultValue: ModelLoadingContextType = {
-  totalModels: 0,
-  loadedModels: 0,
-  isLoading: false,
+  toScan: 0,
+  scanned: 0,
+  isScanning: false,
 };
 
 const ModelLoadingContext =
@@ -29,11 +29,11 @@ export function ModelLoadingProvider({
   useEffect(() => {
     ipcRenderer.on(
       'model-loading',
-      function (_, { totalModels, loadedModels, isLoading }) {
+      function (_, { toScan, scanned, isScanning }) {
         setData({
-          totalModels: totalModels,
-          loadedModels: loadedModels,
-          isLoading: isLoading,
+          toScan,
+          scanned,
+          isScanning,
         });
       },
     );

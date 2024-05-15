@@ -1,6 +1,8 @@
 import Store, { Schema } from 'electron-store';
 import { fetchVaultMeta, fetchVaultModels } from '../civitai-api';
 import { getWindow } from '../browser-window';
+import { getApiKey } from './store';
+import { filesByModelVersionIdHash, updateFile } from './files';
 
 const schema: Schema<Record<string, unknown>> = {
   vaultMeta: {
@@ -31,9 +33,26 @@ export async function setVaultMeta() {
 }
 
 export async function setVault() {
-  const models = await fetchVaultModels();
+  const apiKey = getApiKey();
 
-  store.set('vaultItems', models);
+  if (apiKey) {
+    const models = await fetchVaultModels();
+    const files = filesByModelVersionIdHash();
+
+    models.forEach((model) => {
+        const file = files[model.modelVersionId];
+
+        if (file) {
+            updateFile({
+                ...file,
+                modelVersionId: model.modelVersionId,
+                vaultId: model.vaultItem?.vaultId,
+            });
+        }
+    });
+
+    store.set('vaultItems', models);
+  }
 }
 
 export function getVaultMeta() {

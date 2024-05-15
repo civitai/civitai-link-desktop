@@ -1,25 +1,23 @@
 import chokidar from 'chokidar';
-import { getAllPaths, getRootResourcePath, store } from './store/paths';
+import os from 'os';
+import path from 'path';
+import workerpool from 'workerpool';
+import { getWindow } from './browser-window';
+import { getModelByHash } from './civitai-api';
+import { listDirectories } from './list-directory';
+import { socketCommandStatus } from './socket';
 import {
   addFile,
   deleteFile,
   findFileByFilename,
-  searchFile,
-  updateFile,
 } from './store/files';
-import path from 'path';
-import { socket, socketCommandStatus } from './socket';
-import { getWindow } from './browser-window';
-import { getModelByHash } from './civitai-api';
-import { checkMissingFields } from './utils/check-missing-fields';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
-import workerpool from 'workerpool';
-import os from 'os';
-import { getApiKey } from './store/store';
-import { listDirectories } from './list-directory';
-import { filterResourcesList } from './commands/filter-reources-list';
-import { fetchVaultModelsByVersion } from './civitai-api';
+import { getAllPaths, getRootResourcePath, store } from './store/paths';
 import { diffDirectories } from './store/startup-files';
+import { setVault } from './store/vault';
+import { checkMissingFields } from './utils/check-missing-fields';
+import { limitConcurrency } from './utils/concurrency-helpers';
+import { fileStats } from './utils/file-stats';
 
 const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
 const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
@@ -104,47 +102,65 @@ function onUnlink(filePath: string) {
   });
 }
 
-async function onAdd(filePath: string) {
-  const filename = path.basename(filePath);
-  const pathname = filePath;
-
+async function onAdd(pathname: string) {
   // Short circuit if in not found store
-  const notFoundFile = searchNotFoundFile(filename);
-
+  const notFoundFile = searchNotFoundFile(pathname);
   if (notFoundFile) return;
 
   // See if file already exists by filename
-  const resource = findFileByFilename(path.basename(filename));
+  const resource = findFileByFilename(pathname);
 
   // Update file path and any missing fields
   if (resource) {
-    checkMissingFields(resource, pathname);
+    await checkMissingFields(resource, pathname);
   } else {
-    // Hash files
-    pool
-      .exec('processTask', [pathname, filename])
-      .then(async (modelHash: string) => {
-        try {
-          const model = await getModelByHash(modelHash);
-          addFile({ ...model, localPath: pathname });
-        } catch {
-          addNotFoundFile(filename, modelHash, pathname);
-          console.error('Error hash', modelHash, filename);
-        }
-      })
-      .catch((err) => {
-        console.error('Error hashing', err);
-      });
+    await hashFile(pathname);
   }
+}
+
+
+const toHash: Record<string, { fileSize: number, status: 'pending' | 'complete' }> = {};
+async function hashFile(pathname: string) {
+  if (toHash[pathname]) return;
+  const stats = await fileStats(pathname);
+  if (!stats?.fileSize) return;
+  toHash[pathname] = { fileSize: stats.fileSize, status: 'pending' };
+  updateLoader();
+
+  try {
+    const modelHash = await pool.exec('processTask', [pathname]);
+    try {
+      const model = await getModelByHash(modelHash);
+      await addFile({ ...model, localPath: pathname });
+    } catch (err) {
+      addNotFoundFile(pathname, modelHash);
+      console.error('Model not found', err);
+    } finally {
+      toHash[pathname].status = 'complete';
+      setTimeout(() => {
+        delete toHash[pathname];
+        updateLoader();
+      }, 30000)
+    }
+  } catch (err) {
+    console.error('Error hashing', err);
+  }
+}
+function updateLoader() {
+  const toScan = Object.values(toHash).reduce((a, b) => a + b.fileSize, 0);
+  const scanned = Object.values(toHash).filter((v) => v.status === 'complete').reduce((a, b) => a + b.fileSize, 0);
+  getWindow().webContents.send('model-loading', {
+    toScan,
+    scanned,
+    isScanning: toScan > 0,
+  });
 }
 
 export async function initFolderCheck() {
   // Init load is empty []
   const files = listDirectories();
-  const apiKey = getApiKey();
-  // const totalModels = files.length;
-  // let loadedModels = 0;
 
+  // Remove files that are no longer in the directories from our records
   const filesToRemoveFromStore = diffDirectories(
     files.map((file) => file.pathname),
   );
@@ -157,82 +173,10 @@ export async function initFolderCheck() {
     }
   });
 
-  // ModelVersionId for vault
-  // { modelVersionId: hash }
-  let modelVersionIds: Record<number, string> = {};
-
-  // Set initial loading state
-  // getWindow().webContents.send('model-loading', {
-  //   totalModels,
-  //   loadedModels: 0,
-  //   isLoading: true,
-  // });
-
-  const promises = files.map(async ({ pathname, filename }) => {
-    onAdd(pathname);
-
-    if (apiKey) {
-      const resource = findFileByFilename(filename);
-      if (resource?.modelVersionId && apiKey) {
-        modelVersionIds = {
-          ...modelVersionIds,
-          [resource.modelVersionId]: resource.hash,
-        };
-      }
-    }
+  // Check and hash all files
+  const promises = files.map(({ pathname }) => async () => {
+    await onAdd(pathname);
   });
-
-  // TODO: This doesnt really await the hashing since its offloaded
-  // We dont need to return results
-  await processPromisesBatch(promises, 5);
-
-  if (apiKey) {
-    // Build array of modelVersionIds
-    const modelVersionIdsArray = Object.keys(modelVersionIds).map((key) =>
-      Number(key),
-    );
-
-    if (modelVersionIdsArray.length !== 0) {
-      const vault = await fetchVaultModelsByVersion(modelVersionIdsArray);
-
-      vault.forEach((model) => {
-        const hash = modelVersionIds[model.modelVersionId];
-        const file = searchFile(hash);
-        updateFile({
-          ...file,
-          modelVersionId: model.modelVersionId,
-          vaultId: model.vaultItem?.vaultId,
-        });
-      });
-    }
-  }
-
-  // getWindow().webContents.send('model-loading', {
-  //   totalModels,
-  //   loadedModels: totalModels,
-  //   isLoading: false,
-  // });
-
-  return;
-}
-
-export async function processPromisesBatch(
-  items: Array<any>,
-  limit: number,
-): Promise<any> {
-  const itemsLength = items.length;
-  for (let start = 0; start < itemsLength; start += limit) {
-    const end = start + limit > itemsLength ? itemsLength : start + limit;
-
-    await Promise.allSettled(items.slice(start, end));
-
-    // Update Civitai website with added files
-    const newPayload = filterResourcesList();
-    socket.emit('commandStatus', {
-      type: 'resources:list',
-      resources: newPayload,
-    });
-  }
-
-  return;
+  await limitConcurrency(promises, pool.maxWorkers);
+  await setVault();
 }

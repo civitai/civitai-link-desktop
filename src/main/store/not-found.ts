@@ -1,4 +1,5 @@
 import Store, { Schema } from 'electron-store';
+import path from 'path';
 
 const schema: Schema<Record<string, unknown>> = {
   notFoundFile: {
@@ -9,19 +10,22 @@ const schema: Schema<Record<string, unknown>> = {
 
 export const store = new Store({ schema });
 
-export function addNotFoundFile(filename: string, hash: string, path: string) {
+export function addNotFoundFile(filepath: string, hash: string) {
+  const filename = path.basename(filepath);
   store.set(`notFoundFile.${filename}`, {
     hash,
-    path,
+    path: filepath,
     lastScannedDate: new Date(),
   });
 }
 
 export function removeNotFoundFile(filename: string) {
+  filename = path.basename(filename);
   store.delete(`notFoundFile.${filename}`);
 }
 
 export function searchNotFoundFile(filename: string) {
+  filename = path.basename(filename);
   return store.get(`notFoundFile.${filename}`);
 }
 

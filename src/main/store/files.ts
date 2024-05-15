@@ -3,6 +3,7 @@ import { createModelJson } from '../utils/create-model-json';
 import { createPreviewImage } from '../utils/create-preview-image';
 import { fileStats } from '../utils/file-stats';
 import { getWindow } from '../browser-window';
+import path from 'path';
 
 const schema: Schema<Record<string, unknown>> = {
   files: {
@@ -17,6 +18,9 @@ export async function addFile(file: Resource) {
   const stats = await fileStats(file.localPath);
 
   const fileToAdd = { ...file, hash: file.hash.toLowerCase(), ...stats };
+  if (file.localPath) {
+    fileToAdd.name = path.basename(file.localPath);
+  }
 
   createModelJson(file);
   createPreviewImage(file);
@@ -39,15 +43,16 @@ export function searchFile(hash: string) {
 }
 
 export function findFileByFilename(filename: string) {
+  filename = path.basename(filename);
   const files = store.get('files') as ResourcesMap;
 
-  const hash = Object.keys(files).find(
-    (hash) => files[hash.toLowerCase()].name === filename,
+  const file = Object.values(files).find(
+    (file) => file.name == filename,
   );
 
-  if (!hash) return;
+  if (!file) return;
 
-  return files[hash];
+  return file;
 }
 
 export function searchFileByModelVersionId(modelVersionId: number) {
@@ -73,6 +78,22 @@ export function getFiles() {
 
 export function clearFiles() {
   store.clear();
+}
+
+export function filesByModelVersionIdHash() {
+  const files = store.get('files') as ResourcesMap;
+
+  return Object.values(files).reduce(
+    (acc: Record<string, Resource>, file: Resource) => {
+      if (!file.modelVersionId) return acc;
+
+      return {
+        ...acc,
+        [file.modelVersionId]: file,
+      };
+    },
+    {},
+  );
 }
 
 function sortFiles(files: ResourcesMap) {

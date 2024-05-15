@@ -1,6 +1,7 @@
 import Store, { Schema } from 'electron-store';
 import difference from 'lodash/difference';
-import { updateFile, findFileByFilename } from './files';
+import { findFileByFilename, updateFile } from './files';
+import path from 'path';
 
 const schema: Schema<Record<string, unknown>> = {
   startupFiles: {
@@ -13,8 +14,9 @@ export const store = new Store({ schema });
 
 export function diffDirectories(filesInDirs: string[]): string[] {
   // Get existing list
-  const oldFiles = store.get('startupFiles') as string[];
+  const oldFiles = [...store.get('startupFiles') as string[]];
   store.set('startupFiles', filesInDirs);
+  const filenames = filesInDirs.map((file) => path.basename(file));
 
   // Short circuit if no files
   if (!oldFiles.length) {
@@ -24,19 +26,23 @@ export function diffDirectories(filesInDirs: string[]): string[] {
   let diff = difference(oldFiles, filesInDirs);
 
   // Update paths and remove from diff if it exists and just moved
-  diff = diff.reduce((acc: string[], file: string) => {
-    const resource = findFileByFilename(file);
-
-    if (resource) {
-      updateFile({ ...resource, localPath: file });
-      return acc;
+  const toRemove = diff.reduce((acc: string[], file: string) => {
+    const wasRemoved = !filenames.includes(path.basename(file));
+    if (!wasRemoved) {
+      // File was moved, update the path
+      const resource = findFileByFilename(file);
+      if (resource) {
+        updateFile({ ...resource, localPath: file });
+        return acc;
+      }
     }
 
+    // Otherwise, add to list to remove
     return [...acc, file];
   }, []);
 
   // File no longer on file system
-  return diff;
+  return toRemove;
 }
 
 export function removeFilesFromStore(files: string[]) {
