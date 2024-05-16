@@ -1,4 +1,4 @@
-import { fetchVaultModelsByVersion, toggleVaultModel } from '../civitai-api';
+import { toggleVaultModel } from '../civitai-api';
 import { updateActivity } from '../store/activities';
 import {
   searchFile,
@@ -15,16 +15,24 @@ export function eventFetchVaultMeta() {
   setVaultMeta();
 }
 
+let updateTimeout: NodeJS.Timeout;
+async function updateVaultData() {
+  if (updateTimeout) clearTimeout(updateTimeout);
+  updateTimeout = setTimeout(() => {
+    setVault();
+    setVaultMeta();
+  }, 2000);
+}
+
 export async function eventToggleVaultItem(
   _,
   { hash, modelVersionId }: { hash?: string; modelVersionId: number },
 ) {
-  const { success } = await toggleVaultModel(modelVersionId);
+  const { success, vaultId } = await toggleVaultModel(modelVersionId);
 
   if (success) {
     // Fetch update
-    setVault();
-    setVaultMeta();
+    updateVaultData();
 
     if (!hash) {
       const file = searchFileByModelVersionId(modelVersionId);
@@ -35,22 +43,24 @@ export async function eventToggleVaultItem(
       }
     }
 
-    const vaultStatus = await fetchVaultModelsByVersion([modelVersionId]);
-
-    const file = searchFile(hash);
+    const file = searchFile(hash.toLowerCase());
     updateFile({
       ...file,
-      vaultId: vaultStatus[0].vaultItem?.vaultId,
+      vaultId,
     });
 
     // NOTE: This only works from app
     // TODO: Move this event as part of the socket connection
     updateActivity({
       name: file.modelName,
-      type: vaultStatus[0].vaultItem?.vaultId
+      type: vaultId
         ? ('added vault' as ActivityType)
         : ('removed vault' as ActivityType),
       date: new Date().toISOString(),
     });
+
+    return vaultId;
   }
+
+  return undefined;
 }

@@ -70,7 +70,8 @@ const SYMLINK: { [key in Resources]?: string } = {
 const A1111_PATHS: { [key in Resources]?: string } = {
   [Resources.CHECKPOINT]: 'Stable-diffusion',
   [Resources.VAE]: 'VAE',
-  [Resources.TEXTUALINVERSION]: 'embeddings',
+  [Resources.TEXTUALINVERSION]: '../embeddings',
+  [Resources.LOCON]: 'LyCORIS',
 };
 
 const COMFY_UI_PATHS: { [key in Resources]?: string } = {

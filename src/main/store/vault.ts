@@ -1,6 +1,11 @@
 import Store, { Schema } from 'electron-store';
-import { fetchVaultMeta, fetchVaultModels } from '../civitai-api';
 import { getWindow } from '../browser-window';
+import {
+  fetchVaultModels as fetchAllVaultItems,
+  fetchVaultMeta,
+} from '../civitai-api';
+import { getFiles, updateFile } from './files';
+import { getApiKey } from './store';
 
 const schema: Schema<Record<string, unknown>> = {
   vaultMeta: {
@@ -31,9 +36,31 @@ export async function setVaultMeta() {
 }
 
 export async function setVault() {
-  const models = await fetchVaultModels();
+  const apiKey = getApiKey();
+  if (!apiKey) return;
 
-  store.set('vaultItems', models);
+  const vaultItems = await fetchAllVaultItems();
+  const vaultItemsByModelVersionId = Object.fromEntries(
+    vaultItems.map((x) => [x.modelVersionId, x]),
+  );
+  const files = getFiles();
+
+  for (const file of Object.values(files)) {
+    if (!file.modelVersionId) continue;
+    const vaultItem = vaultItemsByModelVersionId[file.modelVersionId];
+    if (!vaultItem && !file.vaultId) continue;
+
+    updateFile({
+      ...file,
+      vaultId: vaultItem?.id,
+    });
+  }
+  store.set('vaultItems', vaultItems);
+}
+
+export function getVaultByModelVersionId(modelVersionId: number) {
+  const vaultItems = getVault();
+  return vaultItems.find((x) => x.modelVersionId === modelVersionId);
 }
 
 export function getVaultMeta() {
@@ -41,7 +68,7 @@ export function getVaultMeta() {
 }
 
 export function getVault() {
-  return store.get('vaultItems');
+  return store.get('vaultItems') as VaultItem[];
 }
 
 export function clearVault() {

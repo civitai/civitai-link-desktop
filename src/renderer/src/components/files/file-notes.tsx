@@ -40,16 +40,16 @@ export function FileNotes({ file }: { file: Resource }) {
 
   return (
     <Dialog>
-      <div className="bg-[#25262b] w-full p-2 mt-4 rounded-lg relative">
-        <div className="flex justify-between items-center mb-2">
-          <p className="text-[#909296] text-lg">Notes</p>
+      <div className="bg-[#25262b] w-full px-3 py-2 mt-4 rounded-sm relative">
+        <div className="flex justify-between items-center">
+          <p className="text-[#909296] text-sm">Notes</p>
           {loading ? null : (
             <DialogTrigger>
               <PenBoxIcon size={18} />
             </DialogTrigger>
           )}
         </div>
-        {loading ? 'Loading...' : <p className="text-sm">{note}</p>}
+        {loading ? 'Loading...' : note ? <p className="text-sm mt-2">{note}</p> : null}
       </div>
       <DialogContent>
         <DialogHeader>

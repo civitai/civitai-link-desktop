@@ -30,6 +30,8 @@ import {
   eventToggleVaultItem,
   eventFetchVaultMeta,
 } from './vault';
+import { eventDownloadVaultItem } from './download-vault-item';
+import { eventGetFileByHash } from './files';
 
 export function eventsListeners() {
   const mainWindow = getWindow();
@@ -73,7 +75,7 @@ export function eventsListeners() {
   ipcMain.on('open-model-file-folder', (_, filePath) =>
     eventOpenModelFileFolder(filePath),
   );
-  ipcMain.on('toggle-vault-item', eventToggleVaultItem);
+  ipcMain.handle('toggle-vault-item', eventToggleVaultItem);
   ipcMain.on('search-file', eventSearchFile);
 
   // Fetch data
@@ -81,4 +83,6 @@ export function eventsListeners() {
   ipcMain.on('fetch-vault-models', eventFetchVaultModels);
   ipcMain.handle('fetch-metadata', eventFetchMetadata);
   ipcMain.handle('fetch-file-notes', eventFetchFileNotes);
+  ipcMain.on('download-vault-item', eventDownloadVaultItem);
+  ipcMain.handle('get-file-by-hash', eventGetFileByHash);
 }

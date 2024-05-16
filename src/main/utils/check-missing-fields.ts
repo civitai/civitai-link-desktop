@@ -2,7 +2,7 @@ import { getModelByHash } from '../civitai-api';
 import { updateFile } from '../store/files';
 import { fileStats } from './file-stats';
 
-const apiFields = ['baseModel', 'trainedWords', 'previewImage'];
+const apiFields = ['baseModel', 'previewImageUrl'];
 const systemFields = ['fileSize', 'downloadDate'];
 
 export async function checkMissingFields(
@@ -11,26 +11,14 @@ export async function checkMissingFields(
 ) {
   let fieldsToUpdate = { ...resource, localPath };
 
-  const isMissingApiField = apiFields.find((field) => {
-    if (!resource[field]) {
-      return true;
-    }
-
-    return false;
-  });
-
-  const isMissingSystemField = systemFields.find((field) => {
-    if (!resource[field]) {
-      return true;
-    }
-
-    return false;
-  });
+  const isMissingApiField = apiFields.some((field) => !resource[field]);
+  const isMissingSystemField = systemFields.some((field) => !resource[field]);
 
   if (isMissingApiField) {
-    const model = await getModelByHash(resource.hash);
-
-    fieldsToUpdate = { ...fieldsToUpdate, ...model };
+    try {
+      const model = await getModelByHash(resource.hash);
+      fieldsToUpdate = { ...fieldsToUpdate, ...model };
+    } catch (err) {}
   }
 
   if (isMissingSystemField) {
@@ -40,6 +28,6 @@ export async function checkMissingFields(
   }
 
   if (localPath || isMissingApiField || isMissingSystemField) {
-    updateFile(fieldsToUpdate);
+    updateFile({...fieldsToUpdate, name: resource.name});
   }
 }

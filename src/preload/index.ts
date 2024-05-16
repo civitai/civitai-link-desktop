@@ -35,7 +35,7 @@ const api = {
   }: {
     hash?: string;
     modelVersionId: number;
-  }) => ipcRenderer.send('toggle-vault-item', { hash, modelVersionId }),
+  }) => ipcRenderer.invoke('toggle-vault-item', { hash, modelVersionId }),
   fetchVaultModels: () => ipcRenderer.send('fetch-vault-models'),
   setStableDiffusion: (type: string) =>
     ipcRenderer.send('set-stable-diffusion', type),
@@ -50,6 +50,15 @@ const api = {
     ipcRenderer.invoke('fetch-file-notes', hash),
   saveFileNotes: (hash: string, notes: string) =>
     ipcRenderer.send('save-file-notes', { hash, notes }),
+  downloadVaultItem: (resource: {
+    url: string;
+    name: string;
+    id: number;
+    type: string;
+  }) => ipcRenderer.send('download-vault-item', resource),
+  cancelVaultDownload: (id: number) =>
+    ipcRenderer.send('cancel-vault-download', id),
+  getFileByHash: (hash: string) => ipcRenderer.invoke('get-file-by-hash', hash),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

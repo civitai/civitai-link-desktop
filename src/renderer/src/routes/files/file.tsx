@@ -1,25 +1,33 @@
 import { FileActions } from '@/components/files/file-actions';
 import { Separator } from '@/components/ui/separator';
-import { useFile } from '@/providers/files';
 import { useParams } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
+import { Badge, TypeBadge } from '@/components/ui/badge';
 import { DownloadCloud, Copy, Check, Image } from 'lucide-react';
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import classnames from 'classnames';
 import prettyBytes from 'pretty-bytes';
 import { FileNotes } from '@/components/files/file-notes';
+import { useApi } from '@/hooks/use-api';
 
 export function File() {
   const { hash } = useParams();
-  const { fileHashMap } = useFile();
-  const file = useMemo(
-    () => fileHashMap[hash?.toLowerCase() || ''],
-    [fileHashMap, hash],
-  );
+  const { getFileByHash } = useApi();
   const [isCopied, setIsCopied] = useState<number | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
+  const [file, setFile] = useState<Resource | null>(null);
+
+  useEffect(() => {
+    const fetchFile = async () => {
+      if (hash) {
+        const fileByHash = await getFileByHash(hash);
+        setFile(fileByHash);
+      }
+    };
+
+    fetchFile();
+  }, [hash]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -62,7 +70,7 @@ export function File() {
               <tr>
                 <td>Type</td>
                 <td>
-                  <Badge variant="modelTag">{file.type}</Badge>
+                  <TypeBadge type={file?.type} />
                 </td>
               </tr>
               <tr>

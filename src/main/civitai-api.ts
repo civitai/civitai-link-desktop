@@ -70,7 +70,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
   } catch (error: any | AxiosError) {
     if (error.response) {
       console.error('Error fetching model by hash: ', error.response.data);
-      throw error.response.data;
+      throw new Error(JSON.stringify(error.response.data));
     } else {
       throw new Error(`Error fetching model by hash: ${hash}`);
     }
@@ -113,6 +113,8 @@ export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
 type VersionResource = {
   modelVersionId: number;
   vaultItem: null | { vaultId: number };
+  modelName?: string;
+  versionName?: string;
 };
 
 export const fetchVaultModelsByVersion = async (
@@ -141,8 +143,17 @@ export const fetchVaultModelsByVersion = async (
   }
 };
 
+type VaultModelResource = {
+  id: number;
+  modelVersionId: number;
+  modelId: number;
+  modelName: string;
+  versionName: string;
+  coverImageUrl: string;
+  status: 'Pending' | 'Stored';
+};
 // TODO: Add pagination
-export const fetchVaultModels = async (): Promise<VersionResource[]> => {
+export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
   const apiKey = getApiKey();
 
   if (!apiKey) {
@@ -150,7 +161,7 @@ export const fetchVaultModels = async (): Promise<VersionResource[]> => {
   }
 
   try {
-    const { data }: { data: { items: VersionResource[] } } = await axios.get(
+    const { data }: { data: { items: VaultModelResource[] } } = await axios.get(
       `${CIVITAI_API_URL}/vault/all`,
       {
         params: {
@@ -171,9 +182,10 @@ export const fetchVaultModels = async (): Promise<VersionResource[]> => {
   }
 };
 
+type ToggleVaultResponse = { success: boolean, vaultId?: number };
 export const toggleVaultModel = async (
   modelVersionId: number,
-): Promise<{ success: boolean }> => {
+): Promise<ToggleVaultResponse> => {
   const apiKey = getApiKey();
 
   if (!apiKey) {

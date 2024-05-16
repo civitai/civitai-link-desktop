@@ -13,6 +13,7 @@ import {
   sortResource,
 } from '@/lib/search-filter';
 import Fuse, { type FuseResult, type Expression } from 'fuse.js';
+import { isEqual } from 'lodash';
 
 type RemoveActivityParams = {
   hash: string;
@@ -139,15 +140,17 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
           ? fuse.search(filters)
           : mapHashToFuse(fileHashMap);
 
-      setFuseList(
-        searchResults.sort((a, b) => {
-          if (sortType === SortType.FILE_SIZE) {
-            return sortFileSize(a.item, b.item, sortType, sortDirection);
-          }
+      const sortedResults = searchResults.sort((a, b) => {
+        if (sortType === SortType.FILE_SIZE) {
+          return sortFileSize(a.item, b.item, sortType, sortDirection);
+        }
 
-          return sortResource(a.item, b.item, sortType, sortDirection);
-        }),
-      );
+        return sortResource(a.item, b.item, sortType, sortDirection);
+      })
+
+      if (!isEqual(sortedResults, fuseList)) {
+        setFuseList(sortedResults);
+      }
     },
     [sortType, sortDirection, modelTypeArray, baseModelArray, fileHashMap],
   );

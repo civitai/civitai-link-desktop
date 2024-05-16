@@ -4,9 +4,9 @@ export enum ResourceType {
   CONTROLNET = 'ControlNet',
   UPSCALER = 'Upscaler',
   HYPERNETWORK = 'Hypernetwork',
-  TEXTUALINVERSION = 'Embeddings',
-  LORA = 'Lora',
-  LOCON = 'LoCon',
+  TEXTUALINVERSION = 'Embedding',
+  LORA = 'LoRA',
+  LOCON = 'LyCORIS',
   VAE = 'VAE',
 }
 

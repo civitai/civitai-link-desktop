@@ -5,10 +5,10 @@ import { Socket } from 'socket.io-client';
 import { BrowserWindow, Notification, ipcMain } from 'electron';
 import { addFile } from './store/files';
 import { updateActivity } from './store/activities';
-import { getRootResourcePath } from './store/paths';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { v4 as uuid } from 'uuid';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
+import { getRootResourcePath } from './store/paths';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -132,7 +132,7 @@ export async function downloadFile({
     fs.renameSync(tempFilePath, filePath);
 
     updateActivity(activity);
-    addFile(fileData);
+    await addFile(fileData);
 
     new Notification({
       title: 'Download Complete',

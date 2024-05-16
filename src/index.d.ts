@@ -26,7 +26,7 @@ declare global {
       }: {
         hash?: string;
         modelVersionId: number;
-      }) => void;
+      }) => Promise<number | undefined>;
       setStableDiffusion: (type: string) => void;
       searchFile: (hash: string) => Resource;
       restartApp: () => void;
@@ -35,6 +35,14 @@ declare global {
       setAlwaysOnTop: (alwaysOnTop: boolean) => void;
       fetchFileNotes: (hash: string) => string;
       saveFileNotes: (hash: string, notes: string) => void;
+      downloadVaultItem: (resource: {
+        url: string;
+        name: string;
+        id: number;
+        type: string;
+      }) => void;
+      cancelVaultDownload: (id: number) => void;
+      getFileByHash: (hash: string) => Resource;
     };
   }
 
@@ -58,6 +66,21 @@ declare global {
     baseModel?: string;
     fileSize?: number; // bytes
     notes?: string;
+  };
+
+  type VaultItem = {
+    id: number;
+    status: 'Pending' | 'Stored';
+    modelName: string;
+    versionName: string;
+    type: string;
+    modelId: number;
+    modelVersionId: number;
+    coverImageUrl: string;
+    files: { url: string }[];
+    baseModel: string;
+    modelSizeKb: number;
+    addedAt: string;
   };
 
   enum ActivityType {

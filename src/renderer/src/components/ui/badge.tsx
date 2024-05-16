@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { ResourceType } from '@/types';
 
 import { cn } from '@/lib/utils';
 
@@ -35,4 +36,12 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   );
 }
 
-export { Badge, badgeVariants };
+function TypeBadge({ type, ...props }: { type?: string } & BadgeProps) {
+  const typeKey = type?.toUpperCase() as keyof typeof ResourceType;
+  if (!typeKey) return null;
+  const displayType = ResourceType[typeKey];
+  if (!displayType) return null;
+  return <Badge variant="modelTag" {...props}>{ResourceType[typeKey]}</Badge>;
+}
+
+export { Badge, TypeBadge, badgeVariants };

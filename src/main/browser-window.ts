@@ -107,6 +107,8 @@ export function createWindow() {
   if (!DEBUG) {
     autoUpdater.checkForUpdatesAndNotify();
   }
+
+  return mainWindow;
 }
 
 export function setIsQuiting() {
