@@ -1,6 +1,6 @@
+import { app } from 'electron';
 import Store, { Schema } from 'electron-store';
 import path from 'path';
-import { app } from 'electron';
 import { initFolderCheck } from '../folder-watcher';
 
 export enum Resources {
