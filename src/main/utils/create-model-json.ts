@@ -4,7 +4,7 @@ const SD_VERSION = [
   { baseModel: 'SD 1', version: 'SD1' },
   { baseModel: 'SD 2', version: 'SD2' },
   { baseModel: 'SDXL', version: 'SDXL' },
-  { baseModel: 'PONY', version: 'PONY' },
+  { baseModel: 'Pony', version: 'PONY' },
 ];
 
 export function createModelJson(file: Resource) {
