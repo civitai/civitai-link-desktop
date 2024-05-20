@@ -1,41 +1,41 @@
-import { autoUpdater } from 'electron-updater';
 import { electronApp, optimizer } from '@electron-toolkit/utils';
-import log from 'electron-log';
 import {
   BrowserWindow,
-  app,
-  ipcMain,
-  dialog,
-  Tray,
-  nativeImage,
   Menu,
+  Tray,
+  app,
+  dialog,
+  ipcMain,
+  nativeImage,
 } from 'electron';
-import {
-  store,
-  ConnectionStatus,
-  setUser,
-  watcherUser,
-  watchApiKey,
-  getUpgradeKey,
-} from './store/store';
-import { getResourcePath, getRootResourcePath } from './store/paths';
-import { socketIOConnect } from './socket';
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
 import { eventsListeners } from './events';
 import { folderWatcher, initFolderCheck } from './folder-watcher';
+import { socketIOConnect } from './socket';
+import { getResourcePath, getRootResourcePath } from './store/paths';
+import {
+  ConnectionStatus,
+  getUpgradeKey,
+  setUser,
+  store,
+  watchApiKey,
+  watcherUser,
+} from './store/store';
 
 // Colored Logo Assets
+import unhandled from 'electron-unhandled';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
-import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
+import logoPending from '../../resources/favicon-pending@2x.png?asset';
+import { createWindow, getWindow, setIsQuiting } from './browser-window';
 import { watcherActivities } from './store/activities';
 import {
-  setVaultMeta,
   setVault,
+  setVaultMeta,
   watchVault,
   watchVaultMeta,
 } from './store/vault';
-import unhandled from 'electron-unhandled';
-import { createWindow, getWindow, setIsQuiting } from './browser-window';
 
 unhandled({
   logger: log.error,
@@ -67,7 +67,12 @@ Menu.setApplicationMenu(null);
 app.whenReady().then(async () => {
   const mainWindow = createWindow();
 
-  log.info('App ready');
+  log.info('App ready:', {
+    version: app.getVersion(),
+    platform: process.platform,
+    platformVersion: process.getSystemVersion(),
+    arch: process.arch,
+  });
   // Set logo to disconnected (red)
   const icon = nativeImage.createFromPath(logoDisconnected);
   tray = new Tray(icon);
