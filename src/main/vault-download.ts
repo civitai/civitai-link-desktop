@@ -1,12 +1,12 @@
-import fs from 'fs';
-import path from 'path';
 import axios from 'axios';
 import { Notification, ipcMain } from 'electron';
+import fs from 'fs';
+import path from 'path';
 import { v4 as uuid } from 'uuid';
-import { findOrCreateFolder } from './utils/find-or-create-folder';
 import { getWindow } from './browser-window';
-import { getApiKey } from './store/store';
 import { getRootResourcePath } from './store/paths';
+import { getApiKey } from './store/store';
+import { findOrCreateFolder } from './utils/find-or-create-folder';
 
 type VaultDownloadParams = {
   resource: {
@@ -110,7 +110,6 @@ export async function vaultDownload({
   data.pipe(writer);
 
   function cancelDownload(id: number) {
-    console.log('test', id);
     if (resource.id === id) {
       console.log('Download canceled', resource.id);
 
