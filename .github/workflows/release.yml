@@ -69,7 +69,7 @@ jobs:
           totp_secret: ${{ secrets.ES_TOTP_SECRET }}
           # Path of code object to be signed. (DLL, JAR, EXE, MSI files vb... )
           # ${name}-${version}-setup.${ext}
-          file_path: ${{ github.workspace }}/dist/civitai-link-${{ env.APP_VERSION }}.exe
+          file_path: ${{ github.workspace }}/dist/civitai-link-${{ env.APP_VERSION }}-setup.exe
           # Directory where signed code object(s) will be written.
           # output_path: ${{ github.workspace }}/artifacts
           # Scan code before sign
