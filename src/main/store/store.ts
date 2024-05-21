@@ -116,7 +116,7 @@ export function getConnectionStatus() {
 type Settings = {
   nsfw?: boolean;
   alwaysOnTop?: boolean;
-  concurrent: number;
+  concurrent?: number;
 };
 
 export function getSettings() {

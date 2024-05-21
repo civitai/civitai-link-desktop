@@ -1,5 +1,3 @@
-import { set } from 'lodash';
-
 export function useApi() {
   // Note: window.api definitions can be found in src/index.d.ts
   return {
