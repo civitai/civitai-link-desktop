@@ -47,8 +47,6 @@ async function downloadChunk({
     },
   });
 
-  // TODO: maybe do this better with file name and joining
-  // Doesnt write to disk until finished
   fs.writeFileSync(`${tempFilePath}.part${index}`, response.data);
 }
 
@@ -213,6 +211,8 @@ export async function downloadFile({
     }
   };
 
+  findOrCreateFolder(path.dirname(filePath));
+
   const promises: Promise<void>[] = [];
 
   // Create the promises for each chunk
@@ -238,7 +238,6 @@ export async function downloadFile({
 
   await Promise.all(promises);
 
-  // TODO: Fix this to merge correctly
   const writeStream = fs.createWriteStream(filePath);
   for (let i = 0; i < NUMBER_PARTS; i++) {
     const chunkPath = `${tempFilePath}.part${i}`;
@@ -246,8 +245,6 @@ export async function downloadFile({
     writeStream.write(data);
     fs.unlinkSync(chunkPath); // Clean up chunk file after merging
   }
-
-  writeStream.end();
 
   async function onEnd() {
     console.log("Downloaded to: '" + downloadPath + "'!");
@@ -266,11 +263,6 @@ export async function downloadFile({
       type: 'downloaded' as ActivityType,
       civitaiUrl: resource.civitaiUrl,
     };
-
-    console.log("Move file to: '" + filePath + "'!");
-    findOrCreateFolder(path.dirname(filePath));
-
-    fs.renameSync(tempFilePath, filePath);
 
     updateActivity(activity);
     await addFile(fileData);
@@ -307,7 +299,7 @@ export async function downloadFile({
     });
   }
 
-  await onEnd();
+  writeStream.end(onEnd);
 
   const totalTime = (performance.now() - startTime) / 1000;
   console.log(`Total time: ${totalTime.toFixed(2)} seconds`);
