@@ -1,3 +1,5 @@
+import { set } from 'lodash';
+
 export function useApi() {
   // Note: window.api definitions can be found in src/index.d.ts
   return {
@@ -36,6 +38,9 @@ export function useApi() {
     },
     setNSFW: async (nsfw: boolean) => {
       return await window.api.setNSFW(nsfw);
+    },
+    setConcurrent: async (concurrent: number) => {
+      return await window.api.setConcurrent(concurrent);
     },
     openModelFileFolder: async (filePath: string) => {
       return await window.api.openModelFileFolder(filePath);

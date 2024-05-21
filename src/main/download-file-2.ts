@@ -9,9 +9,9 @@ import { filterResourcesList } from './commands/filter-reources-list';
 import { updateActivity } from './store/activities';
 import { addFile } from './store/files';
 import { getRootResourcePath } from './store/paths';
+import { getSettings } from './store/store';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
 
-const NUMBER_PARTS = 10; // Number of parts to split the file into
 const REPORT_INTERVAL = 1000;
 
 type DownloadChunkParams = {
@@ -89,6 +89,8 @@ export async function downloadFile({
   downloadPath,
   resource,
 }: DownloadFileParams) {
+  // Number of parts to split into from settings
+  const NUMBER_PARTS = getSettings().concurrent || 10;
   const startTime = performance.now();
   let lastReportedTime = Date.now();
 
@@ -177,7 +179,6 @@ export async function downloadFile({
     const remainingTime = (fileSize - downloadedBytes) / speed; // seconds
 
     if (currentTime - lastReportedTime > REPORT_INTERVAL) {
-      console.log(`Downloaded ${downloadedBytes} bytes`);
       // Updates the UI with the current progress
       mainWindow.webContents.send(`resource-download:${resource.id}`, {
         totalLength: fileSize,

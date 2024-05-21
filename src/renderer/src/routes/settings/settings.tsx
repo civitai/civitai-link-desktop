@@ -1,14 +1,5 @@
-import { PanelWrapper } from '@/layout/panel-wrapper';
-import { Button } from '@/components/ui/button';
-import { PathInput } from '@/components/inputs/path-input';
-import { useElectron } from '@/providers/electron';
-import { ResourceType } from '@/types';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useApi } from '@/hooks/use-api';
 import { ApiKeyInput } from '@/components/inputs/api-key-input';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { PathInput } from '@/components/inputs/path-input';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +11,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { useApi } from '@/hooks/use-api';
+import { PanelWrapper } from '@/layout/panel-wrapper';
+import { useElectron } from '@/providers/electron';
+import { ResourceType } from '@/types';
 import { RefreshCcw } from 'lucide-react';
 
 export function Settings() {
   const { clearSettings, settings, appVersion, updateAvailable } =
     useElectron();
-  const { setNSFW, setAlwaysOnTop, restartApp } = useApi();
+  const { setNSFW, setAlwaysOnTop, restartApp, setConcurrent } = useApi();
 
   return (
     <PanelWrapper>
@@ -48,7 +49,7 @@ export function Settings() {
         <ScrollArea className="h-screen">
           <div className="grid gap-6 p-4 pb-[145px] max-w-[600px]">
             <div className="flex items-center space-x-2">
-              <Checkbox
+              <Switch
                 id="nsfw"
                 checked={settings.nsfw}
                 onCheckedChange={(checked: boolean) => setNSFW(checked)}
@@ -61,7 +62,7 @@ export function Settings() {
               </label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox
+              <Switch
                 id="alwaysOnTop"
                 checked={settings.alwaysOnTop}
                 onCheckedChange={(checked: boolean) => setAlwaysOnTop(checked)}
@@ -71,6 +72,25 @@ export function Settings() {
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Window always on top
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Input
+                type="number"
+                id="concurrent"
+                name="concurrent"
+                min="1"
+                max="30"
+                className="max-w-16"
+                value={settings.concurrent}
+                onChange={(e) => setConcurrent(Number(e.target.value))}
+              />
+              <label
+                htmlFor="concurrent"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-col flex"
+              >
+                Concurrent download connections
+                <span className="text-xs">Min: 1 / Max: 30</span>
               </label>
             </div>
             <ApiKeyInput />

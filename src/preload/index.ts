@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
+import { contextBridge, ipcRenderer } from 'electron';
 
 // Custom APIs for renderer
 const api = {
@@ -25,6 +25,8 @@ const api = {
   openRootModelFolder: () => ipcRenderer.send('open-root-model-folder'),
   init: () => ipcRenderer.send('init'),
   setNSFW: (nsfw: boolean) => ipcRenderer.send('set-nsfw', nsfw),
+  setConcurrent: (concurrent: number) =>
+    ipcRenderer.send('set-concurrent', concurrent),
   openModelFileFolder: (filePath: string) =>
     ipcRenderer.send('open-model-file-folder', filePath),
   setApiKey: (key: string) => ipcRenderer.send('set-api-key', key),
