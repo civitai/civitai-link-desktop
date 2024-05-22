@@ -55,6 +55,8 @@ const schema: Schema<Record<string, unknown>> = {
     type: 'object',
     default: {
       nsfw: false,
+      concurrent: 10,
+      alwaysOnTop: false,
     },
   },
   apiKey: {
@@ -90,7 +92,6 @@ export function getUpgradeKey() {
 }
 
 export function setApiKey(key: string | null) {
-  console.log('setApiKey', key);
   return store.set('apiKey', key);
 }
 
@@ -115,6 +116,7 @@ export function getConnectionStatus() {
 type Settings = {
   nsfw?: boolean;
   alwaysOnTop?: boolean;
+  concurrent?: number;
 };
 
 export function getSettings() {
@@ -129,7 +131,7 @@ export function setSettings(settings: Settings) {
 
 export function clearSettings() {
   // TODO: I dont think this works from the store
-  store.set('settings', { nsfw: false, alwaysOnTop: false });
+  store.set('settings', { nsfw: false, alwaysOnTop: false, concurrent: 10 });
   store.set('apiKey', null);
   store.set('user', null);
   store.set('apiKey', null);
@@ -165,7 +167,7 @@ export function getUIStore() {
   return {
     rootResourcePath: store.get('rootResourcePath'),
     connectionStatus: store.get('connectionStatus'),
-    settings: store.get('settings') as { nsfw: boolean; alwaysOnTop?: boolean },
+    settings: store.get('settings') as Settings,
     apiKey: store.get('apiKey'),
     user: store.get('user'),
   };

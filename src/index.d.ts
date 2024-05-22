@@ -16,6 +16,7 @@ declare global {
       openRootModelFolder: () => void;
       init: () => void;
       setNSFW: (nsfw: boolean) => void;
+      setConcurrent: (concurrent: number) => void;
       openModelFileFolder: (filePath: string) => void;
       setApiKey(key: string): void;
       fetchVaultMeta: () => void;
