@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { ConnectionStatus } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
+import { ConnectionStatus } from '@/types';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 type ElectronContextType = {
   key?: string | null;
@@ -10,10 +10,11 @@ type ElectronContextType = {
   activityList: ActivityItem[];
   connectionStatus: ConnectionStatus;
   rootResourcePath: string | null;
-  settings: { nsfw: boolean; alwaysOnTop: boolean };
+  settings: { nsfw: boolean; alwaysOnTop: boolean; concurrent: number };
   user?: object | null;
   appVersion: string;
   updateAvailable: boolean;
+  DEBUG: boolean;
 };
 
 const defaultValue: ElectronContextType = {
@@ -24,10 +25,11 @@ const defaultValue: ElectronContextType = {
   activityList: [],
   connectionStatus: ConnectionStatus.DISCONNECTED,
   rootResourcePath: null,
-  settings: { nsfw: false, alwaysOnTop: false },
+  settings: { nsfw: false, alwaysOnTop: false, concurrent: 10 },
   user: null,
   appVersion: '',
   updateAvailable: false,
+  DEBUG: false,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -42,11 +44,12 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     ConnectionStatus.DISCONNECTED,
   );
   const [rootResourcePath, setRootResourcePath] = useState<string | null>(null);
-  const [settings, setSettings] = useState({ nsfw: false, alwaysOnTop: false });
+  const [settings, setSettings] = useState(defaultValue.settings);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [user, setUser] = useState<object | null>(null);
   const [appVersion, setAppVersion] = useState<string>('');
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
+  const [debug, setDebug] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -96,10 +99,11 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setActivityList(message.activities);
       setRootResourcePath(message.rootResourcePath);
       setConnectionStatus(message.connectionStatus);
-      setSettings(message.settings);
+      setSettings({ ...defaultValue.settings, ...message.settings });
       setApiKey(message.apiKey);
       setUser(message.user);
       setAppVersion(message.appVersion);
+      setDebug(message.DEBUG);
     });
 
     return () => {
@@ -186,6 +190,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         user,
         appVersion,
         updateAvailable,
+        DEBUG: debug,
       }}
     >
       {children}

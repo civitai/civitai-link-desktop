@@ -1,9 +1,10 @@
 import { Socket } from 'socket.io-client';
-import { downloadFile } from '../download-file';
+// import { downloadFile } from '../download-file';
 import { BrowserWindow } from 'electron';
-import { getResourcePath } from '../store/paths';
-import { updateActivity } from '../store/activities';
 import { getModelByHash } from '../civitai-api';
+import { downloadFile } from '../download-file-2';
+import { updateActivity } from '../store/activities';
+import { getResourcePath } from '../store/paths';
 
 type ResourcesAddParams = {
   id: string;

@@ -1,14 +1,14 @@
+import axios from 'axios';
+import { BrowserWindow, Notification, ipcMain } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import axios from 'axios';
 import { Socket } from 'socket.io-client';
-import { BrowserWindow, Notification, ipcMain } from 'electron';
-import { addFile } from './store/files';
-import { updateActivity } from './store/activities';
-import { filterResourcesList } from './commands/filter-reources-list';
 import { v4 as uuid } from 'uuid';
-import { findOrCreateFolder } from './utils/find-or-create-folder';
+import { filterResourcesList } from './commands/filter-reources-list';
+import { updateActivity } from './store/activities';
+import { addFile } from './store/files';
 import { getRootResourcePath } from './store/paths';
+import { findOrCreateFolder } from './utils/find-or-create-folder';
 
 type DownloadFileParams = {
   socket: Socket;
@@ -173,7 +173,6 @@ export async function downloadFile({
   data.pipe(writer);
 
   function cancelDownload(id: string) {
-    console.log('test', id);
     if (resource.id === id) {
       console.log('Download canceled', resource.id);
 

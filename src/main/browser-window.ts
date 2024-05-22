@@ -1,6 +1,6 @@
-import { autoUpdater } from 'electron-updater';
 import { is } from '@electron-toolkit/utils';
-import { BrowserWindow, app, shell, nativeTheme } from 'electron';
+import { BrowserWindow, app, nativeTheme, shell } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import { join } from 'path';
 import { getUIStore, getUpgradeKey } from './store/store';
 
@@ -8,7 +8,7 @@ import { getUIStore, getUpgradeKey } from './store/store';
 import logo from '../../resources/favicon@2x.png?asset';
 import { getActivities } from './store/activities';
 import { getFiles } from './store/files';
-import { getVaultMeta, getVault } from './store/vault';
+import { getVault, getVaultMeta } from './store/vault';
 import { clearTempFolders } from './utils/clear-temp-folders';
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
@@ -71,6 +71,7 @@ export function createWindow() {
       files: getFiles(),
       activities: getActivities(),
       appVersion: app.getVersion(),
+      DEBUG,
     });
 
     mainWindow.webContents.send('app-ready', true);

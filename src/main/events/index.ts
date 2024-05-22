@@ -1,37 +1,37 @@
-import { ipcMain } from 'electron';
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import { getWindow } from '../browser-window';
 
 // Settings Events
 import { eventClearSettings } from './clear-settings';
-import { eventSetKey } from './set-key';
-import { eventSetRootPath } from './set-root-path';
-import { eventSetPath } from './set-path';
-import { eventSetNSFW } from './set-nsfw';
-import { eventSetApiKey } from './set-api-key';
-import { eventSetStableDiffusion } from './set-stable-diffusion';
 import { eventSetAlwaysOnTop } from './set-always-on-top';
+import { eventSetApiKey } from './set-api-key';
+import { eventSetKey } from './set-key';
+import { eventSetNSFW } from './set-nsfw';
+import { eventSetPath } from './set-path';
+import { eventSetRootPath } from './set-root-path';
+import { eventSetStableDiffusion } from './set-stable-diffusion';
 
 // App Events
+import { eventCloseApp } from './close-app';
 import { eventInit } from './init';
 import { eventOpenRootModelFolder } from './open-root-model-folder';
-import { eventCloseApp } from './close-app';
 
 // File Events
-import { eventResourceRemove } from './resource-remove';
-import { eventOpenModelFileFolder } from './open-model-file-folder';
-import { eventSearchFile } from './search-file';
 import { eventFetchMetadata } from './fetch-metadata';
 import { eventFetchFileNotes, eventSaveFileNotes } from './notes';
+import { eventOpenModelFileFolder } from './open-model-file-folder';
+import { eventResourceRemove } from './resource-remove';
+import { eventSearchFile } from './search-file';
 
 // Vault Events
-import {
-  eventFetchVaultModels,
-  eventToggleVaultItem,
-  eventFetchVaultMeta,
-} from './vault';
 import { eventDownloadVaultItem } from './download-vault-item';
 import { eventGetFileByHash } from './files';
+import { eventSetConcurrent } from './set-concurrent';
+import {
+  eventFetchVaultMeta,
+  eventFetchVaultModels,
+  eventToggleVaultItem,
+} from './vault';
 
 export function eventsListeners() {
   const mainWindow = getWindow();
@@ -58,6 +58,7 @@ export function eventsListeners() {
   ipcMain.on('set-root-path', eventSetRootPath);
   ipcMain.on('set-path', eventSetPath);
   ipcMain.on('set-nsfw', eventSetNSFW);
+  ipcMain.on('set-concurrent', eventSetConcurrent);
   ipcMain.on('set-always-on-top', (_, alwaysOnTop) => {
     mainWindow.setAlwaysOnTop(alwaysOnTop);
 
