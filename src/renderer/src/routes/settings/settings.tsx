@@ -24,7 +24,7 @@ import { ResourceType } from '@/types';
 import { RefreshCcw } from 'lucide-react';
 
 export function Settings() {
-  const { clearSettings, settings, appVersion, updateAvailable } =
+  const { clearSettings, settings, appVersion, updateAvailable, DEBUG } =
     useElectron();
   const { setNSFW, setAlwaysOnTop, restartApp, setConcurrent } = useApi();
 
@@ -74,25 +74,27 @@ export function Settings() {
                 Window always on top
               </label>
             </div>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="number"
-                id="concurrent"
-                name="concurrent"
-                min="1"
-                max="30"
-                className="max-w-16"
-                value={settings.concurrent}
-                onChange={(e) => setConcurrent(Number(e.target.value))}
-              />
-              <label
-                htmlFor="concurrent"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-col flex"
-              >
-                Concurrent download connections
-                <span className="text-xs">Min: 1 / Max: 30</span>
-              </label>
-            </div>
+            {DEBUG ? (
+              <div className="flex items-center space-x-2">
+                <Input
+                  type="number"
+                  id="concurrent"
+                  name="concurrent"
+                  min="1"
+                  max="30"
+                  className="max-w-16"
+                  value={settings.concurrent}
+                  onChange={(e) => setConcurrent(Number(e.target.value))}
+                />
+                <label
+                  htmlFor="concurrent"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex-col flex"
+                >
+                  Single download connections
+                  <span className="text-xs">Min: 1 / Max: 30</span>
+                </label>
+              </div>
+            ) : null}
             <ApiKeyInput />
             <h1 className="text-xl">Model Settings</h1>
             {(

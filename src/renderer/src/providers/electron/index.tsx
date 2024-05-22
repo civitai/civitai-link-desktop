@@ -14,6 +14,7 @@ type ElectronContextType = {
   user?: object | null;
   appVersion: string;
   updateAvailable: boolean;
+  DEBUG: boolean;
 };
 
 const defaultValue: ElectronContextType = {
@@ -28,6 +29,7 @@ const defaultValue: ElectronContextType = {
   user: null,
   appVersion: '',
   updateAvailable: false,
+  DEBUG: false,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -47,6 +49,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<object | null>(null);
   const [appVersion, setAppVersion] = useState<string>('');
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
+  const [debug, setDebug] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,6 +103,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setApiKey(message.apiKey);
       setUser(message.user);
       setAppVersion(message.appVersion);
+      setDebug(message.DEBUG);
     });
 
     return () => {
@@ -186,6 +190,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         user,
         appVersion,
         updateAvailable,
+        DEBUG: debug,
       }}
     >
       {children}

@@ -164,8 +164,6 @@ export function watcherUser({
 }
 
 export function getUIStore() {
-  console.log(store.get('settings'));
-
   return {
     rootResourcePath: store.get('rootResourcePath'),
     connectionStatus: store.get('connectionStatus'),
