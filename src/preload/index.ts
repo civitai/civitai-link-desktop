@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
+import { contextBridge, ipcRenderer } from 'electron';
 
 // Custom APIs for renderer
 const api = {
@@ -41,8 +41,8 @@ const api = {
     ipcRenderer.send('set-stable-diffusion', type),
   searchFile: (hash: string) => ipcRenderer.send('search-file', hash),
   restartApp: () => ipcRenderer.send('restart-app'),
-  fetchMetadata: (localPath: string) =>
-    ipcRenderer.invoke('fetch-metadata', localPath),
+  fetchMetadata: (localPath: string, hash: string) =>
+    ipcRenderer.invoke('fetch-metadata', { localPath, hash }),
   getRootPath: () => ipcRenderer.invoke('get-root-path'),
   setAlwaysOnTop: (alwaysOnTop: boolean) =>
     ipcRenderer.send('set-always-on-top', alwaysOnTop),

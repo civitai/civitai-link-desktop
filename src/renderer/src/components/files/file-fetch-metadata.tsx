@@ -18,11 +18,13 @@ import { useEffect, useState } from 'react';
 type FileFetchMetadataProps = {
   localPath: string;
   metadata?: Record<string, any> | string;
+  hash: string;
 };
 
 export function FileFetchMetadata({
   localPath,
   metadata,
+  hash,
 }: FileFetchMetadataProps) {
   const { fetchMetadata } = useApi();
   const [loadedMetadata, setLoadedMetadata] = useState<
@@ -40,7 +42,7 @@ export function FileFetchMetadata({
   const handleFetchMetadata = async () => {
     if (!metadata) {
       setLoading(true);
-      const data = await fetchMetadata(localPath);
+      const data = await fetchMetadata(localPath, hash);
 
       if (data) {
         setLoadedMetadata(data);

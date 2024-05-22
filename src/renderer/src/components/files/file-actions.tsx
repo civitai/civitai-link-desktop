@@ -73,6 +73,7 @@ export function FileActions({ file }: FileActionsProps) {
           <FileFetchMetadata
             localPath={file.localPath}
             metadata={file.metadata}
+            hash={file.hash}
           />
         ) : null}
         {file.trainedWords && file.trainedWords.length > 0 ? (

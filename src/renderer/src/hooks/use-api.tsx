@@ -64,8 +64,8 @@ export function useApi() {
     restartApp: async () => {
       return await window.api.restartApp();
     },
-    fetchMetadata: async (localPath: string) => {
-      return await window.api.fetchMetadata(localPath);
+    fetchMetadata: async (localPath: string, hash: string) => {
+      return await window.api.fetchMetadata(localPath, hash);
     },
     fetchVaultModels: async () => {
       return await window.api.fetchVaultModels();
