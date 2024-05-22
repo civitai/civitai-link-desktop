@@ -66,6 +66,7 @@ declare global {
     baseModel?: string;
     fileSize?: number; // bytes
     notes?: string;
+    metadata?: Record<string, any> | string;
   };
 
   type VaultItem = {

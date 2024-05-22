@@ -70,7 +70,10 @@ export function FileActions({ file }: FileActionsProps) {
           </Tooltip>
         ) : null}
         {file.localPath ? (
-          <FileFetchMetadata localPath={file.localPath} />
+          <FileFetchMetadata
+            localPath={file.localPath}
+            metadata={file.metadata}
+          />
         ) : null}
         {file.trainedWords && file.trainedWords.length > 0 ? (
           <>

@@ -1,5 +1,7 @@
 import { readMetadata } from '../utils/read-metadata';
 
+// TODO: If exists dont read file
+// Need to pass in hash lookup or Resource object
 export async function eventFetchMetadata(_, localPath: string) {
   if (!localPath) return;
 
