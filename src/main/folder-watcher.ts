@@ -17,9 +17,9 @@ import { fileStats } from './utils/file-stats';
 
 const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
 const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
+const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
 
 const watchConfig = {
-  ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
   ignoreInitial: true,
 };
 
@@ -78,6 +78,9 @@ function process(filepath: string, event: 'add' | 'unlink') {
 }
 
 function onUnlink(filePath: string) {
+  // Short circuit if file isnt a model file
+  if (!FILE_TYPES.some((x) => filePath.includes(x))) return;
+
   // Remove file from store
   const resource = findFileByFilename(path.basename(filePath));
 
@@ -99,6 +102,9 @@ function onUnlink(filePath: string) {
 }
 
 async function onAdd(pathname: string) {
+  // Short circuit if file isnt a model file
+  if (!FILE_TYPES.some((x) => pathname.includes(x))) return;
+
   // Short circuit if in not found store
   const notFoundFile = searchNotFoundFile(pathname);
   if (notFoundFile) return;
