@@ -312,7 +312,7 @@ export async function downloadFile({
 function readStreamSync(chunkPath: string, writeStream: fs.WriteStream) {
   const stream = fs.createReadStream(chunkPath);
 
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     stream.on('data', (data) => {
       writeStream.write(data);
     });
