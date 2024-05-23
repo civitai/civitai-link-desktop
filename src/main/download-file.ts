@@ -243,8 +243,7 @@ export async function downloadFile({
   const writeStream = fs.createWriteStream(filePath);
   for (let i = 0; i < NUMBER_PARTS; i++) {
     const chunkPath = `${tempFilePath}.part${i}`;
-    const data = fs.readFileSync(chunkPath);
-    writeStream.write(data);
+    await readStreamSync(chunkPath, writeStream);
     fs.unlinkSync(chunkPath); // Clean up chunk file after merging
   }
 
@@ -308,4 +307,17 @@ export async function downloadFile({
 
   const totalTime = (performance.now() - startTime) / 1000;
   console.log(`Total time: ${totalTime.toFixed(2)} seconds`);
+}
+
+function readStreamSync(chunkPath: string, writeStream: fs.WriteStream) {
+  const stream = fs.createReadStream(chunkPath);
+
+  return new Promise<void>((resolve, reject) => {
+    stream.on('data', (data) => {
+      writeStream.write(data);
+    });
+    stream.on('end', () => {
+      resolve();
+    });
+  });
 }
