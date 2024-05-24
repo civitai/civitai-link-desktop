@@ -61,6 +61,7 @@ const processing: Record<
   string,
   { event: 'add' | 'unlink'; timeout?: NodeJS.Timeout }
 > = {};
+
 function process(filepath: string, event: 'add' | 'unlink') {
   const key = path.basename(filepath);
 
@@ -124,6 +125,7 @@ const toHash: Record<
   string,
   { fileSize: number; status: 'pending' | 'complete' }
 > = {};
+
 async function hashFile(pathname: string) {
   if (toHash[pathname]) return;
   const stats = await fileStats(pathname);
@@ -151,6 +153,7 @@ async function hashFile(pathname: string) {
     console.error('Error hashing', err);
   }
 }
+
 function updateLoader() {
   const toScan = Object.values(toHash).reduce((a, b) => a + b.fileSize, 0);
   const scanned = Object.values(toHash)

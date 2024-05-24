@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      APP_VERSION: 1.20.0
+      APP_VERSION: 1.20.1
 
     strategy:
       fail-fast: false

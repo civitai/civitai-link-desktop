@@ -1,12 +1,5 @@
 import { io } from 'socket.io-client';
-import {
-  ConnectionStatus,
-  getUpgradeKey,
-  setConnectionStatus,
-  setKey,
-  setUpgradeKey,
-} from './store/store';
-import { searchFile } from './store/files';
+import { getWindow } from './browser-window';
 import {
   activitiesCancel,
   activitiesClear,
@@ -16,7 +9,14 @@ import {
   resourcesRemove,
 } from './commands';
 import { filterResourcesList } from './commands/filter-reources-list';
-import { getWindow } from './browser-window';
+import { searchFile } from './store/files';
+import {
+  ConnectionStatus,
+  getUpgradeKey,
+  setConnectionStatus,
+  setKey,
+  setUpgradeKey,
+} from './store/store';
 
 export const socket = io(import.meta.env.MAIN_VITE_SOCKET_URL, {
   path: '/api/socketio',
