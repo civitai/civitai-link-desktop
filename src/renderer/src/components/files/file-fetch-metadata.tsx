@@ -1,23 +1,35 @@
-import { Braces, Check, ClipboardCopy } from 'lucide-react';
-import { useApi } from '@/hooks/use-api';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  Dialog,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useEffect, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useApi } from '@/hooks/use-api';
+import { Braces, Check, ClipboardCopy } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-export function FileFetchMetadata({ localPath }: { localPath: string }) {
+type FileFetchMetadataProps = {
+  localPath: string;
+  metadata?: Record<string, any> | string;
+  hash: string;
+};
+
+export function FileFetchMetadata({
+  localPath,
+  metadata,
+  hash,
+}: FileFetchMetadataProps) {
   const { fetchMetadata } = useApi();
-  const [metadata, setMetadata] = useState<any>(null);
+  const [loadedMetadata, setLoadedMetadata] = useState<
+    Record<string, any> | string | undefined
+  >(undefined);
   const [loading, setLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -28,12 +40,14 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
   }, [isCopied]);
 
   const handleFetchMetadata = async () => {
-    setLoading(true);
-    const data = await fetchMetadata(localPath);
+    if (!metadata) {
+      setLoading(true);
+      const data = await fetchMetadata(localPath, hash);
 
-    if (data) {
-      setMetadata(data);
-      setLoading(false);
+      if (data) {
+        setLoadedMetadata(data);
+        setLoading(false);
+      }
     }
   };
 
@@ -58,7 +72,9 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
               variant="ghost"
               size="icon"
               onClick={() => {
-                navigator.clipboard.writeText(JSON.stringify(metadata) || '');
+                navigator.clipboard.writeText(
+                  JSON.stringify(metadata || loadedMetadata) || '',
+                );
                 setIsCopied(true);
               }}
             >
@@ -76,7 +92,7 @@ export function FileFetchMetadata({ localPath }: { localPath: string }) {
         ) : (
           <div className="flex max-h-[440px] overflow-auto bg-black/20 p-2 rounded">
             <pre className="text-sm text-primary">
-              {JSON.stringify(metadata, null, 2)}
+              {JSON.stringify(metadata || loadedMetadata, null, 2)}
             </pre>
           </div>
         )}

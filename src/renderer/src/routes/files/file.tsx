@@ -1,15 +1,15 @@
 import { FileActions } from '@/components/files/file-actions';
-import { Separator } from '@/components/ui/separator';
-import { useParams } from 'react-router-dom';
-import { Badge, TypeBadge } from '@/components/ui/badge';
-import { DownloadCloud, Copy, Check, Image } from 'lucide-react';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import classnames from 'classnames';
-import prettyBytes from 'pretty-bytes';
 import { FileNotes } from '@/components/files/file-notes';
+import { Badge, TypeBadge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { useApi } from '@/hooks/use-api';
+import classnames from 'classnames';
+import dayjs from 'dayjs';
+import { Check, Copy, DownloadCloud, Image } from 'lucide-react';
+import prettyBytes from 'pretty-bytes';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 export function File() {
   const { hash } = useParams();

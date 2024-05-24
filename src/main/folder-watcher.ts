@@ -6,11 +6,7 @@ import { getWindow } from './browser-window';
 import { getModelByHash } from './civitai-api';
 import { listDirectories } from './list-directory';
 import { socketCommandStatus } from './socket';
-import {
-  addFile,
-  deleteFile,
-  findFileByFilename,
-} from './store/files';
+import { addFile, deleteFile, findFileByFilename } from './store/files';
 import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
 import { getAllPaths, getRootResourcePath, store } from './store/paths';
 import { diffDirectories } from './store/startup-files';
@@ -21,9 +17,9 @@ import { fileStats } from './utils/file-stats';
 
 const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
 const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
+const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
 
 const watchConfig = {
-  ignored: /^.*\.(?!pt$|safetensors$|ckpt$|bin$)[^.]+$/,
   ignoreInitial: true,
 };
 
@@ -82,6 +78,9 @@ function process(filepath: string, event: 'add' | 'unlink') {
 }
 
 function onUnlink(filePath: string) {
+  // Short circuit if file isnt a model file
+  if (!FILE_TYPES.some((x) => filePath.includes(x))) return;
+
   // Remove file from store
   const resource = findFileByFilename(path.basename(filePath));
 
@@ -103,6 +102,9 @@ function onUnlink(filePath: string) {
 }
 
 async function onAdd(pathname: string) {
+  // Short circuit if file isnt a model file
+  if (!FILE_TYPES.some((x) => pathname.includes(x))) return;
+
   // Short circuit if in not found store
   const notFoundFile = searchNotFoundFile(pathname);
   if (notFoundFile) return;
@@ -118,8 +120,10 @@ async function onAdd(pathname: string) {
   }
 }
 
-
-const toHash: Record<string, { fileSize: number, status: 'pending' | 'complete' }> = {};
+const toHash: Record<
+  string,
+  { fileSize: number; status: 'pending' | 'complete' }
+> = {};
 async function hashFile(pathname: string) {
   if (toHash[pathname]) return;
   const stats = await fileStats(pathname);
@@ -128,10 +132,10 @@ async function hashFile(pathname: string) {
   updateLoader();
 
   try {
-    const modelHash = await pool.exec('processTask', [pathname]);
+    const { modelHash, metadata } = await pool.exec('processTask', [pathname]);
     try {
       const model = await getModelByHash(modelHash);
-      await addFile({ ...model, localPath: pathname });
+      await addFile({ ...model, localPath: pathname, metadata });
     } catch (err) {
       addNotFoundFile(pathname, modelHash);
       console.error('Model not found', err);
@@ -141,7 +145,7 @@ async function hashFile(pathname: string) {
       setTimeout(() => {
         delete toHash[pathname];
         updateLoader();
-      }, 30000)
+      }, 30000);
     }
   } catch (err) {
     console.error('Error hashing', err);
@@ -149,7 +153,9 @@ async function hashFile(pathname: string) {
 }
 function updateLoader() {
   const toScan = Object.values(toHash).reduce((a, b) => a + b.fileSize, 0);
-  const scanned = Object.values(toHash).filter((v) => v.status === 'complete').reduce((a, b) => a + b.fileSize, 0);
+  const scanned = Object.values(toHash)
+    .filter((v) => v.status === 'complete')
+    .reduce((a, b) => a + b.fileSize, 0);
   const remaining = toScan - scanned;
   getWindow().webContents.send('model-loading', {
     toScan,
