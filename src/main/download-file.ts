@@ -5,6 +5,7 @@ import path from 'path';
 import { performance } from 'perf_hooks';
 import { Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
+import { resourcesRemove } from './commands';
 import { filterResourcesList } from './commands/filter-reources-list';
 import { updateActivity } from './store/activities';
 import { addFile } from './store/files';
@@ -148,8 +149,9 @@ export async function downloadFile({
 
       updateActivity(activity);
 
-      // Remove from temp folder
-      //   fs.unlinkSync(tempFilePath);
+      mainWindow.webContents.send('resource-remove', {
+        resource,
+      });
     }
   }
 
