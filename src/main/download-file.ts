@@ -82,8 +82,6 @@ type DownloadFileParams = {
   downloadPath: string;
 };
 
-// TODO: Error handling for failed downloads
-// Handle error thrown with cancelling a download
 export async function downloadFile({
   socket,
   mainWindow,
@@ -180,13 +178,15 @@ export async function downloadFile({
     const remainingTime = (fileSize - downloadedBytes) / speed; // seconds
 
     if (currentTime - lastReportedTime > REPORT_INTERVAL) {
+      const totalProgress = (downloadedBytes / fileSize) * 100;
+
       // Updates the UI with the current progress
       mainWindow.webContents.send(`resource-download:${resource.id}`, {
         totalLength: fileSize,
         downloaded: downloadedBytes,
-        progress: (downloadedBytes / fileSize) * 100,
+        progress: totalProgress,
         speed,
-        remainingTime: remainingTime,
+        remainingTime,
         downloading: true,
       });
 
@@ -196,7 +196,7 @@ export async function downloadFile({
       // Send progress to server
       socket.emit('commandStatus', {
         status: 'processing',
-        progress,
+        progress: totalProgress,
         remainingTime,
         speed,
         updatedAt: new Date().toISOString(),
