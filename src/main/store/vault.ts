@@ -45,7 +45,6 @@ export async function setVault() {
   );
   const files = getFiles();
 
-  // TODO: Lookup files by modelVersionId
   for (const file of Object.values(files)) {
     if (!file.modelVersionId) continue;
     const vaultItem = vaultItemsByModelVersionId[file.modelVersionId];
@@ -56,6 +55,7 @@ export async function setVault() {
       vaultId: vaultItem?.id,
     });
 
+    // If the vault item is on the file system, mark it as local
     var foundIndex = vaultItems.findIndex(
       (x) => x.modelVersionId == vaultItem.modelVersionId,
     );
