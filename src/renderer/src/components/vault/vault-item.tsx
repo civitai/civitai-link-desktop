@@ -1,16 +1,16 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { VaultItemDelete } from './vault-item-delete';
-import { Image } from 'lucide-react';
 import { type VaultItem } from '@/providers/vault';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { Image } from 'lucide-react';
+import { VaultItemDelete } from './vault-item-delete';
 import { VaultItemDownload } from './vault-item-download';
 
 dayjs.extend(duration);
@@ -26,7 +26,8 @@ export function VaultItem({
   modelVersionId,
   coverImageUrl,
   status,
-  files
+  files,
+  isLocal,
 }: VaultItemProps) {
   return (
     <Card className="bg-transparent group">
@@ -56,10 +57,12 @@ export function VaultItem({
             <div className="flex items-center space-x-2">
               <Badge variant="modelTag">{type}</Badge>
               <Badge variant="outline">{versionName}</Badge>
-              {status === 'Pending' && (<Badge variant="default">Processing</Badge>)}
+              {status === 'Pending' && (
+                <Badge variant="default">Processing</Badge>
+              )}
             </div>
           </div>
-          {status === 'Stored' && (
+          {status === 'Stored' && !isLocal && (
             <VaultItemDownload
               id={id}
               url={`https://civitai.com/api/download/vault/${id}?type=model`}

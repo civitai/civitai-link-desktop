@@ -54,7 +54,14 @@ export async function setVault() {
       ...file,
       vaultId: vaultItem?.id,
     });
+
+    // If the vault item is on the file system, mark it as local
+    var foundIndex = vaultItems.findIndex(
+      (x) => x.modelVersionId == vaultItem.modelVersionId,
+    );
+    vaultItems[foundIndex] = { ...vaultItem, isLocal: true };
   }
+
   store.set('vaultItems', vaultItems);
 }
 
