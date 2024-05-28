@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { getSettings, getApiKey } from './store/store';
+import { getApiKey, getSettings } from './store/store';
 
 const CIVITAI_API_URL = 'https://civitai.com/api/v1';
 
@@ -151,6 +151,7 @@ type VaultModelResource = {
   versionName: string;
   coverImageUrl: string;
   status: 'Pending' | 'Stored';
+  isLocal?: boolean;
 };
 // TODO: Add pagination
 export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
@@ -182,7 +183,7 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
   }
 };
 
-type ToggleVaultResponse = { success: boolean, vaultId?: number };
+type ToggleVaultResponse = { success: boolean; vaultId?: number };
 export const toggleVaultModel = async (
   modelVersionId: number,
 ): Promise<ToggleVaultResponse> => {

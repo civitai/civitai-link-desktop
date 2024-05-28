@@ -1,3 +1,5 @@
+import { useApi } from '@/hooks/use-api';
+import { SortDirection, VaultSortType } from '@/lib/search-filter';
 import {
   createContext,
   useCallback,
@@ -5,8 +7,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useApi } from '@/hooks/use-api';
-import { VaultSortType, SortDirection } from '@/lib/search-filter';
 
 type VaultMeta = {
   usedStorageKb: number;
@@ -31,6 +31,7 @@ export type VaultItem = {
   baseModel: string;
   modelSizeKb: number;
   addedAt: string;
+  isLocal: boolean;
 };
 
 type VaultContextType = {
