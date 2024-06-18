@@ -12,6 +12,7 @@ export enum Resources {
   LORA = 'LORA',
   LOCON = 'LOCON',
   VAE = 'VAE',
+  DORA = 'DORA',
 }
 
 const schema: Schema<Record<string, unknown>> = {
@@ -30,6 +31,7 @@ const schema: Schema<Record<string, unknown>> = {
       [Resources.LORA]: '',
       [Resources.LOCON]: '',
       [Resources.VAE]: '',
+      [Resources.DORA]: '',
     },
   },
   resources: {
@@ -65,6 +67,7 @@ const SYMLINK: { [key in Resources]?: string } = {
   [Resources.LORA]: 'Lora',
   [Resources.LOCON]: 'LoCon',
   [Resources.VAE]: 'VAE',
+  [Resources.DORA]: 'DoRA',
 };
 
 const A1111_PATHS: { [key in Resources]?: string } = {
@@ -72,6 +75,7 @@ const A1111_PATHS: { [key in Resources]?: string } = {
   [Resources.VAE]: 'VAE',
   [Resources.TEXTUALINVERSION]: '../embeddings',
   [Resources.LOCON]: 'LyCORIS',
+  [Resources.DORA]: 'DoRA',
 };
 
 const COMFY_UI_PATHS: { [key in Resources]?: string } = {
@@ -82,6 +86,7 @@ const COMFY_UI_PATHS: { [key in Resources]?: string } = {
   [Resources.TEXTUALINVERSION]: 'embeddings',
   [Resources.LORA]: 'loras',
   [Resources.VAE]: 'vae',
+  [Resources.DORA]: 'DoRA',
 };
 
 export function setSDType(sdType: string) {

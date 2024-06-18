@@ -121,6 +121,7 @@ declare global {
     LORA = 'Lora',
     LOCON = 'LoCon',
     VAE = 'VAE',
+    DORA = 'DoRA',
   }
 
   type Payload = {

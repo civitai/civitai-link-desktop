@@ -8,6 +8,7 @@ export enum ResourceType {
   LORA = 'LoRA',
   LOCON = 'LyCORIS',
   VAE = 'VAE',
+  DORA = 'DoRA',
 }
 
 export enum ConnectionStatus {

@@ -17,6 +17,7 @@ export enum Resources {
   LORA = 'Lora',
   LOCON = 'LoCon',
   VAE = 'VAE',
+  DORA = 'DoRA',
 }
 
 const schema: Schema<Record<string, unknown>> = {
@@ -49,6 +50,7 @@ const schema: Schema<Record<string, unknown>> = {
       [Resources.LORA]: '',
       [Resources.LOCON]: '',
       [Resources.VAE]: '',
+      [Resources.DORA]: '',
     },
   },
   settings: {
