@@ -8,6 +8,7 @@ export async function readMetadata(
     const stream = fs.createReadStream(filePath, { highWaterMark: 64 * 1024 });
     let buffer = Buffer.alloc(0);
     let metadataLen = -1;
+    let isResolved = false;
 
     stream.on('data', (chunk: Buffer) => {
       buffer = Buffer.concat([buffer, chunk]);
@@ -54,7 +55,8 @@ export async function readMetadata(
             }
           }
         }
-
+        
+        isResolved = true;
         resolve(res);
       }
     });
@@ -68,6 +70,9 @@ export async function readMetadata(
     stream.on('close', () => {
       if (metadataLen === -1) {
         reject(new Error('Metadata length not found'));
+      }
+      if(!isResolved) {
+        reject(new Error(`${filePath} is not a safetensors file`))
       }
     });
   });
