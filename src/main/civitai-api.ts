@@ -94,7 +94,7 @@ export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
   }
 
   try {
-    const { data }: { data: VaultMeta } = await axios.get(
+    const result: { data: VaultMeta } = await axios.get(
       `${CIVITAI_API_URL}/vault/get`,
       {
         headers: {
@@ -102,8 +102,9 @@ export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
         },
       },
     );
+    if (!result) return; // If for some reason the result is empty return undefined
 
-    return data;
+    return result.data;
   } catch (error: any | AxiosError) {
     console.error('Error fetching all vault models: ', error.response.data);
     throw error.response.data;

@@ -1,32 +1,32 @@
-import { useElectron } from '@/providers/electron';
-import { ApiKeyInput } from '@/components/inputs/api-key-input';
 import { MemberButton } from '@/components/buttons/member-button';
-import { useVault } from '@/providers/vault';
-import { Progress } from '@/components/ui/progress';
-import { VaultItem } from '@/components/vault/vault-item';
-import { useEffect } from 'react';
-import { useApi } from '@/hooks/use-api';
-import {
-  RefreshCcw,
-  RefreshCwOff,
-  Vault as VaultIcon,
-  XCircle,
-} from 'lucide-react';
-import { formatKBytes } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { PanelWrapper } from '@/layout/panel-wrapper';
-import { Separator } from '@/components/ui/separator';
-import { Search } from 'lucide-react';
+import { ApiKeyInput } from '@/components/inputs/api-key-input';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useDebounce } from '@/hooks/use-debounce';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Button } from '@/components/ui/button';
-import { VaultSort } from '@/components/vault/vault-sort';
 import { VaultFilter } from '@/components/vault/vault-filter';
+import { VaultItem } from '@/components/vault/vault-item';
+import { VaultSort } from '@/components/vault/vault-sort';
+import { useApi } from '@/hooks/use-api';
+import { useDebounce } from '@/hooks/use-debounce';
+import { PanelWrapper } from '@/layout/panel-wrapper';
+import { formatKBytes } from '@/lib/utils';
+import { useElectron } from '@/providers/electron';
+import { useVault } from '@/providers/vault';
+import {
+  RefreshCcw,
+  RefreshCwOff,
+  Search,
+  Vault as VaultIcon,
+  XCircle,
+} from 'lucide-react';
+import { useEffect } from 'react';
 
 export function Vault() {
   const { apiKey, user } = useElectron();
@@ -43,7 +43,7 @@ export function Vault() {
   const { fetchVaultMeta, fetchVaultModels } = useApi();
   const percentUsed = vaultMeta
     ? (
-        ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 0)) *
+        ((vaultMeta?.usedStorageKb || 0) / (vaultMeta?.storageKb || 1)) *
         100
       ).toFixed(2)
     : '0';

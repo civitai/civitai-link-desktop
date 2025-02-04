@@ -13,7 +13,8 @@ export async function readMetadata(
       buffer = Buffer.concat([buffer, chunk]);
 
       if (metadataLen === -1 && buffer.length >= 8) {
-        const metadataLenBytes = buffer.slice(0, 8);
+        // Convert Buffer to Uint8Array explicitly
+        const metadataLenBytes = new Uint8Array(buffer.subarray(0, 8));
         metadataLen = new DataView(metadataLenBytes.buffer).getUint32(0, true);
 
         if (metadataLen <= 2) {
@@ -25,14 +26,17 @@ export async function readMetadata(
       if (metadataLen !== -1 && buffer.length >= 10 + metadataLen - 2) {
         stream.destroy(); // Stop reading the file
 
-        const jsonStartBytes = buffer.slice(8, 10);
+        // Use subarray and new Uint8Array for type-safe conversion
+        const jsonStartBytes = new Uint8Array(buffer.subarray(8, 10));
         const jsonStartStr = new TextDecoder().decode(jsonStartBytes);
         if (!["{'", '{"'].includes(jsonStartStr)) {
           reject(new Error(`${filePath} is not a safetensors file`));
           return;
         }
 
-        const jsonDataBytes = buffer.slice(10, 10 + metadataLen - 2);
+        const jsonDataBytes = new Uint8Array(
+          buffer.subarray(10, 10 + metadataLen - 2),
+        );
         const jsonDataStr =
           jsonStartStr + new TextDecoder().decode(jsonDataBytes);
         let jsonObj;

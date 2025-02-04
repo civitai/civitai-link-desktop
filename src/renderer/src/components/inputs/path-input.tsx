@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
-import { GoFileDirectory } from 'react-icons/go';
-import { useApi } from '@/hooks/use-api';
-import { ResourceType } from '@/types';
-import { useElectron } from '@/providers/electron';
-import { toast } from '../ui/use-toast';
-import { ellipsis } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { toast } from '@/components/ui/use-toast';
+import { useApi } from '@/hooks/use-api';
+import { ellipsis } from '@/lib/utils';
+import { useElectron } from '@/providers/electron';
+import { ResourceType } from '@/types';
+import { useEffect, useState } from 'react';
+import { GoFileDirectory } from 'react-icons/go';
 
 type PathInputProps = {
   type: keyof typeof ResourceType;
@@ -35,7 +35,7 @@ export function PathInput({
 
   useEffect(() => {
     const fetchResourcePath = async () => {
-      if ((type as string) === 'DEFAULT') {
+      if (type === 'DEFAULT') {
         const root = await getRootPath();
         setDirPath(root);
       } else {
@@ -56,7 +56,7 @@ export function PathInput({
 
     setDirPath(directory);
 
-    if ((type as string) !== 'DEFAULT') {
+    if (type !== 'DEFAULT') {
       setResourcePath(type, directory);
 
       if (showToast) {

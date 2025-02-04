@@ -2,6 +2,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils';
 import {
   BrowserWindow,
   Menu,
+  MenuItemConstructorOptions,
   Tray,
   app,
   dialog,
@@ -37,6 +38,12 @@ import {
   watchVaultMeta,
 } from './store/vault';
 
+// For some reason this needs to be imported like this since the project is not type: module
+(async () => {
+  const contextMenu = (await import('electron-context-menu')).default;
+  contextMenu();
+})();
+
 unhandled({
   logger: log.error,
   showDialog: false,
@@ -48,7 +55,7 @@ autoUpdater.logger = log;
 // @ts-ignore
 autoUpdater.logger.transports.file.level = 'info';
 
-let tray;
+let tray: Tray | null = null;
 
 function toggleWindow() {
   getWindow().isDestroyed() ? createWindow() : showWindow();
@@ -57,6 +64,47 @@ function toggleWindow() {
 function showWindow() {
   const mainWindow = getWindow();
   getWindow().isFocused() ? mainWindow.hide() : mainWindow.show();
+}
+
+function createTray() {
+  if (tray) {
+    tray.destroy(); // Destroy previous tray to avoid duplication
+    tray = null;
+  }
+
+  // Set logo to disconnected (red)
+  const icon = nativeImage.createFromPath(logoDisconnected);
+  tray = new Tray(icon);
+  tray.setToolTip('Civitai Link');
+
+  const trayContextMenuItems: MenuItemConstructorOptions[] = [
+    {
+      label: 'Quit',
+      click: () => {
+        setIsQuiting();
+        app.quit();
+      },
+    },
+  ];
+  if (import.meta.env.MAIN_VITE_DEBUG === 'true') {
+    trayContextMenuItems.push({
+      label: 'Dev Tools',
+      click: () => getWindow().webContents.openDevTools(),
+    });
+  }
+  const contextMenu = Menu.buildFromTemplate(trayContextMenuItems);
+
+  tray.on('click', (event) => {
+    if (event.ctrlKey) {
+      tray?.popUpContextMenu(contextMenu);
+    } else {
+      toggleWindow();
+    }
+  });
+
+  tray.on('right-click', () => {
+    tray?.popUpContextMenu(contextMenu);
+  });
 }
 
 Menu.setApplicationMenu(null);
@@ -73,33 +121,7 @@ app.whenReady().then(async () => {
     platformVersion: process.getSystemVersion(),
     arch: process.arch,
   });
-  // Set logo to disconnected (red)
-  const icon = nativeImage.createFromPath(logoDisconnected);
-  tray = new Tray(icon);
-  tray.setToolTip('Civitai Link');
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Quit',
-      click: () => {
-        setIsQuiting();
-        app.quit();
-      },
-    },
-    {
-      label: 'Dev Tools',
-      click: () => mainWindow.webContents.openDevTools(),
-    },
-  ]);
-  tray.on('click', (event) => {
-    if (event.ctrlKey) {
-      tray.popUpContextMenu(contextMenu);
-    } else {
-      toggleWindow();
-    }
-  });
-  tray.on('right-click', () => {
-    tray.popUpContextMenu(contextMenu);
-  });
+  createTray();
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
@@ -158,7 +180,7 @@ app.whenReady().then(async () => {
       icon = nativeImage.createFromPath(logoPending);
     }
 
-    tray.setImage(icon);
+    tray?.setImage(icon);
     mainWindow.webContents.send('connection-status', newValue);
   });
 
@@ -170,18 +192,44 @@ app.whenReady().then(async () => {
     mainWindow.webContents.send('update-available');
   });
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window);
+  // Listen for keyboard shortcuts
+  mainWindow.webContents.on('before-input-event', (_, input) => {
+    if (input.control || input.meta) {
+      switch (input.key.toLowerCase()) {
+        case 'c':
+          mainWindow.webContents.copy();
+          break;
+        case 'v':
+          mainWindow.webContents.paste();
+          break;
+        case 'x':
+          mainWindow.webContents.cut();
+          break;
+        case 'a':
+          mainWindow.webContents.selectAll();
+          break;
+        case 'z':
+          // Ctrl + Shift + Z (Redo)
+          if (input.shift) mainWindow.webContents.redo();
+          // Ctrl + Z (Undo)
+          else mainWindow.webContents.undo();
+          break;
+      }
+    }
   });
+});
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+// Default open or close DevTools by F12 in development
+// and ignore CommandOrControl + R in production.
+// see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+app.on('browser-window-created', (_, window) => {
+  optimizer.watchWindowShortcuts(window);
+});
+
+app.on('activate', function () {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
 // Try to alleviate window flickering on Windows

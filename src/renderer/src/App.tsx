@@ -1,7 +1,7 @@
-import { useElectron } from '@/providers/electron';
 import logo from '@/assets/logo.png';
-import Root from './routes/root';
+import { useElectron } from '@/providers/electron';
 import { Intro } from './components/intro';
+import Root from './routes/root';
 
 function App() {
   const { appLoading, key } = useElectron();

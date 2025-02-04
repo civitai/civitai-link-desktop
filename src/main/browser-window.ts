@@ -52,7 +52,9 @@ export function createWindow() {
   });
 
   // Prevents dock icon from appearing on macOS
-  mainWindow.setMenu(null);
+  if (process.platform === 'darwin') {
+    app.dock.hide();
+  }
 
   mainWindow.on('ready-to-show', () => {
     if (DEBUG) {

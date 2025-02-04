@@ -1,11 +1,11 @@
-import { BrainCircuit, Bot } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useWizard } from 'react-use-wizard';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PathInput } from '@/components/inputs/path-input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useApi } from '@/hooks/use-api';
 import { useElectron } from '@/providers/electron';
+import { Bot, BrainCircuit } from 'lucide-react';
+import { useWizard } from 'react-use-wizard';
+import { Button } from '../ui/button';
 
 type IntroSdProps = {
   folderValue: string | null;
@@ -89,7 +89,9 @@ export function IntroSd(props: IntroSdProps) {
         <Button
           variant="secondary"
           className="w-full rounded-full py-2"
-          disabled={!props.folderValue}
+          disabled={
+            !props.sdType || (props.sdType === 'symlink' && !props.folderValue)
+          }
           onClick={nextStep}
         >
           Continue
