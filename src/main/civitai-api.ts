@@ -163,7 +163,6 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
   }
 
   try {
-    console.log(apiKey);
     const { data }: { data: { items: VaultModelResource[] } } = await axios.get(
       `${CIVITAI_API_URL}/vault/all`,
       {
@@ -177,8 +176,6 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
         },
       },
     );
-
-    console.log(data);
 
     return data.items;
   } catch (error: any | AxiosError) {

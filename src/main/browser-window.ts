@@ -58,8 +58,6 @@ export function createWindow() {
   }
 
   mainWindow.on('ready-to-show', () => {
-    console.log('Window is ready to show');
-
     if (DEBUG) {
       mainWindow.webContents.openDevTools();
     }
@@ -69,9 +67,8 @@ export function createWindow() {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
     }
 
-    console.log('App ready:');
-
     try {
+      // Use a promise, we need to wait for base data to load.
       new Promise(async (resolve) => {
         const data = {
           ...getUIStore(),
@@ -86,10 +83,8 @@ export function createWindow() {
 
         resolve(data);
       }).then((data) => {
-        console.log('Store ready:', data);
         mainWindow.webContents.send('store-ready', data);
         mainWindow.webContents.send('app-ready', true);
-        console.log('App ready event sent');
       });
     } catch (error) {
       console.error('Error sending store-ready event:', error);

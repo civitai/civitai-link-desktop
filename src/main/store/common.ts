@@ -39,7 +39,6 @@ const schema: Schema<{ enums: ApiEnums }> = {
 export const store = new Store({ schema });
 
 export async function setupCommons() {
-  console.log('Setting up commons...');
   const enums = await fetchEnums();
   store.set('enums', enums);
 

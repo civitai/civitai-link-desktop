@@ -12,7 +12,7 @@ type ElectronContextType = {
   rootResourcePath: string | null;
   settings: { nsfw: boolean; alwaysOnTop: boolean; concurrent: number };
   user?: object | null;
-   appVersion: string;
+  appVersion: string;
   updateAvailable: boolean;
   enums: ApiEnums | null;
   DEBUG: boolean;
@@ -99,7 +99,6 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   // Get initial store on load
   useEffect(() => {
     ipcRenderer.on('store-ready', function (_, message) {
-      console.log('Store ready', message);
       setActivityList(message.activities);
       setRootResourcePath(message.rootResourcePath);
       setConnectionStatus(message.connectionStatus);

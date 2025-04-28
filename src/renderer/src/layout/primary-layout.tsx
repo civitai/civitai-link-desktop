@@ -24,7 +24,7 @@ export function PrimaryLayout({ defaultCollapsed = false }: MailProps) {
   const [isCollapsed] = React.useState(defaultCollapsed);
   const { connectionStatus } = useElectron();
   const { fileListCount } = useFile();
-  const { openRootModelFolder,  } = useApi();
+  const { openRootModelFolder } = useApi();
   const { vault } = useVault();
 
   const connectionRender = useCallback(
