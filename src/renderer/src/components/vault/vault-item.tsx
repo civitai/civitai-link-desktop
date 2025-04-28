@@ -29,6 +29,7 @@ export function VaultItem({
   files,
   isLocal,
 }: VaultItemProps) {
+  console.log(coverImageUrl);
   return (
     <Card className="bg-transparent group">
       <CardContent>

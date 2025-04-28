@@ -7,6 +7,7 @@ import { getUIStore, getUpgradeKey } from './store/store';
 // Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
 import { getActivities } from './store/activities';
+import { setupCommons } from './store/common';
 import { getFiles } from './store/files';
 import { getVault, getVaultMeta } from './store/vault';
 import { clearTempFolders } from './utils/clear-temp-folders';
@@ -57,6 +58,8 @@ export function createWindow() {
   }
 
   mainWindow.on('ready-to-show', () => {
+    console.log('Window is ready to show');
+
     if (DEBUG) {
       mainWindow.webContents.openDevTools();
     }
@@ -66,17 +69,31 @@ export function createWindow() {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
     }
 
-    mainWindow.webContents.send('store-ready', {
-      ...getUIStore(),
-      vaultMeta: getVaultMeta(),
-      vault: getVault(),
-      files: getFiles(),
-      activities: getActivities(),
-      appVersion: app.getVersion(),
-      DEBUG,
-    });
+    console.log('App ready:');
 
-    mainWindow.webContents.send('app-ready', true);
+    try {
+      new Promise(async (resolve) => {
+        const data = {
+          ...getUIStore(),
+          ...(await setupCommons()),
+          vaultMeta: await getVaultMeta(),
+          vault: await getVault(),
+          files: await getFiles(),
+          activities: await getActivities(),
+          appVersion: app.getVersion(),
+          DEBUG,
+        };
+
+        resolve(data);
+      }).then((data) => {
+        console.log('Store ready:', data);
+        mainWindow.webContents.send('store-ready', data);
+        mainWindow.webContents.send('app-ready', true);
+        console.log('App ready event sent');
+      });
+    } catch (error) {
+      console.error('Error sending store-ready event:', error);
+    }
   });
 
   mainWindow.on('close', function (event) {

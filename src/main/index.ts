@@ -31,6 +31,7 @@ import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset'
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import { createWindow, getWindow, setIsQuiting } from './browser-window';
 import { watcherActivities } from './store/activities';
+import { setupCommons } from './store/common';
 import {
   setVault,
   setVaultMeta,
@@ -130,6 +131,7 @@ app.whenReady().then(async () => {
   setUser();
   setVaultMeta();
   setVault();
+  setupCommons();
 
   // Watchers/Listeners
   if (getUpgradeKey()) {

@@ -163,6 +163,7 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
   }
 
   try {
+    console.log(apiKey);
     const { data }: { data: { items: VaultModelResource[] } } = await axios.get(
       `${CIVITAI_API_URL}/vault/all`,
       {
@@ -176,6 +177,8 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
         },
       },
     );
+
+    console.log(data);
 
     return data.items;
   } catch (error: any | AxiosError) {
@@ -229,6 +232,27 @@ export const fetchMember = async () => {
     return data;
   } catch (error: any | AxiosError) {
     console.error('Error fetching member: ', error.response.data);
+    throw error.response.data;
+  }
+};
+
+export const fetchEnums = async () => {
+  const apiKey = getApiKey();
+
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const { data } = await axios.get(`${CIVITAI_API_URL}/enums`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    return data as ApiEnums;
+  } catch (error: any | AxiosError) {
+    console.error('Error fetching enums: ', error.response.data);
     throw error.response.data;
   }
 };

@@ -17,10 +17,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { FileListFilters, useFile } from '@/providers/files';
-import { ModelTypes, BaseModels } from '@/lib/search-filter';
+import { ModelTypes } from '@/lib/search-filter';
+import { useElectron } from '@/providers/electron';
 
 export function FilesFilter() {
   const { appliedFilters, clearFilters, filterFiles } = useFile();
+  const { 
+    enums,
+  } = useElectron();
+
+  const baseModels = enums?.BaseModel ?? [];
 
   return (
     <Menubar>
@@ -52,26 +58,28 @@ export function FilesFilter() {
               )}
             </MenubarSubContent>
           </MenubarSub>
-          <MenubarSub>
-            <MenubarSubTrigger>Base Model</MenubarSubTrigger>
-            <MenubarSubContent>
-              {(Object.keys(BaseModels) as Array<keyof typeof BaseModels>).map(
-                (type) => (
-                  <MenubarCheckboxItem
-                    key={type}
-                    onClick={() =>
-                      filterFiles(BaseModels[type], FileListFilters.BASE_MODEL)
-                    }
-                    checked={appliedFilters.baseModelType.includes(
-                      BaseModels[type].toLowerCase(),
-                    )}
-                  >
-                    {BaseModels[type]}
-                  </MenubarCheckboxItem>
-                ),
-              )}
-            </MenubarSubContent>
-          </MenubarSub>
+          {baseModels.length > 0 && (
+            <MenubarSub>
+              <MenubarSubTrigger>Base Model</MenubarSubTrigger>
+              <MenubarSubContent  className="max-h-[300px] overflow-y-auto"> 
+                {(enums?.BaseModel ?? []).map(
+                  (type) => (
+                    <MenubarCheckboxItem
+                      key={type}
+                      onClick={() =>
+                        filterFiles(type, FileListFilters.BASE_MODEL)
+                      }
+                      checked={appliedFilters.baseModelType.includes(
+                        type.toLowerCase(),
+                      )}
+                    >
+                      {type}
+                    </MenubarCheckboxItem>
+                  ),
+                )}
+              </MenubarSubContent>
+            </MenubarSub>
+          )}
           <MenubarSeparator />
           <MenubarItem onClick={clearFilters}>Clear Filters</MenubarItem>
         </MenubarContent>
