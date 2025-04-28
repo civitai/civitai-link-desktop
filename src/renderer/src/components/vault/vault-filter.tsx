@@ -16,7 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { ModelTypes } from '@/lib/search-filter';
+import { BaseModels, ModelTypes } from '@/lib/search-filter';
 import { useVault, VaultFilters } from '@/providers/vault';
 import { useElectron } from '@/providers/electron';
 
@@ -26,8 +26,8 @@ export function VaultFilter() {
       enums,
     } = useElectron();
   
-    const baseModels = enums?.BaseModel ?? [];
-  
+  // Use old `BaseModels`  for legacy support
+  const baseModels = enums?.BaseModel ?? Object.values(BaseModels);  
 
   return (
     <Menubar>
