@@ -12,7 +12,11 @@ import {
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import { eventsListeners } from './events';
-import { folderWatcher, initFolderCheck } from './folder-watcher';
+import {
+  cleanupWatcher,
+  folderWatcher,
+  initFolderCheck,
+} from './folder-watcher';
 import { socketIOConnect } from './socket';
 import { getResourcePath, getRootResourcePath } from './store/paths';
 import {
@@ -230,6 +234,11 @@ app.on('activate', function () {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+
+app.on('before-quit', async () => {
+  log.info('App is quitting, cleaning up watchers...');
+  await cleanupWatcher();
 });
 
 // Try to alleviate window flickering on Windows

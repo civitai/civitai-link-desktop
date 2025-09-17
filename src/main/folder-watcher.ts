@@ -23,9 +23,9 @@ const watchConfig = {
   ignoreInitial: true,
 };
 
-export function folderWatcher() {
-  let watcher;
+let watcher: chokidar.FSWatcher | undefined;
 
+export function folderWatcher() {
   const rootResourcePath = getRootResourcePath();
 
   // Makes sure a root path is set
@@ -184,10 +184,79 @@ export async function initFolderCheck() {
     }
   });
 
-  // Check and hash all files
-  const promises = files.map(({ pathname }) => async () => {
-    await onAdd(pathname);
-  });
-  await limitConcurrency(promises, pool.maxWorkers);
+  // Start background processing without blocking startup
+  processFilesInBackground(files);
   await setVault();
+}
+
+async function processFilesInBackground(files: { pathname: string }[]) {
+  const LARGE_FILE_THRESHOLD = 1024 * 1024 * 1024; // 1GB
+  const smallFiles: string[] = [];
+  const largeFiles: string[] = [];
+
+  // Categorize files by size
+  for (const { pathname } of files) {
+    try {
+      const stats = await fileStats(pathname);
+      if (stats.fileSize && stats.fileSize > LARGE_FILE_THRESHOLD) {
+        largeFiles.push(pathname);
+      } else {
+        smallFiles.push(pathname);
+      }
+    } catch (error) {
+      // If we can't get stats, treat as small file
+      smallFiles.push(pathname);
+    }
+  }
+
+
+  // Send initial model-loading event to indicate scanning is starting
+  if (smallFiles.length > 0 || largeFiles.length > 0) {
+    getWindow().webContents.send('model-loading', {
+      toScan: 0,
+      scanned: 0,
+      isScanning: true,
+    });
+  }
+
+  try {
+    // Process small files first with full concurrency
+    if (smallFiles.length > 0) {
+
+      const smallFilePromises = smallFiles.map((pathname) => async () => {
+        await onAdd(pathname);
+      });
+      await limitConcurrency(smallFilePromises, pool.maxWorkers || maxWorkers);
+
+    }
+
+    // Process large files with reduced concurrency to avoid overwhelming system
+    if (largeFiles.length > 0) {
+
+      const largeFilePromises = largeFiles.map((pathname) => async () => {
+        await onAdd(pathname);
+      });
+      const reducedConcurrency = Math.max(
+        1,
+        Math.floor((pool.maxWorkers || maxWorkers) / 2),
+      );
+      await limitConcurrency(largeFilePromises, reducedConcurrency);
+    }
+
+
+  } catch (error) {
+    console.error('Error during background file processing:', error);
+  }
+}
+
+export async function cleanupWatcher() {
+  try {
+    if (watcher) {
+      await watcher.close();
+      watcher = undefined;
+    }
+    await pool.terminate();
+  } catch (error) {
+    console.error('Error during watcher cleanup:', error);
+  }
 }
