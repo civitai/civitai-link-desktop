@@ -1,7 +1,7 @@
 import { useToast } from '@/components/ui/use-toast';
 import { ConnectionStatus } from '@/types';
 import { createContext, useContext, useEffect, useState } from 'react';
-
+   
 type ElectronContextType = {
   key?: string | null;
   apiKey?: string | null;
@@ -14,6 +14,7 @@ type ElectronContextType = {
   user?: object | null;
   appVersion: string;
   updateAvailable: boolean;
+  enums: ApiEnums | null;
   DEBUG: boolean;
 };
 
@@ -29,6 +30,7 @@ const defaultValue: ElectronContextType = {
   user: null,
   appVersion: '',
   updateAvailable: false,
+  enums: null,
   DEBUG: false,
 };
 
@@ -50,6 +52,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [appVersion, setAppVersion] = useState<string>('');
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [debug, setDebug] = useState<boolean>(false);
+  const [enums, setEnums] = useState<ApiEnums | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -104,6 +107,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
       setUser(message.user);
       setAppVersion(message.appVersion);
       setDebug(message.DEBUG);
+      setEnums(message.enums);
     });
 
     return () => {
@@ -191,6 +195,7 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         appVersion,
         updateAvailable,
         DEBUG: debug,
+        enums,
       }}
     >
       {children}

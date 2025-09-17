@@ -16,11 +16,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { ModelTypes, BaseModels } from '@/lib/search-filter';
+import { BaseModels, ModelTypes } from '@/lib/search-filter';
 import { useVault, VaultFilters } from '@/providers/vault';
+import { useElectron } from '@/providers/electron';
 
 export function VaultFilter() {
   const { appliedFilters, clearFilters, filterVault } = useVault();
+  const { 
+      enums,
+    } = useElectron();
+  
+  // Use old `BaseModels`  for legacy support
+  const baseModels = enums?.BaseModel ?? Object.values(BaseModels);  
 
   return (
     <Menubar>
@@ -52,26 +59,28 @@ export function VaultFilter() {
               )}
             </MenubarSubContent>
           </MenubarSub>
-          <MenubarSub>
-            <MenubarSubTrigger>Base Model</MenubarSubTrigger>
-            <MenubarSubContent>
-              {(Object.keys(BaseModels) as Array<keyof typeof BaseModels>).map(
-                (type) => (
-                  <MenubarCheckboxItem
-                    key={type}
-                    onClick={() =>
-                      filterVault(BaseModels[type], VaultFilters.BASE_MODEL)
-                    }
-                    checked={appliedFilters.baseModelType.includes(
-                      BaseModels[type].toLowerCase(),
-                    )}
-                  >
-                    {BaseModels[type]}
-                  </MenubarCheckboxItem>
-                ),
-              )}
-            </MenubarSubContent>
-          </MenubarSub>
+          {baseModels.length > 0 && (
+            <MenubarSub>
+              <MenubarSubTrigger>Base Model</MenubarSubTrigger>
+              <MenubarSubContent  className="max-h-[300px] overflow-y-auto"> 
+                {(enums?.BaseModel ?? []).map(
+                  (type) => (
+                    <MenubarCheckboxItem
+                      key={type}
+                      onClick={() =>
+                      filterVault(type, VaultFilters.BASE_MODEL)
+                      }
+                      checked={appliedFilters.baseModelType.includes(
+                        type.toLowerCase(),
+                      )}
+                    >
+                      {type}
+                    </MenubarCheckboxItem>
+                  ),
+                )}
+              </MenubarSubContent>
+            </MenubarSub>
+          )}
           <MenubarSeparator />
           <MenubarItem onClick={clearFilters}>Clear Filters</MenubarItem>
         </MenubarContent>

@@ -1,4 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
+import { ApiEnums } from './main/civitai-api';
 
 declare global {
   interface Window {
@@ -44,6 +45,7 @@ declare global {
       }) => void;
       cancelVaultDownload: (id: number) => void;
       getFileByHash: (hash: string) => Resource;
+      fetchEnums: () => ApiEnums;
     };
   }
 
@@ -148,4 +150,12 @@ declare global {
     ResourcesAdd = 'resources:add',
     ResourcesRemove = 'resources:remove',
   }
+
+  type ApiEnums = {
+    ModelType: string[];
+    ModelFileType: string[];
+    ActiveBaseModel: string[];
+    BaseModel: string[];
+    BaseModelType: string[];
+  };
 }

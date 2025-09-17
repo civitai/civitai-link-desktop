@@ -96,5 +96,8 @@ export function useApi() {
     getFileByHash: async (hash: string): Promise<Resource> => {
       return await window.api.getFileByHash(hash);
     },
+    fetchEnums: async () => {
+      return await window.api.fetchEnums();
+    }
   };
 }

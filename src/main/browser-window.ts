@@ -7,6 +7,7 @@ import { getUIStore, getUpgradeKey } from './store/store';
 // Colored Logo Assets
 import logo from '../../resources/favicon@2x.png?asset';
 import { getActivities } from './store/activities';
+import { setupCommons } from './store/common';
 import { getFiles } from './store/files';
 import { getVault, getVaultMeta } from './store/vault';
 import { clearTempFolders } from './utils/clear-temp-folders';
@@ -66,17 +67,28 @@ export function createWindow() {
       mainWindow.webContents.send('upgrade-key', { key: upgradeKey });
     }
 
-    mainWindow.webContents.send('store-ready', {
-      ...getUIStore(),
-      vaultMeta: getVaultMeta(),
-      vault: getVault(),
-      files: getFiles(),
-      activities: getActivities(),
-      appVersion: app.getVersion(),
-      DEBUG,
-    });
+    try {
+      // Use a promise, we need to wait for base data to load.
+      new Promise(async (resolve) => {
+        const data = {
+          ...getUIStore(),
+          ...(await setupCommons()),
+          vaultMeta: await getVaultMeta(),
+          vault: await getVault(),
+          files: await getFiles(),
+          activities: await getActivities(),
+          appVersion: app.getVersion(),
+          DEBUG,
+        };
 
-    mainWindow.webContents.send('app-ready', true);
+        resolve(data);
+      }).then((data) => {
+        mainWindow.webContents.send('store-ready', data);
+        mainWindow.webContents.send('app-ready', true);
+      });
+    } catch (error) {
+      console.error('Error sending store-ready event:', error);
+    }
   });
 
   mainWindow.on('close', function (event) {
