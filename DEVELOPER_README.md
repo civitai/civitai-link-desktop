@@ -14,7 +14,7 @@
 > - Any edge cases with unusual folder structures or model names
 > - Performance issues with very large libraries (1000+ models)
 > 
-> Please open an issue or PR if you find anything that needs fixing. Every bit of feedback helps! 🙏
+> Every bit of feedback helps! 🙏
 >
 > — *theCosmicCrafter*
 
