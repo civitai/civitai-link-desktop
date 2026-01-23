@@ -15,6 +15,7 @@ type ResponsePayload = {
       type: string;
       nsfw: boolean;
       poi: boolean;
+      tags: string[];
     };
     name: string;
     trainedWords: string[];
@@ -61,6 +62,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
       modelVersionId: data.id,
       previewImageUrl,
       trainedWords: data.trainedWords,
+      tags: data.model.tags,
       description: data.description,
       baseModel: data.baseModel,
       civitaiUrl: `https://civitai.com/models/${data.modelId}`,

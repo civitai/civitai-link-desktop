@@ -68,6 +68,8 @@ declare global {
     fileSize?: number; // bytes
     notes?: string;
     metadata?: Record<string, any> | string;
+    tags?: string[];
+    lastUsed?: string;
   };
 
   type VaultItem = {
@@ -122,6 +124,25 @@ declare global {
     LOCON = 'LoCon',
     VAE = 'VAE',
     DORA = 'DoRA',
+    UNET = 'UNET',
+    CLIP = 'CLIP',
+    GLIGEN = 'GLIGEN',
+    STYLE_MODEL = 'StyleModel',
+    CLIP_VISION = 'ClipVision',
+    IPADAPTER = 'IPAdapter',
+    TEXT_ENCODER = 'TextEncoder',
+    DIFFUSION_MODEL = 'DiffusionModel',
+    ANIMATEDIFF = 'AnimateDiff',
+    MOTION_LORA = 'MotionLora',
+    ADAPTER = 'Adapter',
+    INSIGHTFACE = 'InsightFace',
+    FACERESTORE = 'FaceRestore',
+    SAM = 'SAM',
+    ULTRALYTICS = 'Ultralytics',
+    DEPTH = 'Depth',
+    PULID = 'PuLID',
+    PHOTOMAKER = 'PhotoMaker',
+    LLM = 'LLM',
   }
 
   type Payload = {

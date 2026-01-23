@@ -12,6 +12,7 @@ import { getRootResourcePath } from './store/paths';
 import { getSettings } from './store/store';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
 import { readMetadata } from './utils/read-metadata';
+import { hash } from './hash';
 
 const REPORT_INTERVAL = 1000;
 
@@ -296,7 +297,17 @@ export async function downloadFile({
       type: 'resources:add',
     });
 
-    // Send entire list of resources to server
+    const calculatedHash = await hash(filePath);
+    if (resource.hash && calculatedHash.toLowerCase() !== resource.hash.toLowerCase()) {
+      console.error(`Hash mismatch! Expected ${resource.hash}, got ${calculatedHash}`);
+      new Notification({
+        title: 'Download Verification Failed',
+        body: `${resource.name} may be corrupted. Hash mismatch.`,
+      }).show();
+      // Important: Maybe we should rename/quarantine the file instead of just warning?
+      // currently just warning the user
+    }
+
     const newPayload = filterResourcesList();
     socket.emit('commandStatus', {
       type: 'resources:list',

@@ -32,6 +32,7 @@ import {
   eventFetchVaultModels,
   eventToggleVaultItem,
 } from './vault';
+import { eventOrganizeFiles } from './organize-files';
 
 export function eventsListeners() {
   const mainWindow = getWindow();
@@ -86,4 +87,7 @@ export function eventsListeners() {
   ipcMain.handle('fetch-file-notes', eventFetchFileNotes);
   ipcMain.on('download-vault-item', eventDownloadVaultItem);
   ipcMain.handle('get-file-by-hash', eventGetFileByHash);
+  
+  // Organization
+  ipcMain.on('organize-files', eventOrganizeFiles);
 }

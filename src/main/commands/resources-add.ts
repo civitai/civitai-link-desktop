@@ -1,10 +1,11 @@
 import { Socket } from 'socket.io-client';
+import { getSmartPath } from '../utils/smart-path';
 // import { downloadFile } from '../download-file';
 import { BrowserWindow } from 'electron';
 import { getModelByHash } from '../civitai-api';
 import { downloadFile } from '../download-file';
 import { updateActivity } from '../store/activities';
-import { getResourcePath } from '../store/paths';
+
 
 type ResourcesAddParams = {
   id: string;
@@ -16,14 +17,24 @@ type ResourcesAddParams = {
 export async function resourcesAdd(params: ResourcesAddParams) {
   const payload = params.payload;
   const hashLowercase = payload.hash.toLowerCase();
-  const resourcePath = getResourcePath(payload.type);
+  // Destructure tags from the fetched model data
   const {
     previewImageUrl,
     civitaiUrl,
     modelVersionId,
     baseModel,
     trainedWords,
+    tags,
   } = await getModelByHash(hashLowercase);
+  
+  // Smart Categorization Logic
+  // Smart Categorization Logic
+  const { path: targetPath, smartType } = getSmartPath({
+    type: payload.type,
+    baseModel,
+    tags,
+  });
+
   const timestamp = new Date().toISOString();
 
   params.socket.emit('commandStatus', {
@@ -58,7 +69,7 @@ export async function resourcesAdd(params: ResourcesAddParams) {
       id: params.id,
       name: payload.name,
       url: payload.url,
-      type: payload.type,
+      type: smartType, // Use refined type
       hash: hashLowercase,
       modelName: payload.modelName,
       modelVersionName: payload.modelVersionName,
@@ -67,8 +78,9 @@ export async function resourcesAdd(params: ResourcesAddParams) {
       civitaiUrl,
       baseModel,
       trainedWords,
+      tags,
     },
-    downloadPath: resourcePath,
+    downloadPath: targetPath, // Use refined path
     socket: params.socket,
     mainWindow: params.mainWindow,
   });

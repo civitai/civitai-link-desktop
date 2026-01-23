@@ -9,7 +9,8 @@ export async function readMetadata(
     let buffer = Buffer.alloc(0);
     let metadataLen = -1;
 
-    stream.on('data', (chunk: Buffer) => {
+    stream.on('data', (chunk: Buffer | string) => {
+      if (typeof chunk === 'string') chunk = Buffer.from(chunk);
       buffer = Buffer.concat([buffer, chunk]);
 
       if (metadataLen === -1 && buffer.length >= 8) {

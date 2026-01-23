@@ -9,6 +9,10 @@ export enum ResourceType {
   LOCON = 'LyCORIS',
   VAE = 'VAE',
   DORA = 'DoRA',
+  UNET = 'UNET',
+  CLIP = 'CLIP',
+  GLIGEN = 'GLIGEN',
+  STYLE_MODEL = 'StyleModel',
 }
 
 export enum ConnectionStatus {
