@@ -1,5 +1,25 @@
 # Civitai Link Desktop - Developer Guide
 
+---
+
+## ⚠️ A Note to Reviewers
+
+> **This project is a labor of love.** 
+> 
+> I'm an indie developer who mostly "vibecoded" this enhancement to the Civitai Link Desktop app. The features work well in my testing environment, but **I'm looking for help verifying edge cases** before this goes to production.
+> 
+> If you have time to test, I'd really appreciate it! Things to look out for:
+> - Models that don't categorize correctly (especially newer architectures)
+> - Files that get moved to unexpected locations
+> - Any edge cases with unusual folder structures or model names
+> - Performance issues with very large libraries (1000+ models)
+> 
+> Please open an issue or PR if you find anything that needs fixing. Every bit of feedback helps! 🙏
+>
+> — *theCosmicCrafter*
+
+---
+
 ## Overview
 
 This document provides instructions for developers to understand, test, and verify the new Smart Model Organization features added to Civitai Link Desktop.
