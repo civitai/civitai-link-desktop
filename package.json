@@ -25,7 +25,9 @@
     "build": "npm run typecheck && electron-vite build",
     "build:win": "npm run build && electron-builder --win --config --publish always",
     "build:mac": "npm run build && electron-builder --mac --config --publish always",
-    "build:linux": "npm run build && electron-builder --linux --config --publish always"
+    "build:linux": "npm run build && electron-builder --linux --config --publish always",
+    "build:linux:arm64": "npm run build && electron-builder --linux AppImage --arm64 --config --publish never && npm run build:linux:arm64:deb",
+    "build:linux:arm64:deb": "ts-node -P tsconfig.scripts.json scripts/build-linux-arm64-deb.ts"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
