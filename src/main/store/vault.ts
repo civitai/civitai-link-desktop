@@ -24,6 +24,8 @@ const schema: Schema<Record<string, unknown>> = {
 export const store = new Store({ schema });
 
 export async function setVaultMeta() {
+  if (!hasCredentials()) return;
+
   const meta = await fetchVaultMeta();
 
   store.set(
