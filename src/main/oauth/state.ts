@@ -12,6 +12,7 @@ export type OAuthState = {
   status: OAuthStatus;
   message?: string;
   username?: string;
+  verificationUri?: string;
 };
 
 export function sendOAuthState(state: OAuthState) {

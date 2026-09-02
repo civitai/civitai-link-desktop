@@ -23,7 +23,9 @@ const FORM_HEADERS = {
   'Content-Type': 'application/x-www-form-urlencoded',
 };
 
-const RETRY_ERRORS = new Set(['authorization_pending', 'network_error']);
+const POLL_TIMEOUT_MS = 10_000;
+
+const RETRY_ERRORS = new Set(['authorization_pending', 'transient_error']);
 
 const ERROR_MESSAGES: Record<string, string> = {
   access_denied: 'Sign in was denied on Civitai.',
@@ -60,43 +62,57 @@ async function pollToken(
         device_code: deviceCode,
         client_id: OAUTH_CLIENT_ID,
       }).toString(),
-      { headers: FORM_HEADERS, signal },
+      { headers: FORM_HEADERS, signal, timeout: POLL_TIMEOUT_MS },
     );
 
     return { tokens: toTokens(data) };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      if (error.response.status === 429) return { error: 'rate_limited' };
+    if (!axios.isAxiosError(error) || signal.aborted) throw error;
 
-      const body = error.response.data as { error?: string };
+    const { response } = error;
+    if (!response || response.status >= 500)
+      return { error: 'transient_error' };
+    if (response.status === 429) return { error: 'rate_limited' };
 
-      return { error: body?.error || 'invalid_grant' };
-    }
+    const code = (response.data as { error?: string } | undefined)?.error;
 
-    if (axios.isAxiosError(error) && !signal.aborted)
-      return { error: 'network_error' };
-
-    throw error;
+    return { error: code || 'transient_error' };
   }
 }
 
 export async function startDeviceLogin(
   onState: (state: OAuthState) => void,
 ): Promise<OAuthTokens> {
+  controller?.abort();
   controller = new AbortController();
   const { signal } = controller;
 
-  const { data: device } = await axios.post<DeviceCodeResponse>(
-    `${AUTH_URL}/api/auth/oauth/device`,
-    new URLSearchParams({
-      client_id: OAUTH_CLIENT_ID,
-      scope: String(OAUTH_SCOPE),
-    }).toString(),
-    { headers: FORM_HEADERS, signal },
-  );
+  let device: DeviceCodeResponse;
+  try {
+    const { data } = await axios.post<DeviceCodeResponse>(
+      `${AUTH_URL}/api/auth/oauth/device`,
+      new URLSearchParams({
+        client_id: OAUTH_CLIENT_ID,
+        scope: String(OAUTH_SCOPE),
+      }).toString(),
+      { headers: FORM_HEADERS, signal },
+    );
 
-  await shell.openExternal(device.verification_uri_complete);
-  onState({ status: 'waiting', message: device.user_code });
+    device = data;
+  } catch (error) {
+    if (signal.aborted) throw new DeviceLoginCancelledError();
+    throw error;
+  }
+
+  onState({
+    status: 'waiting',
+    message: device.user_code,
+    verificationUri: device.verification_uri,
+  });
+
+  await shell
+    .openExternal(device.verification_uri_complete)
+    .catch(() => console.warn('Could not open a browser for Civitai sign in'));
 
   const deadline = Date.now() + device.expires_in * 1000;
   let interval = device.interval * 1000;
