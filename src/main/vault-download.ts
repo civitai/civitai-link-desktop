@@ -4,8 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
 import { getWindow } from './browser-window';
+import { getAuthHeader } from './oauth/auth-header';
 import { getRootResourcePath } from './store/paths';
-import { getApiKey, getSettings } from './store/store';
+import { getSettings } from './store/store';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
 
 const REPORT_INTERVAL = 1000;
@@ -17,6 +18,7 @@ type DownloadChunkParams = {
   index: number;
   tempFilePath: string;
   abortController: AbortController;
+  authorization: string | null;
   progressCallback: (index: number, loaded: number, total?: number) => void;
 };
 
@@ -27,11 +29,12 @@ async function downloadChunk({
   index,
   tempFilePath,
   abortController,
+  authorization,
   progressCallback,
 }: DownloadChunkParams) {
   const headers = {
     Range: `bytes=${start}-${end}`,
-    Authorization: `Bearer ${getApiKey()}`,
+    ...(authorization ? { Authorization: authorization } : {}),
   };
 
   const response = await axios.get(url, {
@@ -47,7 +50,7 @@ async function downloadChunk({
   fs.writeFileSync(`${tempFilePath}.part${index}`, response.data);
 }
 
-async function getFileSize(url: string) {
+async function getFileSize(url: string, authorization: string | null) {
   const CancelToken = axios.CancelToken;
   const source = CancelToken.source();
 
@@ -55,9 +58,7 @@ async function getFileSize(url: string) {
     const response = await axios.get(url, {
       cancelToken: source.token,
       responseType: 'stream',
-      headers: {
-        Authorization: `Bearer ${getApiKey()}`,
-      },
+      headers: authorization ? { Authorization: authorization } : {},
     });
 
     // Get the content-length from the headers
@@ -94,7 +95,8 @@ export async function vaultDownload({
   const startTime = performance.now();
   let lastReportedTime = Date.now();
 
-  const fileSize = await getFileSize(resource.url);
+  const authorization = await getAuthHeader();
+  const fileSize = await getFileSize(resource.url, authorization);
 
   // If the file size is not available, return (maybe throw an error here?)
   if (!fileSize) return;
@@ -182,6 +184,7 @@ export async function vaultDownload({
         progressCallback: updateProgress,
         tempFilePath,
         abortController: controller,
+        authorization,
       }),
     );
   }
