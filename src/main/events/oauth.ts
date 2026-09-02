@@ -64,9 +64,9 @@ export async function eventOAuthLogin() {
     if (activeLogin === login) sendOAuthState(state);
   };
 
-  send({ status: 'waiting' });
-
   try {
+    send({ status: 'waiting' });
+
     const tokens = await startDeviceLogin(send);
 
     send({ status: 'pairing' });
