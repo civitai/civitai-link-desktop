@@ -1,5 +1,5 @@
 import { useToast } from '@/components/ui/use-toast';
-import { ConnectionStatus } from '@/types';
+import { ConnectionStatus, OAuthState } from '@/types';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type ElectronContextType = {
@@ -15,6 +15,9 @@ type ElectronContextType = {
   appVersion: string;
   updateAvailable: boolean;
   DEBUG: boolean;
+  oauthState: OAuthState;
+  oauthSignedIn: boolean;
+  oauthUsername: string | null;
 };
 
 const defaultValue: ElectronContextType = {
@@ -30,6 +33,9 @@ const defaultValue: ElectronContextType = {
   appVersion: '',
   updateAvailable: false,
   DEBUG: false,
+  oauthState: { status: 'idle' },
+  oauthSignedIn: false,
+  oauthUsername: null,
 };
 
 const ElectronContext = createContext<ElectronContextType>(defaultValue);
@@ -50,6 +56,9 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
   const [appVersion, setAppVersion] = useState<string>('');
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [debug, setDebug] = useState<boolean>(false);
+  const [oauthState, setOAuthState] = useState<OAuthState>({ status: 'idle' });
+  const [oauthSignedIn, setOAuthSignedIn] = useState<boolean>(false);
+  const [oauthUsername, setOAuthUsername] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -59,6 +68,34 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       ipcRenderer.removeAllListeners('upgrade-key');
+    };
+  }, []);
+
+  useEffect(() => {
+    ipcRenderer.on('oauth-state', function (_, state: OAuthState) {
+      setOAuthState(state);
+      if (state.status === 'signed-in') setOAuthSignedIn(true);
+      if (state.status === 'signed-out') setOAuthSignedIn(false);
+      if (state.username) setOAuthUsername(state.username);
+    });
+
+    window.api.oauthStatus().then((status) => {
+      setOAuthSignedIn(status.signedIn);
+      if (status.username) setOAuthUsername(status.username);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('oauth-state');
+    };
+  }, []);
+
+  useEffect(() => {
+    ipcRenderer.on('kicked', function () {
+      setKey(null);
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('kicked');
     };
   }, []);
 
@@ -174,6 +211,8 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
     setRootResourcePath(null);
     setApiKey(null);
     setUser(null);
+    setOAuthSignedIn(false);
+    setOAuthUsername(null);
   };
 
   return (
@@ -191,6 +230,9 @@ export function ElectronProvider({ children }: { children: React.ReactNode }) {
         appVersion,
         updateAvailable,
         DEBUG: debug,
+        oauthState,
+        oauthSignedIn,
+        oauthUsername,
       }}
     >
       {children}
