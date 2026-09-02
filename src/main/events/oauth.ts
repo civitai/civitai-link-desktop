@@ -56,8 +56,13 @@ export async function eventOAuthLogin() {
     await setUser();
     sendOAuthState({ status: 'signed-in', username: username() });
 
-    await setVaultMeta();
-    await setVault();
+    // A vault refresh throws on any non-2xx; sign in has already succeeded here.
+    try {
+      await setVaultMeta();
+      await setVault();
+    } catch (error) {
+      console.error('Civitai vault refresh failed', requestStatus(error));
+    }
   } catch (error) {
     if (error instanceof DeviceLoginCancelledError) {
       sendOAuthState({ status: 'idle' });
