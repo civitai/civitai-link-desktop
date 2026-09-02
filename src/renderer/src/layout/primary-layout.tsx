@@ -7,10 +7,11 @@ import { Separator } from '@/components/ui/separator';
 import { Nav } from './components/nav';
 import { useElectron } from '@/providers/electron';
 import { ConnectionStatus } from '@/types';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import logo from '@/assets/logo.png';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { ResetKeyModal } from '@/components/modals/reset-key-modal';
+import { useOAuthLogin } from '@/hooks/use-oauth-login';
 import { useFile } from '@/providers/files';
 import { useApi } from '@/hooks/use-api';
 import { useVault } from '@/providers/vault';
@@ -26,6 +27,14 @@ export function PrimaryLayout({ defaultCollapsed = false }: MailProps) {
   const { fileListCount } = useFile();
   const { openRootModelFolder } = useApi();
   const { vault } = useVault();
+  const { status: oauthStatus } = useOAuthLogin();
+  const [reconnectOpen, setReconnectOpen] = useState(false);
+
+  // The pill only turns green once a browser joins the room, so a signed-in user
+  // would otherwise be left reading "Sign in with Civitai" with nothing changed.
+  useEffect(() => {
+    if (oauthStatus === 'signed-in') setReconnectOpen(false);
+  }, [oauthStatus]);
 
   const connectionRender = useCallback(
     (connectionStatus: ConnectionStatus) => {
@@ -61,7 +70,7 @@ export function PrimaryLayout({ defaultCollapsed = false }: MailProps) {
             <a href="https://civitai.com/" target="_blank">
               <img src={logo} alt="logo" className="w-10 h-10" />
             </a>
-            <Dialog>
+            <Dialog open={reconnectOpen} onOpenChange={setReconnectOpen}>
               {connectionStatus === ConnectionStatus.CONNECTED ? (
                 <div className="flex items-center space-x-2 rounded-full border-[#373A40] border px-3 py-2">
                   {connectionRender(connectionStatus)}
