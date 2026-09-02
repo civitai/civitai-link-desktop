@@ -59,7 +59,7 @@ function decode(blob: string): OAuthTokens | null {
       'Could not read stored Civitai tokens',
       error instanceof Error ? error.message : 'unknown',
     );
-    clearTokens();
+    if (safeStorage.isEncryptionAvailable()) clearTokens();
 
     return null;
   }
