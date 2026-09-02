@@ -23,6 +23,8 @@ const FORM_HEADERS = {
   'Content-Type': 'application/x-www-form-urlencoded',
 };
 
+const RETRY_ERRORS = new Set(['authorization_pending', 'network_error']);
+
 const ERROR_MESSAGES: Record<string, string> = {
   access_denied: 'Sign in was denied on Civitai.',
   expired_token: 'Sign in timed out. Try again.',
@@ -71,6 +73,9 @@ async function pollToken(
       return { error: body?.error || 'invalid_grant' };
     }
 
+    if (axios.isAxiosError(error) && !signal.aborted)
+      return { error: 'network_error' };
+
     throw error;
   }
 }
@@ -118,7 +123,7 @@ export async function startDeviceLogin(
       continue;
     }
 
-    if (result.error !== 'authorization_pending')
+    if (!RETRY_ERRORS.has(result.error))
       throw new Error(
         ERROR_MESSAGES[result.error] || 'Sign in failed. Try again.',
       );
