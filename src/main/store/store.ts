@@ -1,4 +1,5 @@
 import Store, { Schema } from 'electron-store';
+import { v4 as uuid } from 'uuid';
 import { fetchMember } from '../civitai-api';
 
 export enum ConnectionStatus {
@@ -69,6 +70,14 @@ const schema: Schema<Record<string, unknown>> = {
     type: ['object', 'null'],
     default: null,
   },
+  installId: {
+    type: ['string', 'null'],
+    default: null,
+  },
+  oauth: {
+    type: ['string', 'null'],
+    default: null,
+  },
 };
 
 export const store = new Store({ schema });
@@ -109,6 +118,24 @@ export function watchApiKey({
 
 export function getApiKey() {
   return store.get('apiKey');
+}
+
+export function getOAuthBlob() {
+  return store.get('oauth') as string | null;
+}
+
+export function setOAuthBlob(blob: string | null) {
+  store.set('oauth', blob);
+}
+
+export function getOrCreateInstallId(): string {
+  const existing = store.get('installId') as string | null;
+  if (existing) return existing;
+
+  const installId = uuid();
+  store.set('installId', installId);
+
+  return installId;
 }
 
 export function getConnectionStatus() {
