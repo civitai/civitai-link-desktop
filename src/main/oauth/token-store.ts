@@ -28,13 +28,19 @@ export function toTokens(data: TokenResponse): OAuthTokens {
   };
 }
 
+let warnedPlaintext = false;
+
 function encode(tokens: OAuthTokens): string {
   const json = JSON.stringify(tokens);
 
   if (!safeStorage.isEncryptionAvailable()) {
-    console.warn(
-      'safeStorage is unavailable, storing Civitai tokens unencrypted',
-    );
+    if (!warnedPlaintext) {
+      warnedPlaintext = true;
+      console.warn(
+        'safeStorage is unavailable, storing Civitai tokens unencrypted',
+      );
+    }
+
     return json;
   }
 
@@ -49,7 +55,12 @@ function decode(blob: string): OAuthTokens | null {
       safeStorage.decryptString(Buffer.from(blob, 'base64')),
     ) as OAuthTokens;
   } catch (error) {
-    console.error('Could not read stored Civitai tokens', error);
+    console.error(
+      'Could not read stored Civitai tokens',
+      error instanceof Error ? error.message : 'unknown',
+    );
+    clearTokens();
+
     return null;
   }
 }
@@ -89,9 +100,19 @@ async function requestRefresh(
 
     return tokens;
   } catch (error) {
-    console.error('Civitai token refresh failed', error);
-    clearTokens();
-    sendOAuthState({ status: 'signed-out' });
+    const status = axios.isAxiosError(error)
+      ? error.response?.status
+      : undefined;
+
+    console.error(
+      'Civitai token refresh failed',
+      status ?? (error instanceof Error ? error.message : 'unknown'),
+    );
+
+    if (status && status >= 400 && status < 500) {
+      clearTokens();
+      sendOAuthState({ status: 'signed-out' });
+    }
 
     return null;
   }
