@@ -61,6 +61,10 @@ const api = {
   cancelVaultDownload: (id: number) =>
     ipcRenderer.send('cancel-vault-download', id),
   getFileByHash: (hash: string) => ipcRenderer.invoke('get-file-by-hash', hash),
+  oauthLogin: () => ipcRenderer.send('oauth:login'),
+  oauthCancel: () => ipcRenderer.send('oauth:cancel'),
+  oauthLogout: () => ipcRenderer.send('oauth:logout'),
+  oauthStatus: () => ipcRenderer.invoke('oauth:status'),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
