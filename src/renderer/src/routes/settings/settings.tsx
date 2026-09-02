@@ -1,5 +1,6 @@
 import { ApiKeyInput } from '@/components/inputs/api-key-input';
 import { PathInput } from '@/components/inputs/path-input';
+import { DeviceCode } from '@/components/oauth/device-code';
 import { SignedInRow } from '@/components/settings/signed-in-row';
 import {
   AlertDialog,
@@ -29,7 +30,7 @@ export function Settings() {
   const { clearSettings, settings, appVersion, updateAvailable, DEBUG } =
     useElectron();
   const { setNSFW, setAlwaysOnTop, restartApp, setConcurrent } = useApi();
-  const { signedIn, pending, login } = useOAuthLogin();
+  const { signedIn, status, message, pending, login, cancel } = useOAuthLogin();
 
   return (
     <PanelWrapper>
@@ -102,16 +103,31 @@ export function Settings() {
               <SignedInRow />
             ) : (
               <div className="grid gap-4">
-                <Button
-                  variant="secondary"
-                  className="w-full rounded-full py-2"
-                  onClick={login}
-                  disabled={pending}
-                >
-                  {pending
-                    ? 'Approve in your browser…'
-                    : 'Sign in with Civitai'}
-                </Button>
+                {status === 'error' || pending ? (
+                  <p className="text-sm text-primary">
+                    {status === 'error'
+                      ? message
+                      : 'Approve in your browser to connect this device.'}
+                  </p>
+                ) : null}
+                <DeviceCode />
+                {pending ? (
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-full py-2"
+                    onClick={cancel}
+                  >
+                    Cancel
+                  </Button>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    className="w-full rounded-full py-2"
+                    onClick={login}
+                  >
+                    {status === 'error' ? 'Try again' : 'Sign in with Civitai'}
+                  </Button>
+                )}
                 <ApiKeyInput />
               </div>
             )}
