@@ -1,5 +1,8 @@
+import axios from 'axios';
 import { safeStorage } from 'electron';
 import { getOAuthBlob, setOAuthBlob } from '../store/store';
+import { AUTH_URL, OAUTH_CLIENT_ID } from './constants';
+import { sendOAuthState } from './state';
 
 export type OAuthTokens = {
   accessToken: string;
@@ -14,6 +17,8 @@ export type TokenResponse = {
   token_type: string;
   scope: string;
 };
+
+const REFRESH_WINDOW_MS = 60_000;
 
 export function toTokens(data: TokenResponse): OAuthTokens {
   return {
@@ -61,4 +66,50 @@ export function loadTokens(): OAuthTokens | null {
 
 export function clearTokens() {
   setOAuthBlob(null);
+}
+
+let refreshPromise: Promise<OAuthTokens | null> | null = null;
+
+async function requestRefresh(
+  refreshToken: string,
+): Promise<OAuthTokens | null> {
+  try {
+    const { data } = await axios.post<TokenResponse>(
+      `${AUTH_URL}/api/auth/oauth/token`,
+      new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: OAUTH_CLIENT_ID,
+      }).toString(),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
+    );
+
+    const tokens = toTokens(data);
+    saveTokens(tokens);
+
+    return tokens;
+  } catch (error) {
+    console.error('Civitai token refresh failed', error);
+    clearTokens();
+    sendOAuthState({ status: 'signed-out' });
+
+    return null;
+  }
+}
+
+export async function getAccessToken(): Promise<string | null> {
+  const tokens = loadTokens();
+  if (!tokens) return null;
+  if (tokens.expiresAt - Date.now() >= REFRESH_WINDOW_MS)
+    return tokens.accessToken;
+
+  if (!refreshPromise) {
+    refreshPromise = requestRefresh(tokens.refreshToken).finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  const refreshed = await refreshPromise;
+
+  return refreshed ? refreshed.accessToken : null;
 }
