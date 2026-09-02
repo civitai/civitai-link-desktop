@@ -33,6 +33,14 @@ import {
   eventToggleVaultItem,
 } from './vault';
 
+// OAuth Events
+import {
+  eventOAuthCancel,
+  eventOAuthLogin,
+  eventOAuthLogout,
+  eventOAuthStatus,
+} from './oauth';
+
 export function eventsListeners() {
   const mainWindow = getWindow();
 
@@ -66,6 +74,12 @@ export function eventsListeners() {
   });
   ipcMain.on('set-api-key', eventSetApiKey);
   ipcMain.on('set-stable-diffusion', eventSetStableDiffusion);
+
+  // OAuth
+  ipcMain.on('oauth:login', eventOAuthLogin);
+  ipcMain.on('oauth:cancel', eventOAuthCancel);
+  ipcMain.on('oauth:logout', eventOAuthLogout);
+  ipcMain.handle('oauth:status', eventOAuthStatus);
   ipcMain.on('save-file-notes', eventSaveFileNotes);
 
   // Misc

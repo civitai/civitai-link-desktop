@@ -147,6 +147,7 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
     setKey(null);
     setUpgradeKey(null);
     setConnectionStatus(ConnectionStatus.CONNECTING);
+    mainWindow.webContents.send('kicked');
   });
 
   socket.on('roomPresence', (payload) => {
