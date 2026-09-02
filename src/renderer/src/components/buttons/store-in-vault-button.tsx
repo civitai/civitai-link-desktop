@@ -26,7 +26,8 @@ type StoreInVaultButtonProps = {
 
 export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
   const { toggleVaultItem, resourceRemove } = useApi();
-  const { apiKey } = useElectron();
+  const { apiKey, oauthSignedIn } = useElectron();
+  const hasCredentials = !!apiKey || oauthSignedIn;
   const [vaultId, setVaultId] = useState<number | undefined>(file.vaultId);
 
   // Hack to get around some weird rendering
@@ -53,7 +54,7 @@ export function StoreInVaultButton({ file }: StoreInVaultButtonProps) {
     }
   };
 
-  return apiKey && file.modelVersionId ? (
+  return hasCredentials && file.modelVersionId ? (
     <Tooltip>
       <TooltipTrigger>
         {vaultId ? (

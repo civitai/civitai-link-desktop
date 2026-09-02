@@ -1,5 +1,6 @@
 import { ApiKeyInput } from '@/components/inputs/api-key-input';
 import { PathInput } from '@/components/inputs/path-input';
+import { SignedInRow } from '@/components/settings/signed-in-row';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useApi } from '@/hooks/use-api';
+import { useOAuthLogin } from '@/hooks/use-oauth-login';
 import { PanelWrapper } from '@/layout/panel-wrapper';
 import { useElectron } from '@/providers/electron';
 import { ResourceType } from '@/types';
@@ -27,6 +29,7 @@ export function Settings() {
   const { clearSettings, settings, appVersion, updateAvailable, DEBUG } =
     useElectron();
   const { setNSFW, setAlwaysOnTop, restartApp, setConcurrent } = useApi();
+  const { signedIn, pending, login } = useOAuthLogin();
 
   return (
     <PanelWrapper>
@@ -95,7 +98,23 @@ export function Settings() {
                 </label>
               </div>
             ) : null}
-            <ApiKeyInput />
+            {signedIn ? (
+              <SignedInRow />
+            ) : (
+              <div className="grid gap-4">
+                <Button
+                  variant="secondary"
+                  className="w-full rounded-full py-2"
+                  onClick={login}
+                  disabled={pending}
+                >
+                  {pending
+                    ? 'Approve in your browser…'
+                    : 'Sign in with Civitai'}
+                </Button>
+                <ApiKeyInput />
+              </div>
+            )}
             <h1 className="text-xl">Model Settings</h1>
             {(
               Object.keys(ResourceType) as Array<keyof typeof ResourceType>
