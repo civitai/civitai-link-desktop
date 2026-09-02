@@ -6,12 +6,13 @@ import {
   startDeviceLogin,
 } from '../oauth/device-flow';
 import { pairWithLink } from '../oauth/pair';
-import { sendOAuthState } from '../oauth/state';
+import { OAuthState, sendOAuthState } from '../oauth/state';
 import { clearTokens, loadTokens } from '../oauth/token-store';
 import { leaveSocketRoom } from '../socket';
 import {
   ConnectionStatus,
   getUser,
+  setApiKey,
   setConnectionStatus,
   setKey,
   setUpgradeKey,
@@ -45,39 +46,67 @@ function describeSignInError(error: unknown) {
   return { log: 'unknown', message: 'Sign in failed. Try again.' };
 }
 
+// The api throws its parsed body rather than the AxiosError.
+function vaultErrorReason(error: unknown) {
+  return (error as { error?: string } | null)?.error ?? requestStatus(error);
+}
+
+let activeLogin: symbol | null = null;
+
 export async function eventOAuthLogin() {
-  sendOAuthState({ status: 'waiting' });
+  if (activeLogin) return;
+
+  const login = Symbol('oauth-login');
+  activeLogin = login;
+
+  // A superseded login must not write over the state of the one that replaced it.
+  const send = (state: OAuthState) => {
+    if (activeLogin === login) sendOAuthState(state);
+  };
+
+  send({ status: 'waiting' });
 
   try {
-    const tokens = await startDeviceLogin(sendOAuthState);
+    const tokens = await startDeviceLogin(send);
 
-    sendOAuthState({ status: 'pairing' });
-    await pairWithLink(tokens);
+    send({ status: 'pairing' });
+
+    try {
+      await pairWithLink(tokens);
+    } catch (error) {
+      // startDeviceLogin already persisted the tokens, and nothing re-pairs later.
+      clearTokens();
+      throw error;
+    }
+
     await setUser();
-    sendOAuthState({ status: 'signed-in', username: username() });
+    send({ status: 'signed-in', username: username() });
 
     // A vault refresh throws on any non-2xx; sign in has already succeeded here.
     try {
       await setVaultMeta();
       await setVault();
     } catch (error) {
-      console.error('Civitai vault refresh failed', requestStatus(error));
+      console.error('Civitai vault refresh failed', vaultErrorReason(error));
     }
   } catch (error) {
     if (error instanceof DeviceLoginCancelledError) {
-      sendOAuthState({ status: 'idle' });
+      send({ status: 'idle' });
       return;
     }
 
     const { log, message } = describeSignInError(error);
 
     console.error('Civitai sign in failed', log);
-    sendOAuthState({ status: 'error', message });
+    send({ status: 'error', message });
+  } finally {
+    if (activeLogin === login) activeLogin = null;
   }
 }
 
 export function eventOAuthCancel() {
   cancelDeviceLogin();
+  activeLogin = null;
   sendOAuthState({ status: 'idle' });
 }
 
@@ -100,6 +129,7 @@ export async function eventOAuthLogout() {
   }
 
   clearTokens();
+  setApiKey(null);
   setKey(null);
   setUpgradeKey(null);
   leaveSocketRoom();

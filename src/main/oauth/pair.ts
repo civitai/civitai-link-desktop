@@ -2,7 +2,12 @@ import axios from 'axios';
 import os from 'os';
 import { getWindow } from '../browser-window';
 import { socketEmit } from '../socket';
-import { getOrCreateInstallId, setUpgradeKey } from '../store/store';
+import {
+  ConnectionStatus,
+  getOrCreateInstallId,
+  setConnectionStatus,
+  setUpgradeKey,
+} from '../store/store';
 import { OAuthTokens } from './token-store';
 
 type LinkInstance = { id: number; key: string; name: string };
@@ -44,7 +49,10 @@ export async function pairWithLink(tokens: OAuthTokens): Promise<LinkInstance> {
   socketEmit({
     eventName: 'join',
     payload: instance.key,
-    cb: () => console.log('Joined Civitai Link room'),
+    cb: () => {
+      setConnectionStatus(ConnectionStatus.CONNECTED);
+      console.log('Joined Civitai Link room');
+    },
   });
 
   return instance;
