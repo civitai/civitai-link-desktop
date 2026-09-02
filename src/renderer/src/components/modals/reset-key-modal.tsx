@@ -1,4 +1,5 @@
 import logo from '@/assets/logo.png';
+import { DeviceCode } from '@/components/oauth/device-code';
 import { Button } from '@/components/ui/button';
 import {
   DialogContent,
@@ -26,9 +27,7 @@ export function ResetKeyModal() {
               : 'Sign in with Civitai to reconnect this device.'}
         </DialogDescription>
       </DialogHeader>
-      {pending && message ? (
-        <p className="text-sm text-primary font-mono">{message}</p>
-      ) : null}
+      <DeviceCode />
       <DialogFooter>
         {pending ? (
           <Button

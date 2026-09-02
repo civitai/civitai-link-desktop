@@ -8,6 +8,7 @@ export function useOAuthLogin() {
   return {
     status: oauthState.status,
     message: oauthState.message,
+    verificationUri: oauthState.verificationUri,
     signedIn: oauthSignedIn,
     username: oauthUsername,
     pending: oauthState.status === 'waiting' || oauthState.status === 'pairing',

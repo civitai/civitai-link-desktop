@@ -1,3 +1,4 @@
+import { DeviceCode } from '@/components/oauth/device-code';
 import { Button } from '@/components/ui/button';
 import { useOAuthLogin } from '@/hooks/use-oauth-login';
 import { LogIn } from 'lucide-react';
@@ -26,9 +27,7 @@ export function IntroSignin() {
               ? 'Approve in your browser to connect this device.'
               : 'We will open your browser so you can approve this device.'}
         </p>
-        {pending && message ? (
-          <p className="text-sm text-primary font-mono">{message}</p>
-        ) : null}
+        <DeviceCode />
       </div>
       <div className="flex flex-1 flex-col justify-center space-y-4">
         {pending ? (
