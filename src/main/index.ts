@@ -1,6 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import {
-  BrowserWindow,
   Menu,
   MenuItemConstructorOptions,
   Tray,
@@ -67,6 +66,17 @@ autoUpdater.logger.transports.file.level = 'info';
 
 let tray: Tray | null = null;
 
+function openWindow() {
+  const mainWindow = getWindow();
+
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    createWindow();
+    return;
+  }
+
+  revealWindow();
+}
+
 function toggleWindow() {
   getWindow().isDestroyed() ? createWindow() : showWindow();
 }
@@ -107,6 +117,11 @@ function createTray() {
   tray.setToolTip('Civitai Link');
 
   const trayContextMenuItems: MenuItemConstructorOptions[] = [
+    {
+      label: 'Open Civitai Link',
+      click: openWindow,
+    },
+    { type: 'separator' },
     {
       label: 'Quit',
       click: () => {
@@ -263,14 +278,13 @@ app.on('browser-window-created', (_, window) => {
 });
 
 app.on('second-instance', () => {
-  if (getWindow()?.isDestroyed() === false) revealWindow();
+  openWindow();
 });
 
 app.on('activate', function () {
   // The window is hidden rather than destroyed on close, so a dock-icon click
-  // has one to raise and only needs a new one once it has been destroyed.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  else revealWindow();
+  // usually has one to raise and only needs a new one once it has been destroyed.
+  openWindow();
 });
 
 app.on('before-quit', async () => {

@@ -74,6 +74,16 @@ export function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
+  // The tray is the app's permanent presence; the Dock icon and ⌘-Tab entry are not.
+  // Binding the activation policy to window visibility here rather than at each call
+  // site covers closing to the tray and the tray toggle as well as opening.
+  if (process.platform === 'darwin') {
+    mainWindow.on('show', () => {
+      app.dock?.show().catch(() => undefined);
+    });
+    mainWindow.on('hide', () => app.dock?.hide());
+  }
+
   mainWindow.on('close', function (event) {
     const platform = process.platform;
 
