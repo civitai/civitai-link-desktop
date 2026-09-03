@@ -33,6 +33,7 @@ import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
 import { createWindow, getWindow, setIsQuiting } from './browser-window';
+import { syncDock } from './dock';
 import { watcherActivities } from './store/activities';
 import {
   setVault,
@@ -76,10 +77,6 @@ function openWindow() {
   revealWindow();
 }
 
-function toggleWindow() {
-  getWindow().isDestroyed() ? createWindow() : showWindow();
-}
-
 // show() alone neither raises a window that is already visible behind another app
 // nor restores a minimized one, and on macOS it does not bring the app itself
 // forward — which is why the tray icon looked inert.
@@ -90,18 +87,7 @@ function revealWindow() {
   mainWindow.show();
   mainWindow.focus();
   if (process.platform === 'darwin') app.focus({ steal: true });
-}
-
-// The tray toggles; a dock click or a second launch only ever reveals.
-function showWindow() {
-  const mainWindow = getWindow();
-
-  if (mainWindow.isVisible() && mainWindow.isFocused()) {
-    mainWindow.hide();
-    return;
-  }
-
-  revealWindow();
+  void syncDock();
 }
 
 function createTray() {
@@ -135,19 +121,9 @@ function createTray() {
       click: () => getWindow().webContents.openDevTools(),
     });
   }
-  const contextMenu = Menu.buildFromTemplate(trayContextMenuItems);
-
-  tray.on('click', (event) => {
-    if (event.ctrlKey) {
-      tray?.popUpContextMenu(contextMenu);
-    } else {
-      toggleWindow();
-    }
-  });
-
-  tray.on('right-click', () => {
-    tray?.popUpContextMenu(contextMenu);
-  });
+  // Left click opens the menu too, rather than toggling a window — with no Dock icon the
+  // menu is the app's only affordance, so hiding Quit behind a right click strands people.
+  tray.setContextMenu(Menu.buildFromTemplate(trayContextMenuItems));
 }
 
 Menu.setApplicationMenu(null);
@@ -267,6 +243,12 @@ app.whenReady().then(async () => {
 // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
 app.on('browser-window-created', (_, window) => {
   optimizer.watchWindowShortcuts(window);
+});
+
+// Without a listener Electron quits once the last window closes, which for a tray app
+// throws away the whole point of the tray. Quit is the tray's Quit item instead.
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin' && process.platform !== 'win32') app.quit();
 });
 
 app.on('second-instance', () => {

@@ -14,7 +14,10 @@ import { clearTempFolders } from './utils/clear-temp-folders';
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 let mainWindow;
-let isQuiting = DEBUG;
+// Only the tray's Quit sets this. It used to start as DEBUG, which made the close button
+// quit outright in development — the one behaviour a tray app most needs to be able to
+// test, and it cannot be tested from a build that does the opposite.
+let isQuiting = false;
 
 //defaults
 let width = getUpgradeKey() ? 1060 : 400;
@@ -75,10 +78,9 @@ export function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
-  // Re-derived here rather than at each call site, so closing to the tray and the tray
-  // toggle are covered as well as opening.
-  mainWindow.on('show', () => void syncDock());
-  mainWindow.on('hide', () => void syncDock());
+  // Measured on macOS 26 / Electron 32: BrowserWindow.hide() does NOT emit 'hide' — the
+  // window goes isVisible() true -> false with zero events — so the Dock policy cannot be
+  // driven by them and every site that changes visibility calls syncDock itself.
   mainWindow.on('closed', () => void syncDock());
 
   mainWindow.on('close', function (event) {
@@ -87,6 +89,7 @@ export function createWindow() {
     if (!isQuiting && (platform === 'darwin' || platform === 'win32')) {
       event.preventDefault();
       mainWindow.hide();
+      void syncDock();
     } else {
       clearTempFolders();
     }
