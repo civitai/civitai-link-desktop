@@ -2,7 +2,8 @@ import axios, { AxiosError } from 'axios';
 import { getAuthHeader } from './oauth/auth-header';
 import { getSettings } from './store/store';
 
-const CIVITAI_API_URL = 'https://civitai.com/api/v1';
+const CIVITAI_API_URL: string =
+  import.meta.env.MAIN_VITE_API_URL || 'https://civitai.com/api/v1';
 
 type ResponsePayload = {
   data: {

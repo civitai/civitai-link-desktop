@@ -7,7 +7,11 @@ import {
 } from '../oauth/device-flow';
 import { pairWithLink } from '../oauth/pair';
 import { OAuthState, sendOAuthState } from '../oauth/state';
-import { clearTokens, loadTokens } from '../oauth/token-store';
+import {
+  clearTokens,
+  loadTokens,
+  setSessionExpiredHandler,
+} from '../oauth/token-store';
 import { leaveSocketRoom } from '../socket';
 import {
   ConnectionStatus,
@@ -128,6 +132,12 @@ export async function eventOAuthLogout() {
     }
   }
 
+  await endOAuthSession();
+}
+
+// Everything a session leaves behind, whichever way it ended. Revoking on the hub is the
+// caller's job — a refresh that came back 4xx has nothing left to revoke.
+async function endOAuthSession() {
   clearTokens();
   setApiKey(null);
   setKey(null);
@@ -137,6 +147,10 @@ export async function eventOAuthLogout() {
   await setUser();
   sendOAuthState({ status: 'signed-out' });
 }
+
+// A refresh rejected with a 4xx means the grant is gone, which has to tear down as much as
+// an explicit sign-out does.
+setSessionExpiredHandler(() => void endOAuthSession());
 
 export async function eventOAuthStatus() {
   return loadTokens()

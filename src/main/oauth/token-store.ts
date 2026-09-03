@@ -20,6 +20,15 @@ export type TokenResponse = {
 
 const REFRESH_WINDOW_MS = 60_000;
 
+// Ending a session has to leave the socket room and clear the instance key, and both of
+// those reach back to this module through civitai-api's auth header. The owner registers
+// the teardown rather than being imported, so that cycle never forms.
+let onSessionExpired: (() => void) | null = null;
+
+export function setSessionExpiredHandler(handler: () => void) {
+  onSessionExpired = handler;
+}
+
 export function toTokens(data: TokenResponse): OAuthTokens {
   return {
     accessToken: data.access_token,
@@ -109,9 +118,14 @@ async function requestRefresh(
       status ?? (error instanceof Error ? error.message : 'unknown'),
     );
 
+    // A 4xx means the grant is gone — revoked on civitai.com, or expired. Clearing the
+    // tokens alone left the instance key and the socket room in place, so a revoked device
+    // stayed reachable from the site; end the whole session, exactly as signing out does.
     if (status && status >= 400 && status < 500) {
       clearTokens();
-      sendOAuthState({ status: 'signed-out' });
+
+      if (onSessionExpired) onSessionExpired();
+      else sendOAuthState({ status: 'signed-out' });
     }
 
     return null;
