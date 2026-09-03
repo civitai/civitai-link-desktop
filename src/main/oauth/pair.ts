@@ -4,7 +4,9 @@ import { getWindow } from '../browser-window';
 import { socketEmit } from '../socket';
 import {
   ConnectionStatus,
+  getKey,
   getOrCreateInstallId,
+  getUpgradeKey,
   setConnectionStatus,
   setUpgradeKey,
 } from '../store/store';
@@ -14,12 +16,21 @@ type LinkInstance = { id: number; key: string; name: string };
 
 export async function pairWithLink(tokens: OAuthTokens): Promise<LinkInstance> {
   const installId = getOrCreateInstallId();
+  // An install paired before OAuth still holds the key it paired with, and its row carries
+  // no installId — so nothing else can identify it. Sending it lets the service adopt that
+  // row instead of leaving it orphaned beside a new one. The upgraded key first, since the
+  // socket replaces the six-character one as soon as a room goes live.
+  const legacyKey = (getUpgradeKey() ?? getKey()) as string | null;
 
   let instance: LinkInstance;
   try {
     const { data } = await axios.post<LinkInstance>(
       `${import.meta.env.MAIN_VITE_SOCKET_URL}/api/link/self`,
-      { installId, name: `${os.hostname()} (${process.platform})` },
+      {
+        installId,
+        name: `${os.hostname()} (${process.platform})`,
+        ...(legacyKey ? { legacyKey } : {}),
+      },
       { headers: { Authorization: `Bearer ${tokens.accessToken}` } },
     );
 
