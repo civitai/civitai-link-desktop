@@ -128,3 +128,12 @@ export function setIsQuiting() {
 export function getWindow() {
   return mainWindow;
 }
+
+// Quit closes the socket, whose disconnect handler writes connectionStatus, whose watcher
+// posts here — by which point the window is gone and the send throws. Store watchers can
+// outlive the window, so anything driven by one sends through this.
+export function sendToWindow(channel: string, payload?: unknown) {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+
+  mainWindow.webContents.send(channel, payload);
+}

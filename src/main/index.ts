@@ -32,7 +32,12 @@ import unhandled from 'electron-unhandled';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
-import { createWindow, getWindow, setIsQuiting } from './browser-window';
+import {
+  createWindow,
+  getWindow,
+  sendToWindow,
+  setIsQuiting,
+} from './browser-window';
 import { syncDock } from './dock';
 import { watcherActivities } from './store/activities';
 import {
@@ -132,6 +137,10 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  // app.quit() above is asynchronous, so the copy that lost the lock still gets here and
+  // would stand up a second window and tray against the same store before it dies.
+  if (!gotInstanceLock) return;
+
   const mainWindow = createWindow();
 
   log.info('App ready:', {
@@ -200,15 +209,15 @@ app.whenReady().then(async () => {
     }
 
     tray?.setImage(icon);
-    mainWindow.webContents.send('connection-status', newValue);
+    sendToWindow('connection-status', newValue);
   });
 
   store.onDidChange('settings', (newValue) => {
-    mainWindow.webContents.send('settings-update', newValue);
+    sendToWindow('settings-update', newValue);
   });
 
   autoUpdater.on('update-available', () => {
-    mainWindow.webContents.send('update-available');
+    sendToWindow('update-available');
   });
 
   // Listen for keyboard shortcuts
