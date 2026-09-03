@@ -1,4 +1,4 @@
-import { electronApp, is, optimizer } from '@electron-toolkit/utils';
+import { electronApp, optimizer } from '@electron-toolkit/utils';
 import {
   Menu,
   MenuItemConstructorOptions,
@@ -29,7 +29,6 @@ import {
 
 // Colored Logo Assets
 import unhandled from 'electron-unhandled';
-import dockIcon from '../../resources/dock-icon.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
@@ -166,13 +165,6 @@ app.whenReady().then(async () => {
     arch: process.arch,
   });
   createTray();
-
-  // A dev run is the stock Electron binary, so the Dock and ⌘-Tab show Electron's own
-  // icon; a packaged build takes build/icon.icns and needs no help. dock-icon.png is the
-  // same squircle artwork that icns is built from.
-  if (is.dev && process.platform === 'darwin') {
-    app.dock?.setIcon(nativeImage.createFromPath(dockIcon));
-  }
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');

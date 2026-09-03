@@ -2,6 +2,7 @@ import { is } from '@electron-toolkit/utils';
 import { BrowserWindow, app, nativeTheme, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { join } from 'path';
+import { syncDock } from './dock';
 import { getUIStore, getUpgradeKey } from './store/store';
 
 // Colored Logo Assets
@@ -74,15 +75,11 @@ export function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
-  // The tray is the app's permanent presence; the Dock icon and ⌘-Tab entry are not.
-  // Binding the activation policy to window visibility here rather than at each call
-  // site covers closing to the tray and the tray toggle as well as opening.
-  if (process.platform === 'darwin') {
-    mainWindow.on('show', () => {
-      app.dock?.show().catch(() => undefined);
-    });
-    mainWindow.on('hide', () => app.dock?.hide());
-  }
+  // Re-derived here rather than at each call site, so closing to the tray and the tray
+  // toggle are covered as well as opening.
+  mainWindow.on('show', () => void syncDock());
+  mainWindow.on('hide', () => void syncDock());
+  mainWindow.on('closed', () => void syncDock());
 
   mainWindow.on('close', function (event) {
     const platform = process.platform;
@@ -115,6 +112,8 @@ export function createWindow() {
   if (!DEBUG) {
     autoUpdater.checkForUpdatesAndNotify();
   }
+
+  void syncDock();
 
   return mainWindow;
 }
