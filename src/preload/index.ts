@@ -62,6 +62,7 @@ const api = {
     ipcRenderer.send('cancel-vault-download', id),
   getFileByHash: (hash: string) => ipcRenderer.invoke('get-file-by-hash', hash),
   oauthLogin: () => ipcRenderer.send('oauth:login'),
+  oauthPair: () => ipcRenderer.send('oauth:pair'),
   oauthCancel: () => ipcRenderer.send('oauth:cancel'),
   oauthLogout: () => ipcRenderer.send('oauth:logout'),
   oauthStatus: () => ipcRenderer.invoke('oauth:status'),

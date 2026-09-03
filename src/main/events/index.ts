@@ -36,6 +36,7 @@ import {
 // OAuth Events
 import {
   eventOAuthCancel,
+  eventOAuthPair,
   eventOAuthLogin,
   eventOAuthLogout,
   eventOAuthStatus,
@@ -77,6 +78,7 @@ export function eventsListeners() {
 
   // OAuth
   ipcMain.on('oauth:login', eventOAuthLogin);
+  ipcMain.on('oauth:pair', eventOAuthPair);
   ipcMain.on('oauth:cancel', eventOAuthCancel);
   ipcMain.on('oauth:logout', eventOAuthLogout);
   ipcMain.handle('oauth:status', eventOAuthStatus);

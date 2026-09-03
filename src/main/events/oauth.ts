@@ -108,6 +108,33 @@ export async function eventOAuthLogin() {
   }
 }
 
+// Pairing without a fresh device grant, for someone who still holds tokens but has lost the
+// instance key — a `kicked` clears the key and leaves the sign-in alone. Sending them back
+// through the browser would be asking them to sign in to an account they never left, and
+// simply advancing past the step would skip the pairing that step exists to do.
+export async function eventOAuthPair() {
+  const tokens = loadTokens();
+
+  if (!tokens) {
+    sendOAuthState({ status: 'signed-out' });
+    return;
+  }
+
+  try {
+    sendOAuthState({ status: 'pairing' });
+    await pairWithLink(tokens);
+    await setUser();
+    sendOAuthState({ status: 'signed-in', username: username() });
+  } catch (error) {
+    // The tokens are still good — this failed at pairing, e.g. the instance limit — so they
+    // are kept and the user can retry once they have made room.
+    const { log, message } = describeSignInError(error);
+
+    console.error('Civitai re-pair failed', log);
+    sendOAuthState({ status: 'error', message });
+  }
+}
+
 export function eventOAuthCancel() {
   cancelDeviceLogin();
   activeLogin = null;

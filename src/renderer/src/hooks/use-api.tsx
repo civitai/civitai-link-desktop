@@ -99,6 +99,9 @@ export function useApi() {
     oauthLogin: () => {
       window.api.oauthLogin();
     },
+    oauthPair: () => {
+      window.api.oauthPair();
+    },
     oauthCancel: () => {
       window.api.oauthCancel();
     },

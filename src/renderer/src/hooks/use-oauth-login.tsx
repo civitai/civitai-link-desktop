@@ -3,7 +3,7 @@ import { useElectron } from '@/providers/electron';
 
 export function useOAuthLogin() {
   const { oauthState, oauthSignedIn, oauthUsername } = useElectron();
-  const { oauthLogin, oauthCancel, oauthLogout } = useApi();
+  const { oauthLogin, oauthPair, oauthCancel, oauthLogout } = useApi();
 
   return {
     status: oauthState.status,
@@ -13,6 +13,7 @@ export function useOAuthLogin() {
     username: oauthUsername,
     pending: oauthState.status === 'waiting' || oauthState.status === 'pairing',
     login: oauthLogin,
+    pair: oauthPair,
     cancel: oauthCancel,
     logout: oauthLogout,
   };
