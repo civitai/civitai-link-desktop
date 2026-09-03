@@ -53,6 +53,11 @@ unhandled({
   showDialog: false,
 });
 
+// Two copies of the app share one electron-store and race on every key it holds,
+// including the instance key. Hand the launch to the copy already running.
+const gotInstanceLock = app.requestSingleInstanceLock();
+if (!gotInstanceLock) app.quit();
+
 log.info('Starting App...');
 
 autoUpdater.logger = log;
@@ -65,9 +70,28 @@ function toggleWindow() {
   getWindow().isDestroyed() ? createWindow() : showWindow();
 }
 
+// show() alone neither raises a window that is already visible behind another app
+// nor restores a minimized one, and on macOS it does not bring the app itself
+// forward — which is why the tray icon looked inert.
+function revealWindow() {
+  const mainWindow = getWindow();
+
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+  if (process.platform === 'darwin') app.focus({ steal: true });
+}
+
+// The tray toggles; a dock click or a second launch only ever reveals.
 function showWindow() {
   const mainWindow = getWindow();
-  getWindow().isFocused() ? mainWindow.hide() : mainWindow.show();
+
+  if (mainWindow.isVisible() && mainWindow.isFocused()) {
+    mainWindow.hide();
+    return;
+  }
+
+  revealWindow();
 }
 
 function createTray() {
@@ -230,10 +254,15 @@ app.on('browser-window-created', (_, window) => {
   optimizer.watchWindowShortcuts(window);
 });
 
+app.on('second-instance', () => {
+  if (getWindow()?.isDestroyed() === false) revealWindow();
+});
+
 app.on('activate', function () {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+  // The window is hidden rather than destroyed on close, so a dock-icon click
+  // has one to raise and only needs a new one once it has been destroyed.
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  else revealWindow();
 });
 
 app.on('before-quit', async () => {

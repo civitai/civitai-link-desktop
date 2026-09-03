@@ -51,11 +51,6 @@ export function createWindow() {
     alwaysOnTop: settings.alwaysOnTop,
   });
 
-  // Prevents dock icon from appearing on macOS
-  if (process.platform === 'darwin') {
-    app.dock.hide();
-  }
-
   mainWindow.on('ready-to-show', () => {
     if (DEBUG) {
       mainWindow.webContents.openDevTools();
