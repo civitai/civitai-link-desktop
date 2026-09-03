@@ -1,4 +1,4 @@
-import { electronApp, optimizer } from '@electron-toolkit/utils';
+import { electronApp, is, optimizer } from '@electron-toolkit/utils';
 import {
   BrowserWindow,
   Menu,
@@ -30,6 +30,7 @@ import {
 
 // Colored Logo Assets
 import unhandled from 'electron-unhandled';
+import dockIcon from '../../resources/logo.png?asset';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
@@ -150,6 +151,13 @@ app.whenReady().then(async () => {
     arch: process.arch,
   });
   createTray();
+
+  // A dev run is the stock Electron binary, so the Dock and ⌘-Tab show Electron's own
+  // icon; a packaged build takes build/icon.icns and needs no help. Only reachable at
+  // all since the app stopped hiding its dock icon.
+  if (is.dev && process.platform === 'darwin') {
+    app.dock?.setIcon(nativeImage.createFromPath(dockIcon));
+  }
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.civitai.link');
