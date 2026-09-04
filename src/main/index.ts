@@ -1,6 +1,5 @@
 import { electronApp, optimizer } from '@electron-toolkit/utils';
 import {
-  BrowserWindow,
   Menu,
   MenuItemConstructorOptions,
   Tray,
@@ -33,7 +32,13 @@ import unhandled from 'electron-unhandled';
 import logoConnected from '../../resources/favicon-connected@2x.png?asset';
 import logoDisconnected from '../../resources/favicon-disconnected@2x.png?asset';
 import logoPending from '../../resources/favicon-pending@2x.png?asset';
-import { createWindow, getWindow, setIsQuiting } from './browser-window';
+import {
+  createWindow,
+  getWindow,
+  sendToWindow,
+  setIsQuiting,
+} from './browser-window';
+import { syncDock } from './dock';
 import { watcherActivities } from './store/activities';
 import {
   setVault,
@@ -53,6 +58,11 @@ unhandled({
   showDialog: false,
 });
 
+// Two copies of the app share one electron-store and race on every key it holds,
+// including the instance key. Hand the launch to the copy already running.
+const gotInstanceLock = app.requestSingleInstanceLock();
+if (!gotInstanceLock) app.quit();
+
 log.info('Starting App...');
 
 autoUpdater.logger = log;
@@ -61,13 +71,28 @@ autoUpdater.logger.transports.file.level = 'info';
 
 let tray: Tray | null = null;
 
-function toggleWindow() {
-  getWindow().isDestroyed() ? createWindow() : showWindow();
+function openWindow() {
+  const mainWindow = getWindow();
+
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    createWindow();
+    return;
+  }
+
+  revealWindow();
 }
 
-function showWindow() {
+// show() alone neither raises a window that is already visible behind another app
+// nor restores a minimized one, and on macOS it does not bring the app itself
+// forward — which is why the tray icon looked inert.
+function revealWindow() {
   const mainWindow = getWindow();
-  getWindow().isFocused() ? mainWindow.hide() : mainWindow.show();
+
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+  if (process.platform === 'darwin') app.focus({ steal: true });
+  void syncDock();
 }
 
 function createTray() {
@@ -83,6 +108,11 @@ function createTray() {
 
   const trayContextMenuItems: MenuItemConstructorOptions[] = [
     {
+      label: 'Open Civitai Link',
+      click: openWindow,
+    },
+    { type: 'separator' },
+    {
       label: 'Quit',
       click: () => {
         setIsQuiting();
@@ -96,19 +126,9 @@ function createTray() {
       click: () => getWindow().webContents.openDevTools(),
     });
   }
-  const contextMenu = Menu.buildFromTemplate(trayContextMenuItems);
-
-  tray.on('click', (event) => {
-    if (event.ctrlKey) {
-      tray?.popUpContextMenu(contextMenu);
-    } else {
-      toggleWindow();
-    }
-  });
-
-  tray.on('right-click', () => {
-    tray?.popUpContextMenu(contextMenu);
-  });
+  // Left click opens the menu too, rather than toggling a window — with no Dock icon the
+  // menu is the app's only affordance, so hiding Quit behind a right click strands people.
+  tray.setContextMenu(Menu.buildFromTemplate(trayContextMenuItems));
 }
 
 Menu.setApplicationMenu(null);
@@ -117,6 +137,10 @@ Menu.setApplicationMenu(null);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  // app.quit() above is asynchronous, so the copy that lost the lock still gets here and
+  // would stand up a second window and tray against the same store before it dies.
+  if (!gotInstanceLock) return;
+
   const mainWindow = createWindow();
 
   log.info('App ready:', {
@@ -185,15 +209,15 @@ app.whenReady().then(async () => {
     }
 
     tray?.setImage(icon);
-    mainWindow.webContents.send('connection-status', newValue);
+    sendToWindow('connection-status', newValue);
   });
 
   store.onDidChange('settings', (newValue) => {
-    mainWindow.webContents.send('settings-update', newValue);
+    sendToWindow('settings-update', newValue);
   });
 
   autoUpdater.on('update-available', () => {
-    mainWindow.webContents.send('update-available');
+    sendToWindow('update-available');
   });
 
   // Listen for keyboard shortcuts
@@ -230,10 +254,20 @@ app.on('browser-window-created', (_, window) => {
   optimizer.watchWindowShortcuts(window);
 });
 
+// Without a listener Electron quits once the last window closes, which for a tray app
+// throws away the whole point of the tray. Quit is the tray's Quit item instead.
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin' && process.platform !== 'win32') app.quit();
+});
+
+app.on('second-instance', () => {
+  openWindow();
+});
+
 app.on('activate', function () {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  // The window is hidden rather than destroyed on close, so a dock-icon click
+  // usually has one to raise and only needs a new one once it has been destroyed.
+  openWindow();
 });
 
 app.on('before-quit', async () => {

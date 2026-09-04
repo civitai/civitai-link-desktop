@@ -62,11 +62,14 @@ $ npm run build:linux
 
 ## FAQ
 
-### What the Civitai Link Key? Where do I get it?
+### How do I connect the app to my Civitai account?
 
-The Civitai Link Key is a short 6 character token that you'll receive when setting up your Civitai Link instance (you can see it referenced here in this [Civitai Link installation video](https://civitai.com/v/civitai-link-installation)). The Link Key acts as a temporary secret key to connect your Stable Diffusion instance to your Civitai Account inside our link service.
+Open the app and choose **Sign in with Civitai**. Your browser opens on Civitai, you approve the
+device, and the app connects itself — there is no code to copy and no API key to paste. The same
+sign-in is what authorizes Vault. You can sign out again from **Settings**.
 
-Since Civitai Link is still in alpha, it is currently only available to Supporters as part of the Civitai Early Access program. You can get access to Civitai Link today by [becoming a supporter](https://civitai.com/pricing) 🥰 or you can wait until we've gotten it to a state that we're ready for a full release.
+Older releases used a six-character Link Key. That flow still exists for the ComfyUI node pack; the
+desktop app no longer uses it.
 
 ## Filing an Issue
 

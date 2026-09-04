@@ -14,8 +14,8 @@ export function IntroWelcome() {
         </div>
         <h1 className="text-xl">Welcome to Link</h1>
         <p className="text-sm text-primary mb-2">
-          Add models from Civitai to your Stable Diffusion installation with one
-          click.
+          Send models from Civitai to the machine you generate on. Link
+          downloads them and files them where your app expects.
         </p>
       </div>
       <div className="flex flex-1 flex-col justify-center space-y-4">

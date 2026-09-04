@@ -26,3 +26,18 @@ export enum ActivityType {
   ADDED_VAULT = 'added vault',
   REMOVED_VAULT = 'removed vault',
 }
+
+export type OAuthStatus =
+  | 'idle'
+  | 'waiting'
+  | 'pairing'
+  | 'signed-in'
+  | 'signed-out'
+  | 'error';
+
+export type OAuthState = {
+  status: OAuthStatus;
+  message?: string;
+  username?: string;
+  verificationUri?: string;
+};

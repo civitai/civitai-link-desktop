@@ -29,7 +29,8 @@ import {
 import { useEffect } from 'react';
 
 export function Vault() {
-  const { apiKey, user } = useElectron();
+  const { apiKey, user, oauthSignedIn } = useElectron();
+  const hasCredentials = !!apiKey || oauthSignedIn;
   const {
     refetchVault,
     canRefresh,
@@ -49,11 +50,11 @@ export function Vault() {
     : '0';
 
   useEffect(() => {
-    if (apiKey) {
+    if (hasCredentials) {
       fetchVaultMeta();
       fetchVaultModels();
     }
-  }, [apiKey]);
+  }, [hasCredentials]);
 
   const clearFilter = () => {
     setSearchTerm('');
@@ -66,7 +67,7 @@ export function Vault() {
 
   const debouncedOnChange = useDebounce(search);
 
-  if (!apiKey) {
+  if (!hasCredentials) {
     return (
       <PanelWrapper>
         <div className="p-4 flex flex-1 h-full flex-col justify-center items-center">

@@ -1,26 +1,24 @@
-import { Wizard } from 'react-use-wizard';
-import { IntroWelcome } from './intro-welcome';
-import { IntroCode } from './intro-code';
-import { IntroSd } from './intro-sd';
-import { IntroCongrats } from './intro-congrats';
 import { useApi } from '@/hooks/use-api';
 import { useState } from 'react';
+import { Wizard } from 'react-use-wizard';
+import { IntroCongrats } from './intro-congrats';
+import { IntroSd } from './intro-sd';
+import { IntroSignin } from './intro-signin';
+import { IntroWelcome } from './intro-welcome';
 
-export function Intro() {
-  const [segments, setSegments] = useState<string[]>(new Array(6).fill(''));
+type IntroProps = {
+  onComplete: () => void;
+};
+
+export function Intro(props: IntroProps) {
   const [folderValue, setFolderValue] = useState<string | null>(null);
   const [sdType, setSdType] = useState<string>('symlink');
-  const { setKey, init, setStableDiffusion } = useApi();
+  const { init, setStableDiffusion } = useApi();
 
   const submit = async () => {
-    const segmentsString = segments.join('');
-    if (segmentsString && segmentsString.length === 6) {
-      setStableDiffusion(sdType);
-      setKey(segmentsString);
-      init();
-    } else {
-      console.log('No input value');
-    }
+    setStableDiffusion(sdType);
+    init();
+    props.onComplete();
   };
 
   return (
@@ -29,7 +27,7 @@ export function Intro() {
       <div className="container mx-auto p-6 space-y-8 flex flex-col h-screen pt-16">
         <Wizard>
           <IntroWelcome />
-          <IntroCode segments={segments} setSegments={setSegments} />
+          <IntroSignin />
           <IntroSd
             folderValue={folderValue}
             setFolderValue={setFolderValue}

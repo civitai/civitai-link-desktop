@@ -2,6 +2,7 @@ import { is } from '@electron-toolkit/utils';
 import { BrowserWindow, app, nativeTheme, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { join } from 'path';
+import { syncDock } from './dock';
 import { getUIStore, getUpgradeKey } from './store/store';
 
 // Colored Logo Assets
@@ -13,7 +14,10 @@ import { clearTempFolders } from './utils/clear-temp-folders';
 
 const DEBUG = import.meta.env.MAIN_VITE_DEBUG === 'true' || false;
 let mainWindow;
-let isQuiting = DEBUG;
+// Only the tray's Quit sets this. It used to start as DEBUG, which made the close button
+// quit outright in development — the one behaviour a tray app most needs to be able to
+// test, and it cannot be tested from a build that does the opposite.
+let isQuiting = false;
 
 //defaults
 let width = getUpgradeKey() ? 1060 : 400;
@@ -51,11 +55,6 @@ export function createWindow() {
     alwaysOnTop: settings.alwaysOnTop,
   });
 
-  // Prevents dock icon from appearing on macOS
-  if (process.platform === 'darwin') {
-    app.dock.hide();
-  }
-
   mainWindow.on('ready-to-show', () => {
     if (DEBUG) {
       mainWindow.webContents.openDevTools();
@@ -79,12 +78,18 @@ export function createWindow() {
     mainWindow.webContents.send('app-ready', true);
   });
 
+  // Measured on macOS 26 / Electron 32: BrowserWindow.hide() does NOT emit 'hide' — the
+  // window goes isVisible() true -> false with zero events — so the Dock policy cannot be
+  // driven by them and every site that changes visibility calls syncDock itself.
+  mainWindow.on('closed', () => void syncDock());
+
   mainWindow.on('close', function (event) {
     const platform = process.platform;
 
     if (!isQuiting && (platform === 'darwin' || platform === 'win32')) {
       event.preventDefault();
       mainWindow.hide();
+      void syncDock();
     } else {
       clearTempFolders();
     }
@@ -111,6 +116,8 @@ export function createWindow() {
     autoUpdater.checkForUpdatesAndNotify();
   }
 
+  void syncDock();
+
   return mainWindow;
 }
 
@@ -120,4 +127,13 @@ export function setIsQuiting() {
 
 export function getWindow() {
   return mainWindow;
+}
+
+// Quit closes the socket, whose disconnect handler writes connectionStatus, whose watcher
+// posts here — by which point the window is gone and the send throws. Store watchers can
+// outlive the window, so anything driven by one sends through this.
+export function sendToWindow(channel: string, payload?: unknown) {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+
+  mainWindow.webContents.send(channel, payload);
 }

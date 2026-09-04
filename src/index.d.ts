@@ -44,6 +44,11 @@ declare global {
       }) => void;
       cancelVaultDownload: (id: number) => void;
       getFileByHash: (hash: string) => Resource;
+      oauthLogin: () => void;
+    oauthPair: () => void;
+      oauthCancel: () => void;
+      oauthLogout: () => void;
+      oauthStatus: () => Promise<{ signedIn: boolean; username?: string }>;
     };
   }
 

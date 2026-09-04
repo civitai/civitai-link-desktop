@@ -1,10 +1,10 @@
 import Store, { Schema } from 'electron-store';
 import path from 'path';
 import { getWindow } from '../browser-window';
+import { hasCredentials } from '../oauth/auth-header';
 import { createModelJson } from '../utils/create-model-json';
 import { createPreviewImage } from '../utils/create-preview-image';
 import { fileStats } from '../utils/file-stats';
-import { getApiKey } from './store';
 import { getVaultByModelVersionId } from './vault';
 
 const schema: Schema<Record<string, unknown>> = {
@@ -18,14 +18,13 @@ export const store = new Store({ schema });
 
 export async function addFile(file: Resource) {
   const stats = await fileStats(file.localPath);
-  const apiKey = getApiKey();
 
   const fileToAdd = { ...file, hash: file.hash.toLowerCase(), ...stats };
   if (file.localPath) {
     fileToAdd.name = path.basename(file.localPath);
   }
 
-  if (apiKey && file.modelVersionId) {
+  if (hasCredentials() && file.modelVersionId) {
     const vaultItem = getVaultByModelVersionId(file.modelVersionId);
 
     fileToAdd.vaultId = vaultItem?.id;

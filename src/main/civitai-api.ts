@@ -1,7 +1,9 @@
 import axios, { AxiosError } from 'axios';
-import { getApiKey, getSettings } from './store/store';
+import { getAuthHeader } from './oauth/auth-header';
+import { getSettings } from './store/store';
 
-const CIVITAI_API_URL = 'https://civitai.com/api/v1';
+const CIVITAI_API_URL: string =
+  import.meta.env.MAIN_VITE_API_URL || 'https://civitai.com/api/v1';
 
 type ResponsePayload = {
   data: {
@@ -87,9 +89,9 @@ type VaultMeta = {
 };
 
 export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
-  const apiKey = getApiKey();
+  const authorization = await getAuthHeader();
 
-  if (!apiKey) {
+  if (!authorization) {
     return;
   }
 
@@ -98,7 +100,7 @@ export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
       `${CIVITAI_API_URL}/vault/get`,
       {
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: authorization,
         },
       },
     );
@@ -121,9 +123,9 @@ type VersionResource = {
 export const fetchVaultModelsByVersion = async (
   modelVersionIds: number[],
 ): Promise<VersionResource[]> => {
-  const apiKey = getApiKey();
+  const authorization = await getAuthHeader();
 
-  if (!apiKey) {
+  if (!authorization) {
     return [];
   }
 
@@ -132,7 +134,7 @@ export const fetchVaultModelsByVersion = async (
       `${CIVITAI_API_URL}/vault/check-vault?modelVersionIds=${modelVersionIds.join(',')}`,
       {
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: authorization,
         },
       },
     );
@@ -156,9 +158,9 @@ type VaultModelResource = {
 };
 // TODO: Add pagination
 export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
-  const apiKey = getApiKey();
+  const authorization = await getAuthHeader();
 
-  if (!apiKey) {
+  if (!authorization) {
     return [];
   }
 
@@ -172,7 +174,7 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
           page: 1,
         },
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: authorization,
         },
       },
     );
@@ -188,9 +190,9 @@ type ToggleVaultResponse = { success: boolean; vaultId?: number };
 export const toggleVaultModel = async (
   modelVersionId: number,
 ): Promise<ToggleVaultResponse> => {
-  const apiKey = getApiKey();
+  const authorization = await getAuthHeader();
 
-  if (!apiKey) {
+  if (!authorization) {
     return { success: false };
   }
 
@@ -200,7 +202,7 @@ export const toggleVaultModel = async (
       {},
       {
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: authorization,
         },
       },
     );
@@ -213,16 +215,16 @@ export const toggleVaultModel = async (
 };
 
 export const fetchMember = async () => {
-  const apiKey = getApiKey();
+  const authorization = await getAuthHeader();
 
-  if (!apiKey) {
+  if (!authorization) {
     return null;
   }
 
   try {
     const { data } = await axios.get(`${CIVITAI_API_URL}/me`, {
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: authorization,
       },
     });
 

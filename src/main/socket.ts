@@ -147,6 +147,7 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
     setKey(null);
     setUpgradeKey(null);
     setConnectionStatus(ConnectionStatus.CONNECTING);
+    mainWindow.webContents.send('kicked');
   });
 
   socket.on('roomPresence', (payload) => {
@@ -154,7 +155,10 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
       `Presence update: SD: ${payload['sd']}, Clients: ${payload['client']}`,
     );
 
-    if (payload['client'] === 0 || payload['sd'] === 0) {
+    // Only our own membership decides whether this device is linked. Counting
+    // browsers here reported "Disconnected" to anyone who wasn't on the site,
+    // which after OAuth sign-in is every new install.
+    if (payload['sd'] === 0) {
       setConnectionStatus(ConnectionStatus.CONNECTING);
     } else {
       setConnectionStatus(ConnectionStatus.CONNECTED);

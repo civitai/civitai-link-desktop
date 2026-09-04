@@ -96,5 +96,20 @@ export function useApi() {
     getFileByHash: async (hash: string): Promise<Resource> => {
       return await window.api.getFileByHash(hash);
     },
+    oauthLogin: () => {
+      window.api.oauthLogin();
+    },
+    oauthPair: () => {
+      window.api.oauthPair();
+    },
+    oauthCancel: () => {
+      window.api.oauthCancel();
+    },
+    oauthLogout: () => {
+      window.api.oauthLogout();
+    },
+    oauthStatus: async () => {
+      return await window.api.oauthStatus();
+    },
   };
 }

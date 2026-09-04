@@ -4,8 +4,8 @@ import {
   fetchVaultModels as fetchAllVaultItems,
   fetchVaultMeta,
 } from '../civitai-api';
+import { hasCredentials } from '../oauth/auth-header';
 import { getFiles, updateFile } from './files';
-import { getApiKey } from './store';
 
 const schema: Schema<Record<string, unknown>> = {
   vaultMeta: {
@@ -24,6 +24,8 @@ const schema: Schema<Record<string, unknown>> = {
 export const store = new Store({ schema });
 
 export async function setVaultMeta() {
+  if (!hasCredentials()) return;
+
   const meta = await fetchVaultMeta();
 
   store.set(
@@ -36,8 +38,7 @@ export async function setVaultMeta() {
 }
 
 export async function setVault() {
-  const apiKey = getApiKey();
-  if (!apiKey) return;
+  if (!hasCredentials()) return;
 
   const vaultItems = await fetchAllVaultItems();
   const vaultItemsByModelVersionId = Object.fromEntries(
