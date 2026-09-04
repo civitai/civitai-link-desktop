@@ -9,6 +9,11 @@ jobs:
   release:
     runs-on: ${{ matrix.os }}
 
+    # electron-builder publishes the release, so the job token needs write access to
+    # Contents. Everything else stays at none.
+    permissions:
+      contents: write
+
     env:
       APP_VERSION: 1.21.0
 
@@ -38,19 +43,19 @@ jobs:
       - name: build-linux
         if: matrix.os == 'ubuntu-latest'
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:linux
 
       - name: build-mac
         if: matrix.os == 'macos-latest'
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:mac
 
       - name: build-win
         if: matrix.os == 'windows-latest'
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:win
 
       - name: Sign Artifact with CodeSignTool
