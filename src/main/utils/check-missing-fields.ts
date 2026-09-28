@@ -18,7 +18,9 @@ export async function checkMissingFields(
     try {
       const model = await getModelByHash(resource.hash);
       fieldsToUpdate = { ...fieldsToUpdate, ...model };
-    } catch (err) {}
+    } catch {
+      // Best effort: keep the fields we already have if the lookup fails
+    }
   }
 
   if (isMissingSystemField) {
@@ -28,6 +30,6 @@ export async function checkMissingFields(
   }
 
   if (localPath || isMissingApiField || isMissingSystemField) {
-    updateFile({...fieldsToUpdate, name: resource.name});
+    updateFile({ ...fieldsToUpdate, name: resource.name });
   }
 }

@@ -31,7 +31,10 @@ declare global {
       setStableDiffusion: (type: string) => void;
       searchFile: (hash: string) => Resource;
       restartApp: () => void;
-      fetchMetadata: (localPath: string, hash: string) => JSON;
+      fetchMetadata: (
+        localPath: string,
+        hash: string,
+      ) => Promise<Record<string, unknown> | string | undefined>;
       getRootPath: () => string;
       setAlwaysOnTop: (alwaysOnTop: boolean) => void;
       fetchFileNotes: (hash: string) => string;
@@ -72,7 +75,7 @@ declare global {
     baseModel?: string;
     fileSize?: number; // bytes
     notes?: string;
-    metadata?: Record<string, any> | string;
+    metadata?: Record<string, unknown> | string;
   };
 
   type VaultItem = {

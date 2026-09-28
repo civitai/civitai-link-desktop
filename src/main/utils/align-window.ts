@@ -3,10 +3,10 @@ import { screen } from 'electron';
 let mainWindow;
 let tray;
 
-let height = 600;
-let width = 400;
-let margin_x = 0;
-let margin_y = 0;
+const height = 600;
+const width = 400;
+const margin_x = 0;
+const margin_y = 0;
 
 export function alignWindow() {
   const position = calculateWindowPosition();
@@ -22,7 +22,7 @@ function calculateWindowPosition() {
   trayPos = trayBounds.y > screenBounds.height / 2 ? trayPos : trayPos / 2;
   trayPos = trayBounds.x > screenBounds.width / 2 ? trayPos : trayPos - 1;
 
-  let DEFAULT_MARGIN = { x: margin_x, y: trayBounds.height / 2 + margin_y };
+  const DEFAULT_MARGIN = { x: margin_x, y: trayBounds.height / 2 + margin_y };
   let x;
   let y;
 

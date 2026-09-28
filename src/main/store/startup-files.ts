@@ -23,7 +23,7 @@ export function diffDirectories(filesInDirs: string[]): string[] {
     return [];
   }
 
-  let diff = difference(oldFiles, filesInDirs);
+  const diff = difference(oldFiles, filesInDirs);
 
   // Update paths and remove from diff if it exists and just moved
   const toRemove = diff.reduce((acc: string[], file: string) => {

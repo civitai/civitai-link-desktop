@@ -66,7 +66,7 @@ if (!gotInstanceLock) app.quit();
 log.info('Starting App...');
 
 autoUpdater.logger = log;
-// @ts-ignore
+// @ts-expect-error electron-updater types its logger without electron-log's transports
 autoUpdater.logger.transports.file.level = 'info';
 
 let tray: Tray | null = null;

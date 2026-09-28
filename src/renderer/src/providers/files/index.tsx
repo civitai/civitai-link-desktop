@@ -1,3 +1,12 @@
+import { useApi } from '@/hooks/use-api';
+import {
+  SortDirection,
+  SortType,
+  sortFileSize,
+  sortResource,
+} from '@/lib/search-filter';
+import Fuse, { type Expression, type FuseResult } from 'fuse.js';
+import { isEqual } from 'lodash';
 import {
   createContext,
   useCallback,
@@ -5,15 +14,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useApi } from '@/hooks/use-api';
-import {
-  SortType,
-  SortDirection,
-  sortFileSize,
-  sortResource,
-} from '@/lib/search-filter';
-import Fuse, { type FuseResult, type Expression } from 'fuse.js';
-import { isEqual } from 'lodash';
 
 type RemoveActivityParams = {
   hash: string;
@@ -115,7 +115,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
 
   const searchFiles = useCallback(
     (search: string) => {
-      let filters: Expression = {
+      const filters: Expression = {
         $and: [],
       };
 
@@ -135,7 +135,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         });
       }
 
-      const searchResults: any[] =
+      const searchResults: FuseResult<Resource>[] =
         search.length || modelTypeArray.length || baseModelArray.length
           ? fuse.search(filters)
           : mapHashToFuse(fileHashMap);
@@ -146,7 +146,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
         }
 
         return sortResource(a.item, b.item, sortType, sortDirection);
-      })
+      });
 
       if (!isEqual(sortedResults, fuseList)) {
         setFuseList(sortedResults);
@@ -279,7 +279,7 @@ export function FileProvider({ children }: { children: React.ReactNode }) {
       fuse.setCollection(fuseFiles);
 
       // Hack to show initial list
-      const list: any[] = mapHashToFuse(message.files);
+      const list: FuseResult<Resource>[] = mapHashToFuse(message.files);
       setFuseList(list);
       setFileHashMap(message.files);
     });

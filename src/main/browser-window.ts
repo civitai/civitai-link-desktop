@@ -20,8 +20,8 @@ let mainWindow;
 let isQuiting = false;
 
 //defaults
-let width = getUpgradeKey() ? 1060 : 400;
-let height = 600;
+const width = getUpgradeKey() ? 1060 : 400;
+const height = 600;
 
 export function createWindow() {
   const upgradeKey = getUpgradeKey();

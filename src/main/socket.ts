@@ -32,7 +32,7 @@ export function socketCommandStatus(payload) {
 
 type socketEmitParams = {
   eventName: string;
-  payload: any;
+  payload: unknown;
   cb?: () => void;
 };
 
@@ -97,7 +97,7 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
       case 'activities:cancel':
         activitiesCancel({ mainWindow, activityId: payload.activityId });
         break;
-      case 'resources:list':
+      case 'resources:list': {
         const resourceList = filterResourcesList();
         socketCommandStatus({
           id: payload.id,
@@ -106,6 +106,7 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
           resources: resourceList,
         });
         break;
+      }
       case 'resources:add':
         if (searchFile(payload.resource.hash)) {
           mainWindow.webContents.send('error', 'Resource already exists');
@@ -118,7 +119,7 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
           });
         }
         break;
-      case 'resources:remove':
+      case 'resources:remove': {
         const updatedResources = resourcesRemove(payload.resource.hash);
         socketCommandStatus({
           id: payload.id,
@@ -134,6 +135,7 @@ export function socketIOConnect({ app }: socketIOConnectParams) {
           resource: payload.resource,
         });
         break;
+      }
       case 'image:txt2img':
         imageTxt2img();
         break;
