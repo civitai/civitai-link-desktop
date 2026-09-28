@@ -1,4 +1,7 @@
 import { FileHandle, open } from 'fs/promises';
+import path from 'path';
+import { formatFileError } from './format-file-error';
+import { supportsEmbeddedMetadata } from './model-files';
 
 const SAFETENSORS_HEADER_SIZE = 8;
 const MAX_METADATA_SIZE = 100 * 1024 * 1024;
@@ -94,5 +97,24 @@ export async function readMetadata(
     return metadata;
   } finally {
     await file.close();
+  }
+}
+
+// Metadata is optional: returns {} for formats without an embedded header
+// (.pt, .ckpt, ...) and for unreadable headers, so callers never fail on it.
+export async function readModelMetadata(
+  filePath: string,
+): Promise<Record<string, unknown>> {
+  if (!supportsEmbeddedMetadata(filePath)) return {};
+
+  try {
+    return await readMetadata(filePath);
+  } catch (error) {
+    console.warn(
+      'Unable to read model metadata',
+      path.basename(filePath),
+      formatFileError(error, filePath),
+    );
+    return {};
   }
 }
