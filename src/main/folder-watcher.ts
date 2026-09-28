@@ -130,6 +130,7 @@ async function hashFile(pathname: string) {
   if (toHash[pathname]) return;
   const stats = await fileStats(pathname);
   if (!stats?.fileSize) return;
+  const filename = path.basename(pathname);
   toHash[pathname] = { fileSize: stats.fileSize, status: 'pending' };
   updateLoader();
 
@@ -141,7 +142,11 @@ async function hashFile(pathname: string) {
       try {
         metadata = await readMetadata(pathname);
       } catch (error) {
-        console.warn('Unable to read model metadata', pathname, error);
+        console.warn(
+          'Unable to read model metadata',
+          filename,
+          formatFileError(error, pathname),
+        );
       }
     }
 
@@ -151,13 +156,17 @@ async function hashFile(pathname: string) {
     } catch (err) {
       if (err instanceof ModelNotFoundError) {
         addNotFoundFile(pathname, modelHash);
-        console.info('Model not found', pathname);
+        console.info('Model not found', filename);
       } else {
-        console.error('Model lookup failed', pathname, err);
+        console.error(
+          'Model lookup failed',
+          filename,
+          formatFileError(err, pathname),
+        );
       }
     }
   } catch (err) {
-    console.error('Error hashing', err);
+    console.error('Error hashing', filename, formatFileError(err, pathname));
   } finally {
     const entry = toHash[pathname];
     if (entry) {
@@ -169,6 +178,11 @@ async function hashFile(pathname: string) {
       }, 30000);
     }
   }
+}
+
+function formatFileError(error: unknown, filepath: string) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.split(filepath).join(path.basename(filepath));
 }
 
 function updateLoader() {

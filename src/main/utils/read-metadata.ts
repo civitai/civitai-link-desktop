@@ -38,7 +38,7 @@ export async function readMetadata(
       metadataLength > BigInt(MAX_METADATA_SIZE) ||
       metadataLength > BigInt(Number.MAX_SAFE_INTEGER)
     ) {
-      throw new Error(`${filePath} has an invalid safetensors header`);
+      throw new Error('Invalid safetensors header');
     }
 
     const metadataBuffer = Buffer.alloc(Number(metadataLength));
@@ -72,14 +72,23 @@ export async function readMetadata(
 
     const metadata: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(metadataValue)) {
-      metadata[key] = value;
+      let parsedValue = value;
       if (typeof value === 'string' && value.startsWith('{')) {
         try {
-          metadata[key] = JSON.parse(value);
+          parsedValue = JSON.parse(value);
         } catch {
           // Keep the original string when nested metadata is not JSON.
         }
       }
+
+      // Treat keys such as "__proto__" as data instead of invoking setters
+      // inherited from Object.prototype.
+      Object.defineProperty(metadata, key, {
+        configurable: true,
+        enumerable: true,
+        value: parsedValue,
+        writable: true,
+      });
     }
 
     return metadata;

@@ -40,6 +40,30 @@ async function main() {
       nested: { value: 1 },
     });
 
+    const untrustedMetadataPath = path.join(
+      tempDirectory,
+      'untrusted-metadata.safetensors',
+    );
+    const untrustedMetadataJson = Buffer.from(
+      '{"__metadata__":{"__proto__":"{\\"polluted\\":true}"}}',
+    );
+    const untrustedMetadataLength = Buffer.alloc(8);
+    untrustedMetadataLength.writeBigUInt64LE(
+      BigInt(untrustedMetadataJson.length),
+    );
+    await writeFile(
+      untrustedMetadataPath,
+      Buffer.concat([untrustedMetadataLength, untrustedMetadataJson]),
+    );
+    const untrustedMetadata = await readMetadata(untrustedMetadataPath);
+    assert.equal(Object.getPrototypeOf(untrustedMetadata), Object.prototype);
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(untrustedMetadata, '__proto__'),
+      true,
+    );
+    assert.deepEqual(untrustedMetadata['__proto__'], { polluted: true });
+    assert.equal(({} as { polluted?: boolean }).polluted, undefined);
+
     const truncatedPath = path.join(tempDirectory, 'truncated.safetensors');
     const truncatedLength = Buffer.alloc(8);
     truncatedLength.writeBigUInt64LE(128n);
