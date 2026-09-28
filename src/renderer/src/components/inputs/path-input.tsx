@@ -61,9 +61,7 @@ export function PathInput({
 
       if (showToast) {
         toast({
-          // @ts-ignore
           title: `${ResourceType[type]} Model directory set`,
-          // @ts-ignore
           description: `${ResourceType[type]} Model directory has been set successfully`,
         });
       }

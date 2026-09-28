@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 
 type FileFetchMetadataProps = {
   localPath: string;
-  metadata?: Record<string, any> | string;
+  metadata?: Record<string, unknown> | string;
   hash: string;
 };
 
@@ -28,7 +28,7 @@ export function FileFetchMetadata({
 }: FileFetchMetadataProps) {
   const { fetchMetadata } = useApi();
   const [loadedMetadata, setLoadedMetadata] = useState<
-    Record<string, any> | string | undefined
+    Record<string, unknown> | string | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);

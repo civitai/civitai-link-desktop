@@ -11,7 +11,7 @@ type ResourcesList = {
 
 export function filterResourcesList() {
   const resources = getFiles();
-  let resourceList: ResourcesList = [];
+  const resourceList: ResourcesList = [];
 
   for (const resource of Object.values(resources)) {
     resourceList.push({

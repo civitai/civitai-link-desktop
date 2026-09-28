@@ -1,7 +1,7 @@
 export type Task = () => Promise<void>;
 type TaskGenerator = () => Task | null;
 
-function isTaskGenerator(arg: any): arg is TaskGenerator {
+function isTaskGenerator(arg: unknown): arg is TaskGenerator {
   return typeof arg === 'function';
 }
 
