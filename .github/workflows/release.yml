@@ -15,7 +15,7 @@ jobs:
       contents: write
 
     env:
-      APP_VERSION: 1.21.0
+      APP_VERSION: 1.21.1
 
     strategy:
       fail-fast: false
