@@ -1,4 +1,5 @@
 import chokidar from 'chokidar';
+import { stat } from 'fs/promises';
 import path from 'path';
 import { getWindow } from './browser-window';
 import { getModelByHash, ModelNotFoundError } from './civitai-api';
@@ -6,7 +7,14 @@ import { hash } from './hash';
 import { listDirectories } from './list-directory';
 import { socketCommandStatus } from './socket';
 import { addFile, deleteFile, findFileByFilename } from './store/files';
-import { addNotFoundFile, searchNotFoundFile } from './store/not-found';
+import {
+  addNotFoundFile,
+  FileFingerprint,
+  isUnchangedSinceHashed,
+  NotFoundFile,
+  removeNotFoundFile,
+  searchNotFoundFile,
+} from './store/not-found';
 import { getAllPaths, getRootResourcePath, store } from './store/paths';
 import { diffDirectories } from './store/startup-files';
 import { setVault } from './store/vault';
@@ -108,8 +116,11 @@ async function onAdd(pathname: string) {
   if (!isModelFile(pathname)) return;
 
   // Short circuit if in not found store
-  const notFoundFile = searchNotFoundFile(pathname);
-  if (notFoundFile) return;
+  const notFound = searchNotFoundFile(pathname);
+  if (notFound) {
+    if (!notFound.isStale) return;
+    if (await recheckNotFoundFile(pathname, notFound.entry)) return;
+  }
 
   // See if file already exists by filename
   const resource = findFileByFilename(pathname);
@@ -120,6 +131,47 @@ async function onAdd(pathname: string) {
   } else {
     await hashFile(pathname);
   }
+}
+
+async function getFileFingerprint(
+  pathname: string,
+): Promise<FileFingerprint | undefined> {
+  try {
+    const stats = await stat(pathname);
+    return { fileSize: stats.size, mtimeMs: stats.mtimeMs };
+  } catch {
+    return undefined;
+  }
+}
+
+// Looks a stale not-found entry up again by its stored hash. Returns false
+// when the file changed since it was hashed, so the caller re-hashes it.
+async function recheckNotFoundFile(pathname: string, entry: NotFoundFile) {
+  const fingerprint = await getFileFingerprint(pathname);
+  if (!fingerprint || !isUnchangedSinceHashed(entry, fingerprint)) {
+    removeNotFoundFile(pathname);
+    return false;
+  }
+
+  try {
+    const model = await getModelByHash(entry.hash);
+    const metadata = await readModelMetadata(pathname);
+    await addFile({ ...model, localPath: pathname, metadata });
+    removeNotFoundFile(pathname);
+  } catch (err) {
+    if (err instanceof ModelNotFoundError) {
+      addNotFoundFile(pathname, entry.hash, fingerprint);
+    } else {
+      // Keep the stale entry so the next scan retries the lookup.
+      console.error(
+        'Model lookup failed',
+        path.basename(pathname),
+        formatFileError(err, pathname),
+      );
+    }
+  }
+
+  return true;
 }
 
 const toHash: Record<
@@ -136,6 +188,8 @@ async function hashFile(pathname: string) {
   updateLoader();
 
   try {
+    // Fingerprint before hashing so an edit during the hash reads as a change.
+    const fingerprint = await getFileFingerprint(pathname);
     const modelHash = await hash(pathname);
     const metadata = await readModelMetadata(pathname);
 
@@ -144,7 +198,7 @@ async function hashFile(pathname: string) {
       await addFile({ ...model, localPath: pathname, metadata });
     } catch (err) {
       if (err instanceof ModelNotFoundError) {
-        addNotFoundFile(pathname, modelHash);
+        addNotFoundFile(pathname, modelHash, fingerprint);
         console.info('Model not found', filename);
       } else {
         console.error(
