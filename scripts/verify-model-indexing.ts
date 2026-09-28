@@ -8,7 +8,10 @@ import {
   isModelFile,
   supportsEmbeddedMetadata,
 } from '../src/main/utils/model-files';
-import { readMetadata } from '../src/main/utils/read-metadata';
+import {
+  readMetadata,
+  readModelMetadata,
+} from '../src/main/utils/read-metadata';
 
 async function main() {
   const tempDirectory = await mkdtemp(path.join(os.tmpdir(), 'civitai-link-'));
@@ -72,6 +75,21 @@ async function main() {
       Buffer.concat([truncatedLength, Buffer.from('{}')]),
     );
     await assert.rejects(readMetadata(truncatedPath), /Unexpected end of file/);
+    assert.deepEqual(await readModelMetadata(truncatedPath), {});
+    assert.deepEqual(await readModelMetadata(metadataPath), {
+      author: 'Civitai',
+      nested: { value: 1 },
+    });
+
+    // Pickle formats are zip archives; their first bytes are not a
+    // SafeTensors header, so metadata must be skipped rather than rejected.
+    const picklePath = path.join(tempDirectory, 'embedding.pt');
+    await writeFile(
+      picklePath,
+      Buffer.concat([Buffer.from('PK\x03\x04', 'latin1'), Buffer.alloc(64)]),
+    );
+    await assert.rejects(readMetadata(picklePath));
+    assert.deepEqual(await readModelMetadata(picklePath), {});
 
     assert.equal(isModelFile('MODEL.SAFETENSORS'), true);
     assert.equal(isModelFile('embedding.pth'), true);

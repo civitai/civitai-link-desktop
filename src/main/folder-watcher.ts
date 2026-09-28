@@ -13,8 +13,9 @@ import { setVault } from './store/vault';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { limitConcurrency } from './utils/concurrency-helpers';
 import { fileStats } from './utils/file-stats';
-import { isModelFile, supportsEmbeddedMetadata } from './utils/model-files';
-import { readMetadata } from './utils/read-metadata';
+import { formatFileError } from './utils/format-file-error';
+import { isModelFile } from './utils/model-files';
+import { readModelMetadata } from './utils/read-metadata';
 
 const SMALL_FILE_SCAN_CONCURRENCY = 2;
 const LARGE_FILE_SCAN_CONCURRENCY = 1;
@@ -136,19 +137,7 @@ async function hashFile(pathname: string) {
 
   try {
     const modelHash = await hash(pathname);
-    let metadata: Record<string, unknown> = {};
-
-    if (supportsEmbeddedMetadata(pathname)) {
-      try {
-        metadata = await readMetadata(pathname);
-      } catch (error) {
-        console.warn(
-          'Unable to read model metadata',
-          filename,
-          formatFileError(error, pathname),
-        );
-      }
-    }
+    const metadata = await readModelMetadata(pathname);
 
     try {
       const model = await getModelByHash(modelHash);
@@ -178,11 +167,6 @@ async function hashFile(pathname: string) {
       }, 30000);
     }
   }
-}
-
-function formatFileError(error: unknown, filepath: string) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message.split(filepath).join(path.basename(filepath));
 }
 
 function updateLoader() {

@@ -11,7 +11,7 @@ import { addFile } from './store/files';
 import { getRootResourcePath } from './store/paths';
 import { getSettings } from './store/store';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
-import { readMetadata } from './utils/read-metadata';
+import { readModelMetadata } from './utils/read-metadata';
 
 const REPORT_INTERVAL = 1000;
 
@@ -252,7 +252,7 @@ export async function downloadFile({
     console.log("Downloaded to: '" + downloadPath + "'!");
     const timestamp = new Date().toISOString();
 
-    const metadata = await readMetadata(filePath);
+    const metadata = await readModelMetadata(filePath);
 
     const fileData = {
       downloadDate: timestamp,
