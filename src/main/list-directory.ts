@@ -1,10 +1,8 @@
 import fs from 'fs';
-import path from 'path';
 import uniqBy from 'lodash/uniqBy';
+import path from 'path';
 import { getAllPaths, getRootResourcePath } from './store/paths';
-
-const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
-const EXCLUDE_TYPES = ['/temp/', '.json', '.png'];
+import { isModelFile } from './utils/model-files';
 
 export function listDirectories() {
   const modelDirectory = getRootResourcePath();
@@ -38,11 +36,7 @@ export function listDirectory(directory: string) {
 }
 
 function filterFileTypes(file: string | Buffer) {
-  if (EXCLUDE_TYPES.some((x) => !file.includes(x))) {
-    return FILE_TYPES.some((x) => file.includes(x));
-  }
-
-  return true;
+  return isModelFile(file.toString());
 }
 
 function mapFiles(file: string | Buffer, directory: string) {

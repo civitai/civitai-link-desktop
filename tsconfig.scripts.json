@@ -2,14 +2,15 @@
     "compilerOptions": {
       "baseUrl": "./src",
       "declaration": true,
+      "esModuleInterop": true,
       "outDir": "./dist",
       "removeComments": true,
       "noImplicitAny": true,
       "strictNullChecks": true,
+      "target": "ES2022",
     },
     "exclude": ["node_modules", "dist"],
     "ts-node": {
       "files": true
     }
   }
-    

@@ -19,6 +19,7 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "verify:model-indexing": "ts-node -P tsconfig.scripts.json scripts/verify-model-indexing.ts",
     "recompute-hash": "ts-node -P tsconfig.scripts.json scripts/recompute-hash.ts",
     "start": "electron-vite preview",
     "dev": "electron-vite dev --watch --inspect",
@@ -73,7 +74,6 @@
     "ts-node": "^10.9.2",
     "uuid": "^9.0.1",
     "virtua": "^0.31.0",
-    "workerpool": "^9.1.1",
     "yaml": "^2.4.1"
   },
   "devDependencies": {

@@ -1,9 +1,22 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { getAuthHeader } from './oauth/auth-header';
 import { getSettings } from './store/store';
 
 const CIVITAI_API_URL: string =
   import.meta.env.MAIN_VITE_API_URL || 'https://civitai.com/api/v1';
+const MODEL_LOOKUP_TIMEOUT = 15000;
+
+export class ModelNotFoundError extends Error {
+  constructor(hash: string) {
+    super(`No Civitai model found for hash ${hash}`);
+    this.name = 'ModelNotFoundError';
+  }
+}
+
+function getRequestError(error: unknown) {
+  if (!axios.isAxiosError(error)) return error;
+  return error.response?.data ?? error.message;
+}
 
 type ResponsePayload = {
   data: {
@@ -38,6 +51,7 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
   try {
     const { data }: ResponsePayload = await axios.get(
       `${CIVITAI_API_URL}/model-versions/by-hash/${hash}`,
+      { timeout: MODEL_LOOKUP_TIMEOUT },
     );
 
     // Filter NSFW based on settings
@@ -69,13 +83,19 @@ export const getModelByHash = async (hash: string): Promise<Resource> => {
     };
 
     return resource;
-  } catch (error: any | AxiosError) {
-    if (error.response) {
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      throw new ModelNotFoundError(hash);
+    }
+
+    if (axios.isAxiosError(error) && error.response) {
       console.error('Error fetching model by hash: ', error.response.data);
       throw new Error(JSON.stringify(error.response.data));
-    } else {
-      throw new Error(`Error fetching model by hash: ${hash}`);
     }
+
+    throw new Error(`Error fetching model by hash: ${hash}`, {
+      cause: error,
+    });
   }
 };
 
@@ -107,9 +127,10 @@ export const fetchVaultMeta = async (): Promise<VaultMeta | undefined> => {
     if (!result) return; // If for some reason the result is empty return undefined
 
     return result.data;
-  } catch (error: any | AxiosError) {
-    console.error('Error fetching all vault models: ', error.response.data);
-    throw error.response.data;
+  } catch (error: unknown) {
+    const requestError = getRequestError(error);
+    console.error('Error fetching all vault models: ', requestError);
+    throw requestError;
   }
 };
 
@@ -140,9 +161,10 @@ export const fetchVaultModelsByVersion = async (
     );
 
     return data;
-  } catch (error: any | AxiosError) {
-    console.error('Error fetching vault models: ', error.response.data);
-    throw error.response.data;
+  } catch (error: unknown) {
+    const requestError = getRequestError(error);
+    console.error('Error fetching vault models: ', requestError);
+    throw requestError;
   }
 };
 
@@ -180,9 +202,10 @@ export const fetchVaultModels = async (): Promise<VaultModelResource[]> => {
     );
 
     return data.items;
-  } catch (error: any | AxiosError) {
-    console.error('Error fetching vault models: ', error.response.data);
-    throw error.response.data;
+  } catch (error: unknown) {
+    const requestError = getRequestError(error);
+    console.error('Error fetching vault models: ', requestError);
+    throw requestError;
   }
 };
 
@@ -208,9 +231,10 @@ export const toggleVaultModel = async (
     );
 
     return data;
-  } catch (error: any | AxiosError) {
-    console.error('Error toggling vault model: ', error.response.data);
-    throw error.response.data;
+  } catch (error: unknown) {
+    const requestError = getRequestError(error);
+    console.error('Error toggling vault model: ', requestError);
+    throw requestError;
   }
 };
 
@@ -229,8 +253,9 @@ export const fetchMember = async () => {
     });
 
     return data;
-  } catch (error: any | AxiosError) {
-    console.error('Error fetching member: ', error.response.data);
-    throw error.response.data;
+  } catch (error: unknown) {
+    const requestError = getRequestError(error);
+    console.error('Error fetching member: ', requestError);
+    throw requestError;
   }
 };
