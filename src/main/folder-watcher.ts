@@ -20,6 +20,7 @@ import { diffDirectories } from './store/startup-files';
 import { setVault } from './store/vault';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { limitConcurrency } from './utils/concurrency-helpers';
+import { isDownloadInProgress } from './utils/downloads-in-progress';
 import { fileStats } from './utils/file-stats';
 import { formatFileError } from './utils/format-file-error';
 import { isModelFile } from './utils/model-files';
@@ -114,6 +115,9 @@ function onUnlink(filePath: string) {
 async function onAdd(pathname: string) {
   // Short circuit if file isnt a model file
   if (!isModelFile(pathname)) return;
+
+  // The download registers the file itself once it's fully written
+  if (isDownloadInProgress(pathname)) return;
 
   // Short circuit if in not found store
   const notFound = searchNotFoundFile(pathname);

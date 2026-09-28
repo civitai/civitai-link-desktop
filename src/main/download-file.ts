@@ -10,6 +10,10 @@ import { updateActivity } from './store/activities';
 import { addFile } from './store/files';
 import { getRootResourcePath } from './store/paths';
 import { getSettings } from './store/store';
+import {
+  markDownloadFinished,
+  markDownloadStarted,
+} from './utils/downloads-in-progress';
 import { findOrCreateFolder } from './utils/find-or-create-folder';
 import { readModelMetadata } from './utils/read-metadata';
 
@@ -241,6 +245,7 @@ export async function downloadFile({
 
   await Promise.all(promises);
 
+  markDownloadStarted(filePath);
   const writeStream = fs.createWriteStream(filePath);
   for (let i = 0; i < NUMBER_PARTS; i++) {
     const chunkPath = `${tempFilePath}.part${i}`;
@@ -252,56 +257,80 @@ export async function downloadFile({
     console.log("Downloaded to: '" + downloadPath + "'!");
     const timestamp = new Date().toISOString();
 
-    const metadata = await readModelMetadata(filePath);
+    try {
+      const metadata = await readModelMetadata(filePath);
 
-    const fileData = {
-      downloadDate: timestamp,
-      totalLength: fileSize,
-      localPath: filePath,
-      metadata,
-      ...resource,
-    };
+      const fileData = {
+        downloadDate: timestamp,
+        totalLength: fileSize,
+        localPath: filePath,
+        metadata,
+        ...resource,
+      };
 
-    const activity: ActivityItem = {
-      name: resource.modelName,
-      date: timestamp,
-      type: 'downloaded' as ActivityType,
-      civitaiUrl: resource.civitaiUrl,
-    };
+      const activity: ActivityItem = {
+        name: resource.modelName,
+        date: timestamp,
+        type: 'downloaded' as ActivityType,
+        civitaiUrl: resource.civitaiUrl,
+      };
 
-    updateActivity(activity);
-    await addFile(fileData);
+      updateActivity(activity);
+      await addFile(fileData);
 
-    new Notification({
-      title: 'Download Complete',
-      body: resource.name,
-    }).show();
+      new Notification({
+        title: 'Download Complete',
+        body: resource.name,
+      }).show();
 
-    // Reset progress bar
-    mainWindow.setProgressBar(-1);
+      // Reset progress bar
+      mainWindow.setProgressBar(-1);
 
-    // Updates the UI with the final progress
-    mainWindow.webContents.send(`resource-download:${resource.id}`, {
-      progress: 100,
-      downloading: false,
-    });
+      // Updates the UI with the final progress
+      mainWindow.webContents.send(`resource-download:${resource.id}`, {
+        progress: 100,
+        downloading: false,
+      });
 
-    // Send newly added resource to server
-    socket.emit('commandStatus', {
-      status: 'success',
-      progress: 100,
-      updatedAt: timestamp,
-      resource: fileData,
-      id: resource.id,
-      type: 'resources:add',
-    });
+      // Send newly added resource to server
+      socket.emit('commandStatus', {
+        status: 'success',
+        progress: 100,
+        updatedAt: timestamp,
+        resource: fileData,
+        id: resource.id,
+        type: 'resources:add',
+      });
 
-    // Send entire list of resources to server
-    const newPayload = filterResourcesList();
-    socket.emit('commandStatus', {
-      type: 'resources:list',
-      resources: newPayload,
-    });
+      // Send entire list of resources to server
+      const newPayload = filterResourcesList();
+      socket.emit('commandStatus', {
+        type: 'resources:list',
+        resources: newPayload,
+      });
+    } catch (error) {
+      // onEnd runs as a stream callback, so nothing upstream would catch this
+      console.error('Error finishing download', resource.name, error);
+      const message = error instanceof Error ? error.message : String(error);
+
+      mainWindow.setProgressBar(-1);
+      mainWindow.webContents.send(`resource-download:${resource.id}`, {
+        downloading: false,
+      });
+      mainWindow.webContents.send(
+        'error',
+        `Failed to finish downloading ${resource.name}`,
+      );
+      socket.emit('commandStatus', {
+        status: 'error',
+        error: message,
+        updatedAt: timestamp,
+        id: resource.id,
+        type: 'resources:add',
+      });
+    } finally {
+      markDownloadFinished(filePath);
+    }
   }
 
   writeStream.end(onEnd);
