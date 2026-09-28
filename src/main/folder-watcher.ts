@@ -1,9 +1,8 @@
 import chokidar from 'chokidar';
-import os from 'os';
 import path from 'path';
-import workerpool from 'workerpool';
 import { getWindow } from './browser-window';
-import { getModelByHash } from './civitai-api';
+import { getModelByHash, ModelNotFoundError } from './civitai-api';
+import { hash } from './hash';
 import { listDirectories } from './list-directory';
 import { socketCommandStatus } from './socket';
 import { addFile, deleteFile, findFileByFilename } from './store/files';
@@ -14,10 +13,11 @@ import { setVault } from './store/vault';
 import { checkMissingFields } from './utils/check-missing-fields';
 import { limitConcurrency } from './utils/concurrency-helpers';
 import { fileStats } from './utils/file-stats';
+import { isModelFile, supportsEmbeddedMetadata } from './utils/model-files';
+import { readMetadata } from './utils/read-metadata';
 
-const maxWorkers = os.cpus().length > 1 ? os.cpus().length - 1 : 1;
-const pool = workerpool.pool(__dirname + '/worker.js', { maxWorkers });
-const FILE_TYPES = ['.pt', '.safetensors', '.ckpt', '.bin'];
+const SMALL_FILE_SCAN_CONCURRENCY = 2;
+const LARGE_FILE_SCAN_CONCURRENCY = 1;
 
 const watchConfig = {
   ignoreInitial: true,
@@ -80,7 +80,7 @@ function process(filepath: string, event: 'add' | 'unlink') {
 
 function onUnlink(filePath: string) {
   // Short circuit if file isnt a model file
-  if (!FILE_TYPES.some((x) => filePath.includes(x))) return;
+  if (!isModelFile(filePath)) return;
 
   // Remove file from store
   const resource = findFileByFilename(path.basename(filePath));
@@ -104,7 +104,7 @@ function onUnlink(filePath: string) {
 
 async function onAdd(pathname: string) {
   // Short circuit if file isnt a model file
-  if (!FILE_TYPES.some((x) => pathname.includes(x))) return;
+  if (!isModelFile(pathname)) return;
 
   // Short circuit if in not found store
   const notFoundFile = searchNotFoundFile(pathname);
@@ -134,23 +134,40 @@ async function hashFile(pathname: string) {
   updateLoader();
 
   try {
-    const { modelHash, metadata } = await pool.exec('processTask', [pathname]);
+    const modelHash = await hash(pathname);
+    let metadata: Record<string, unknown> = {};
+
+    if (supportsEmbeddedMetadata(pathname)) {
+      try {
+        metadata = await readMetadata(pathname);
+      } catch (error) {
+        console.warn('Unable to read model metadata', pathname, error);
+      }
+    }
+
     try {
       const model = await getModelByHash(modelHash);
       await addFile({ ...model, localPath: pathname, metadata });
     } catch (err) {
-      addNotFoundFile(pathname, modelHash);
-      console.error('Model not found', err);
-    } finally {
-      toHash[pathname].status = 'complete';
+      if (err instanceof ModelNotFoundError) {
+        addNotFoundFile(pathname, modelHash);
+        console.info('Model not found', pathname);
+      } else {
+        console.error('Model lookup failed', pathname, err);
+      }
+    }
+  } catch (err) {
+    console.error('Error hashing', err);
+  } finally {
+    const entry = toHash[pathname];
+    if (entry) {
+      entry.status = 'complete';
       updateLoader();
       setTimeout(() => {
         delete toHash[pathname];
         updateLoader();
       }, 30000);
     }
-  } catch (err) {
-    console.error('Error hashing', err);
   }
 }
 
@@ -209,7 +226,6 @@ async function processFilesInBackground(files: { pathname: string }[]) {
     }
   }
 
-
   // Send initial model-loading event to indicate scanning is starting
   if (smallFiles.length > 0 || largeFiles.length > 0) {
     getWindow().webContents.send('model-loading', {
@@ -220,30 +236,21 @@ async function processFilesInBackground(files: { pathname: string }[]) {
   }
 
   try {
-    // Process small files first with full concurrency
+    // Small files use two lanes so hashing can overlap a model lookup.
     if (smallFiles.length > 0) {
-
       const smallFilePromises = smallFiles.map((pathname) => async () => {
         await onAdd(pathname);
       });
-      await limitConcurrency(smallFilePromises, pool.maxWorkers || maxWorkers);
-
+      await limitConcurrency(smallFilePromises, SMALL_FILE_SCAN_CONCURRENCY);
     }
 
-    // Process large files with reduced concurrency to avoid overwhelming system
+    // Large files stay serial to avoid competing multi-GB disk reads.
     if (largeFiles.length > 0) {
-
       const largeFilePromises = largeFiles.map((pathname) => async () => {
         await onAdd(pathname);
       });
-      const reducedConcurrency = Math.max(
-        1,
-        Math.floor((pool.maxWorkers || maxWorkers) / 2),
-      );
-      await limitConcurrency(largeFilePromises, reducedConcurrency);
+      await limitConcurrency(largeFilePromises, LARGE_FILE_SCAN_CONCURRENCY);
     }
-
-
   } catch (error) {
     console.error('Error during background file processing:', error);
   }
@@ -255,7 +262,6 @@ export async function cleanupWatcher() {
       await watcher.close();
       watcher = undefined;
     }
-    await pool.terminate();
   } catch (error) {
     console.error('Error during watcher cleanup:', error);
   }

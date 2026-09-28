@@ -1,78 +1,89 @@
-import fs from 'fs';
-import { TextDecoder } from 'util';
+import { FileHandle, open } from 'fs/promises';
+
+const SAFETENSORS_HEADER_SIZE = 8;
+const MAX_METADATA_SIZE = 100 * 1024 * 1024;
+
+async function readExactly(
+  file: FileHandle,
+  buffer: Buffer,
+  position: number,
+): Promise<void> {
+  let offset = 0;
+
+  while (offset < buffer.length) {
+    const { bytesRead } = await file.read(
+      buffer,
+      offset,
+      buffer.length - offset,
+      position + offset,
+    );
+
+    if (bytesRead === 0) throw new Error('Unexpected end of file');
+    offset += bytesRead;
+  }
+}
 
 export async function readMetadata(
   filePath: string,
-): Promise<Record<string, any> | string> {
-  return new Promise((resolve, reject) => {
-    const stream = fs.createReadStream(filePath, { highWaterMark: 64 * 1024 });
-    let buffer = Buffer.alloc(0);
-    let metadataLen = -1;
+): Promise<Record<string, unknown>> {
+  const file = await open(filePath, 'r');
 
-    stream.on('data', (chunk: Buffer) => {
-      buffer = Buffer.concat([buffer, chunk]);
+  try {
+    const lengthBuffer = Buffer.alloc(SAFETENSORS_HEADER_SIZE);
+    await readExactly(file, lengthBuffer, 0);
 
-      if (metadataLen === -1 && buffer.length >= 8) {
-        // Convert Buffer to Uint8Array explicitly
-        const metadataLenBytes = new Uint8Array(buffer.subarray(0, 8));
-        metadataLen = new DataView(metadataLenBytes.buffer).getUint32(0, true);
+    const metadataLength = lengthBuffer.readBigUInt64LE();
+    if (
+      metadataLength <= 2n ||
+      metadataLength > BigInt(MAX_METADATA_SIZE) ||
+      metadataLength > BigInt(Number.MAX_SAFE_INTEGER)
+    ) {
+      throw new Error(`${filePath} has an invalid safetensors header`);
+    }
 
-        if (metadataLen <= 2) {
-          stream.destroy(new Error(`${filePath} is not a safetensors file`));
-          return;
-        }
-      }
+    const metadataBuffer = Buffer.alloc(Number(metadataLength));
+    await readExactly(file, metadataBuffer, SAFETENSORS_HEADER_SIZE);
 
-      if (metadataLen !== -1 && buffer.length >= 10 + metadataLen - 2) {
-        stream.destroy(); // Stop reading the file
+    let parsedMetadata: unknown;
+    try {
+      parsedMetadata = JSON.parse(metadataBuffer.toString('utf8'));
+    } catch {
+      throw new Error('Failed to parse metadata JSON');
+    }
 
-        // Use subarray and new Uint8Array for type-safe conversion
-        const jsonStartBytes = new Uint8Array(buffer.subarray(8, 10));
-        const jsonStartStr = new TextDecoder().decode(jsonStartBytes);
-        if (!["{'", '{"'].includes(jsonStartStr)) {
-          reject(new Error(`${filePath} is not a safetensors file`));
-          return;
-        }
+    if (
+      !parsedMetadata ||
+      typeof parsedMetadata !== 'object' ||
+      Array.isArray(parsedMetadata)
+    ) {
+      throw new Error('Invalid safetensors metadata JSON');
+    }
 
-        const jsonDataBytes = new Uint8Array(
-          buffer.subarray(10, 10 + metadataLen - 2),
-        );
-        const jsonDataStr =
-          jsonStartStr + new TextDecoder().decode(jsonDataBytes);
-        let jsonObj;
+    const metadataValue = (parsedMetadata as Record<string, unknown>)[
+      '__metadata__'
+    ];
+    if (
+      !metadataValue ||
+      typeof metadataValue !== 'object' ||
+      Array.isArray(metadataValue)
+    ) {
+      return {};
+    }
+
+    const metadata: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(metadataValue)) {
+      metadata[key] = value;
+      if (typeof value === 'string' && value.startsWith('{')) {
         try {
-          jsonObj = JSON.parse(jsonDataStr);
-        } catch (err) {
-          reject(new Error('Failed to parse metadata JSON'));
-          return;
+          metadata[key] = JSON.parse(value);
+        } catch {
+          // Keep the original string when nested metadata is not JSON.
         }
-
-        const res: Record<string, any> = {};
-        for (const [k, v] of Object.entries(jsonObj['__metadata__'] || {})) {
-          res[k] = v;
-          if (typeof v === 'string' && v.startsWith('{')) {
-            try {
-              res[k] = JSON.parse(v);
-            } catch (error) {
-              // Ignore the error and use the original string
-            }
-          }
-        }
-
-        resolve(res);
       }
-    });
+    }
 
-    stream.on('error', (err) => {
-      if (err) {
-        reject('Failed to parse metadata JSON');
-      }
-    });
-
-    stream.on('close', () => {
-      if (metadataLen === -1) {
-        reject(new Error('Metadata length not found'));
-      }
-    });
-  });
+    return metadata;
+  } finally {
+    await file.close();
+  }
 }
