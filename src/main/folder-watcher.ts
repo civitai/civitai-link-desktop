@@ -156,6 +156,15 @@ async function recheckNotFoundFile(pathname: string, entry: NotFoundFile) {
   try {
     const model = await getModelByHash(entry.hash);
     const metadata = await readModelMetadata(pathname);
+
+    // The lookup can take a while; if the file was replaced meanwhile, the
+    // stored hash no longer describes it, so hash the current bytes instead.
+    const current = await getFileFingerprint(pathname);
+    if (!current || !isUnchangedSinceHashed(entry, current)) {
+      removeNotFoundFile(pathname);
+      return false;
+    }
+
     await addFile({ ...model, localPath: pathname, metadata });
     removeNotFoundFile(pathname);
   } catch (err) {
