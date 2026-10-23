@@ -89,7 +89,7 @@ function process(filepath: string, event: 'add' | 'unlink') {
 }
 
 function onUnlink(filePath: string) {
-  // Short circuit if file isnt a model file
+  // Short circuit if file isn't a model file
   if (!isModelFile(filePath)) return;
 
   // Remove file from store
@@ -113,7 +113,7 @@ function onUnlink(filePath: string) {
 }
 
 async function onAdd(pathname: string) {
-  // Short circuit if file isnt a model file
+  // Short circuit if file isn't a model file
   if (!isModelFile(pathname)) return;
 
   // The download registers the file itself once it's fully written

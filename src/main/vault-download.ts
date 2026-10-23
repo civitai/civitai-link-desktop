@@ -113,7 +113,7 @@ export async function vaultDownload({
   const tempDirPath = path.resolve(getRootResourcePath(), 'tmp');
   const tempFilePath = path.resolve(tempDirPath, tempFileName);
 
-  // Creates temp folder if it doesnt exist, also ensures that the main dir exists
+  // Creates temp folder if it doesn't exist, also ensures that the main dir exists
   if (!fs.existsSync(tempDirPath)) {
     fs.mkdirSync(tempDirPath, { recursive: true });
   }
