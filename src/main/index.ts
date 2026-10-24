@@ -186,7 +186,7 @@ app.whenReady().then(async () => {
       properties: ['openDirectory', 'createDirectory'],
     });
 
-    // Fix closed window when dialog takes focus Windows
+    // Fix closed window when dialog takes focus on Windows
     mainWindow.show();
 
     if (canceled) {
